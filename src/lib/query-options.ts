@@ -8,7 +8,6 @@ export const Personality = {
     Kai: 'beach bum',
     Felix: 'hipster',
     Steve: 'metalhead',
-    // Quinn: 'skater',
     Sophia: 'fashionista',
     Emma: 'foodie',
     Brody: 'fitness enthusiast',
@@ -22,8 +21,6 @@ export const Mood = {
     Angry: 'pissed off',
     Disappointed: 'disappointed',
     Happy: 'ecstatic',
-    // Scared: 'scared',
-    // Lonely: 'lonely',
     None: '',
 } as const;
 
@@ -41,9 +38,36 @@ export type ResponseLength = (typeof ResponseLength)[keyof typeof ResponseLength
 export const Relationship = {
     Stranger: 'stranger',
     Acquaintance: 'acquaintance',
-    // Friend: 'friend',
     Enemy: 'enemy',
     Nemesis: 'nemesis',
 } as const;
 
 export type Relationship = (typeof Relationship)[keyof typeof Relationship];
+
+
+export function getRandomPersonality(): Personality {
+    const values = Object.values(Personality);
+
+    return values[randomIndex(values)];
+}
+
+export function getRandomMood(): Mood {
+    const values = Object.values(Mood);
+
+    return values[randomIndex(values)];
+}
+
+export function getRandomRelationship(): Relationship {
+    const values = Object.values(Relationship);
+
+    return values[randomIndex(values)];
+}
+
+export function getRandomResponseLength(): ResponseLength {
+    const values = Object.values(ResponseLength);
+
+    return values[randomIndex(values)];
+}
+
+const randomIndex = (array: unknown[]) =>
+    Math.floor(Math.random() * array.length);

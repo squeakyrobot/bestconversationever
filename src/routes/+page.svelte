@@ -4,6 +4,15 @@
 	export let data: PageData;
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-{data.time}
-<p>Visit <a href="rant"> /post</a> to post a problem</p>
+<div class="hero h-full">
+	<div class="hero-content text-center">
+		<div class="max-w-md">
+			<h1 class="text-5xl font-bold">Hello there</h1>
+			<p class="py-6">
+				Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
+				quasi. In deleniti eaque aut repudiandae et a id nisi.
+			</p>
+			<a href="/rant" class="btn btn-primary">Get Started</a>
+		</div>
+	</div>
+</div>

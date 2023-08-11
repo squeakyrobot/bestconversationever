@@ -1,7 +1,7 @@
 
-import type { PageServerLoad, Actions, ActionData } from './$types';
-import { buildQuery, getRandomPersonality } from '$lib/server/query';
-import { Personality } from '$lib/server/query-options';
+import type { PageServerLoad, Actions } from './$types';
+import { buildQuery } from '$lib/server/query';
+import { Personality, getRandomPersonality } from '$lib/query-options';
 import { OPENAI_API_KEY } from '$env/static/private';
 import { Configuration, OpenAIApi } from 'openai';
 import type { RantResponse } from '$lib/rant-response';
@@ -32,7 +32,7 @@ export const actions = {
         // TODO: Allow a specified personality
         const personality = getRandomPersonality();
 
-        const query = buildQuery(rant, personality);
+        const query = buildQuery({ rant, personality });
         const personName = Object.keys(Personality)[Object.values(Personality).indexOf(personality)];
 
         // TODO: Count tokens, error on too large of a query

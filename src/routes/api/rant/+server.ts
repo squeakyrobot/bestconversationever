@@ -1,9 +1,11 @@
 import { OPENAI_API_KEY } from '$env/static/private';
-import { Configuration, OpenAIApi } from 'openai';
+import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { buildQuery, getRandomPersonality } from '$lib/server/query';
-import { Personality } from '$lib/server/query-options';
+import { buildQuery, } from '$lib/server/query';
+import { Personality } from '$lib/query-options';
+import type { RantRequest } from '$lib/rant-request';
+import type { RantResponse } from '$lib/rant-response';
 // import type { Config } from '@sveltejs/adapter-vercel';
 
 // export const config: Config = {
@@ -11,25 +13,30 @@ import { Personality } from '$lib/server/query-options';
 // };
 
 export const POST: RequestHandler = async ({ request }) => {
-
+    const rantTime = new Date();
     // TODO: Check API key and throw appropriate error
 
     // Get request data
-    const requestData = await request.json();
+    const rantRequest = await request.json() as RantRequest;
 
     // TODO: Validate request data
 
-    const rant = requestData.rant;
     // TODO: check rant
 
     // TODO: Use moderation API to check that the rant is allowed
 
 
-    // TODO: Allow a specified personality
-    const personality = getRandomPersonality();
+    const query = buildQuery(rantRequest);
+    const personName = Object.keys(Personality)[Object.values(Personality).indexOf(query.personality)];
 
-    const prompt = buildQuery(rant, personality);
-    const personName = Object.keys(Personality)[Object.values(Personality).indexOf(personality)];
+    const messages: ChatCompletionRequestMessage[] = [
+        { role: 'system', content: query.system },
+        { role: 'user', content: query.prompt },
+    ];
+
+    if (rantRequest.previousMessages) {
+        messages.push(...rantRequest.previousMessages)
+    }
 
     // TODO: Count tokens, error on too large of a query
 
@@ -43,18 +50,25 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const chatCompletion = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
-        messages: [
-            { role: 'system', content: prompt.system },
-            { role: 'user', content: prompt.prompt }
-        ],
+        messages,
     });
 
 
-    const response = chatCompletion.data.choices[0].message || 'I have nothing to say.'
+    const response = chatCompletion.data.choices[0].message?.content || 'I have nothing to say.'
+
+    const rantResponse: RantResponse = {
+        personName,
+        response,
+        responseTime: new Date(),
+        personality: query.personality,
+        mood: query.mood,
+        relationship: query.relationship,
+        rantTime,
+    }
 
 
-    return json({ personName, response, prompt });
-
+    return json(rantResponse);
+};
 
 
     // try {
@@ -142,4 +156,3 @@ export const POST: RequestHandler = async ({ request }) => {
     //     console.error(err);
     //     return json({ error: 'There was an error processing your request' }, { status: 500 });
     // }
-};

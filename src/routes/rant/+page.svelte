@@ -1,12 +1,15 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import type { PageData, ActionData } from './$types';
+	import { applyAction, enhance } from '$app/forms';
+	import type { ActionData } from './$types';
 	import Typewriter from 'svelte-typewriter';
+	import type { RantResponse } from '$lib/rant-response';
 	export let form: ActionData;
 
+	let rantResponse: RantResponse | undefined = undefined;
 	let currentRant = '';
 	let rant = '';
 	let rantTime = new Date();
+	let waitingForResponse = false;
 
 	const init = (el: HTMLElement) => el.focus();
 
@@ -14,22 +17,33 @@
 		try {
 			rant = currentRant;
 			rantTime = new Date();
-			if (form) {
-				form.response = '...';
-			}
-			currentRant = '';
+			waitingForResponse = true;
+			setTimeout(() => (currentRant = ''), 100);
 		} catch {
 			event.stopPropagation();
 			event.preventDefault();
 		}
 	};
+
+	const rantResult = () => {
+		return async (a: any) => {
+			// `result` is an `ActionResult` object
+			await applyAction(a.result);
+
+			rantResponse = a.result.data as RantResponse;
+
+			// TODO: all the stuff
+
+			setTimeout(() => (waitingForResponse = false), 1000);
+		};
+	};
 </script>
 
 <div class="flex flex-col overflow-hidden h-full p-2 max-w-4xl w-full">
-	<div class="sticky z-50 top-0 p-2 border-b-2 border-neutral">
+	<div class="sticky z-50 top-0 p-2 border-b-2 border-neutral mb-2">
 		Chatting with {form?.personName || "anyone who'll listen"}
 	</div>
-	<div class="mt-10 text-xl flex-grow overflow-y-auto">
+	<div class="text-xl flex-grow overflow-y-auto">
 		{#if rant}
 			<div class="chat chat-end">
 				<div class="chat-image avatar">
@@ -45,14 +59,14 @@
 				{#key rant}
 					<div class="chat-bubble mt-2 chat-bubble-info">
 						<div class="m-3">
-							<Typewriter interval="10">{rant}</Typewriter>
+							{rant}
 						</div>
 					</div>
 				{/key}
 			</div>
 		{/if}
 
-		{#if form?.response}
+		{#if form?.response || waitingForResponse}
 			<div class="chat chat-start mt-10 text-xl">
 				<div class="chat-image avatar">
 					<div class="w-16 rounded-full">
@@ -69,14 +83,23 @@
 				</div>
 				<div class="chat-bubble mt-2">
 					<div class="m-3">
-						<Typewriter>{form?.response}</Typewriter>
+						{#if waitingForResponse}
+							<span class="loading loading-dots loading-md" />
+						{:else}
+							<Typewriter>{form?.response}</Typewriter>
+						{/if}
 					</div>
 				</div>
 			</div>
 		{/if}
 	</div>
 	<div class=" bottom-0 mt-2">
-		<form method="POST" action="?/getResponse" on:submit={(e) => sendRant(e)} use:enhance>
+		<form
+			method="POST"
+			action="?/getResponse"
+			on:submit={(e) => sendRant(e)}
+			use:enhance={rantResult}
+		>
 			<div class="form-control">
 				<div class="input-group input-group-lg w-full">
 					<input
