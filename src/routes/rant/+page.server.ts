@@ -4,6 +4,7 @@ import { buildQuery, getRandomPersonality } from '$lib/server/query';
 import { Personality } from '$lib/server/query-options';
 import { OPENAI_API_KEY } from '$env/static/private';
 import { Configuration, OpenAIApi } from 'openai';
+import type { RantResponse } from '$lib/rant-response';
 
 // let prompt = '';
 // let rant = '';
@@ -16,8 +17,8 @@ export const load = (async (event) => {
 
 export const actions = {
 
-    getResponse: async ({ request }) => {
-
+    getResponse: async ({ request }): Promise<RantResponse> => {
+        const rantTime = new Date();
         // TODO: Check API key and throw appropriate error
 
         // Get request data
@@ -53,6 +54,6 @@ export const actions = {
 
         const prompt = query.system;
 
-        return { personName, response, prompt, rant };
+        return { personName, response, responseTime: new Date(), prompt, rant, rantTime };
     }
 } satisfies Actions

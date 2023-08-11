@@ -21,26 +21,26 @@ export function buildQuery(
 export function getRandomPersonality(): Personality {
     const values = Object.values(Personality);
 
-    return values[randomInt(0, values.length - 1)];
+    return values[randomIndex(values)];
 }
 
 function getRandomMood(): Mood {
     const values = Object.values(Mood);
 
-    return values[randomInt(0, values.length - 1)];
+    return values[randomIndex(values)];
 }
 
 function getRandomRelationship(): Relationship {
     const values = Object.values(Relationship);
 
-    return values[randomInt(0, values.length - 1)];
+    return values[randomIndex(values)];
 }
 
 function getRandomResponseLength(): ResponseLength {
     const values = Object.values(ResponseLength);
 
-    return values[randomInt(0, values.length - 1)];
+    return values[randomIndex(values)];
 }
 
-const randomInt = (min: number, max: number) =>
-    Math.floor(Math.random() * (max - min + 1)) + min;
+const randomIndex = (array: unknown[]) =>
+    Math.floor(Math.random() * array.length);

@@ -1,4 +1,4 @@
-// TODO: Give them names
+
 export const Personality = {
     Tiffany: 'valley girl',
     Sky: 'hippie',
