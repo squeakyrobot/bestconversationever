@@ -8,17 +8,28 @@
 	let rant = '';
 	let rantTime = new Date();
 
-	const setRant = () => {
-		rant = currentRant;
-		rantTime = new Date();
-		if (form) {
-			form.response = '...';
+	const init = (el: HTMLElement) => el.focus();
+
+	const sendRant = (event: Event) => {
+		try {
+			rant = currentRant;
+			rantTime = new Date();
+			if (form) {
+				form.response = '...';
+			}
+			currentRant = '';
+		} catch {
+			event.stopPropagation();
+			event.preventDefault();
 		}
 	};
 </script>
 
-<div class="max-w-screen-md">
-	<div class="response mt-10 text-xl">
+<div class="flex flex-col overflow-hidden h-full p-2 max-w-4xl w-full">
+	<div class="sticky z-50 top-0 p-2 border-b-2 border-neutral">
+		Chatting with {form?.personName || "anyone who'll listen"}
+	</div>
+	<div class="mt-10 text-xl flex-grow overflow-y-auto">
 		{#if rant}
 			<div class="chat chat-end">
 				<div class="chat-image avatar">
@@ -34,7 +45,7 @@
 				{#key rant}
 					<div class="chat-bubble mt-2 chat-bubble-info">
 						<div class="m-3">
-							<Typewriter>{rant}</Typewriter>
+							<Typewriter interval="10">{rant}</Typewriter>
 						</div>
 					</div>
 				{/key}
@@ -64,31 +75,33 @@
 			</div>
 		{/if}
 	</div>
-
-	<form method="POST" action="?/getResponse" use:enhance>
-		<div class="form-control mt-10">
-			<div class="input-group input-group-lg w-full">
-				<input
-					type="text"
-					name="rant"
-					placeholder="What do you have to say?"
-					class="input input-bordered w-full text-xl"
-					bind:value={currentRant}
-				/>
-				<button type="submit" class="btn btn-square btn-neutral" on:click={setRant}>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 16 16"
-						fill="none"
-						class="h-4 w-4 m-1 md:m-0"
-						stroke-width="2"
-						><path
-							d="M.5 1.163A1 1 0 0 1 1.97.28l12.868 6.837a1 1 0 0 1 0 1.766L1.969 15.72A1 1 0 0 1 .5 14.836V10.33a1 1 0 0 1 .816-.983L8.5 8 1.316 6.653A1 1 0 0 1 .5 5.67V1.163Z"
-							fill="currentColor"
-						/></svg
-					>
-				</button>
+	<div class=" bottom-0 mt-2">
+		<form method="POST" action="?/getResponse" on:submit={(e) => sendRant(e)} use:enhance>
+			<div class="form-control">
+				<div class="input-group input-group-lg w-full">
+					<input
+						use:init
+						type="text"
+						name="rant"
+						placeholder="What do you have to say?"
+						class="input input-bordered w-full"
+						bind:value={currentRant}
+					/>
+					<button type="submit" disabled={!currentRant} class="btn btn-square btn-neutral">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 16 16"
+							fill="none"
+							class="h-4 w-4 m-1 md:m-0"
+							stroke-width="2"
+							><path
+								d="M.5 1.163A1 1 0 0 1 1.97.28l12.868 6.837a1 1 0 0 1 0 1.766L1.969 15.72A1 1 0 0 1 .5 14.836V10.33a1 1 0 0 1 .816-.983L8.5 8 1.316 6.653A1 1 0 0 1 .5 5.67V1.163Z"
+								fill="currentColor"
+							/></svg
+						>
+					</button>
+				</div>
 			</div>
-		</div>
-	</form>
+		</form>
+	</div>
 </div>

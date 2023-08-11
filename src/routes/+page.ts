@@ -1,5 +1,6 @@
 import type { PageLoad } from './$types';
+import { redirect } from '@sveltejs/kit';
 
 export const load = (async () => {
-    return { time: Date.now() };
+    throw redirect(302, '/rant');
 }) satisfies PageLoad;

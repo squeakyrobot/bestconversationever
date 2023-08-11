@@ -1,10 +1,9 @@
 import { OPENAI_API_KEY } from '$env/static/private';
-import { type CreateChatCompletionRequest, type ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai';
+import { Configuration, OpenAIApi } from 'openai';
 import type { RequestHandler } from './$types';
-import { getTokens } from '$lib/utils/tokenizer';
 import { json } from '@sveltejs/kit';
-import { buildQuery, getRandomPersonality } from '$lib/query';
-import { Personality } from '$lib/query-options';
+import { buildQuery, getRandomPersonality } from '$lib/server/query';
+import { Personality } from '$lib/server/query-options';
 // import type { Config } from '@sveltejs/adapter-vercel';
 
 // export const config: Config = {
