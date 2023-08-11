@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
-
+	import Typewriter from 'svelte-typewriter';
 	export let form: ActionData;
 
 	let currentRant = '';
@@ -31,11 +31,13 @@
 
 					<time class="text-xs opacity-70">{rantTime.toLocaleString()}</time>
 				</div>
-				<div class="chat-bubble mt-2 chat-bubble-info">
-					<div class="m-3">
-						{rant}
+				{#key rant}
+					<div class="chat-bubble mt-2 chat-bubble-info">
+						<div class="m-3">
+							<Typewriter>{rant}</Typewriter>
+						</div>
 					</div>
-				</div>
+				{/key}
 			</div>
 		{/if}
 
@@ -56,7 +58,7 @@
 				</div>
 				<div class="chat-bubble mt-2">
 					<div class="m-3">
-						{form?.response}
+						<Typewriter>{form?.response}</Typewriter>
 					</div>
 				</div>
 			</div>
