@@ -1,4 +1,5 @@
 <script lang="ts">
+	import DOMPurify from 'isomorphic-dompurify';
 	import Typewriter from 'svelte-typewriter';
 	import type { RantResponse } from '$lib/rant-response';
 	import type { RantRequest } from '$lib/rant-request';
@@ -17,6 +18,7 @@
 	let rantTime = new Date();
 	let waitingForResponse = false;
 	let personality: Personality;
+	const messages: { role: 'user' | 'assistant'; content: string }[] = [];
 
 	// const init = (el: HTMLElement) => el.focus();
 
@@ -44,6 +46,10 @@
 			personality: personality // || rantResponse?.personality
 		};
 
+		if (personality) {
+			rantRequest.previousMessages = messages;
+		}
+
 		rant = currentRant;
 		rantTime = new Date();
 		setTimeout(() => (waitingForResponse = true), 250);
@@ -56,6 +62,11 @@
 
 			rantResponse = await result.json();
 			personName = rantResponse?.personName || '';
+
+			messages.push(
+				{ role: 'user', content: rant },
+				{ role: 'assistant', content: rantResponse?.response || '' }
+			);
 
 			waitingForResponse = false;
 		}, 10);
@@ -138,7 +149,7 @@
 						{#if waitingForResponse}
 							<span class="loading loading-dots loading-md" />
 						{:else}
-							<Typewriter>{rantResponse?.response}</Typewriter>
+							<Typewriter>{DOMPurify.sanitize(rantResponse?.response)}</Typewriter>
 						{/if}
 					</div>
 				</div>

@@ -30,13 +30,14 @@ export const POST: RequestHandler = async ({ request }) => {
     const personName = Object.keys(Personality)[Object.values(Personality).indexOf(query.personality)];
 
     const messages: ChatCompletionRequestMessage[] = [
-        { role: 'system', content: query.system },
-        { role: 'user', content: query.prompt },
+        { role: 'system', content: query.system }
     ];
 
     if (rantRequest.previousMessages) {
         messages.push(...rantRequest.previousMessages)
     }
+
+    messages.push({ role: 'user', content: query.prompt });
 
     // TODO: Count tokens, error on too large of a query
 
