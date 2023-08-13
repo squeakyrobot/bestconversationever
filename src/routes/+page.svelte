@@ -30,7 +30,7 @@
 						on:keyup={onKeyUp}
 					/>
 					<a
-						href="/rant/anyone"
+						href="/rant"
 						bind:this={rantLink}
 						class="btn btn-secondary lg:text-lg ml-2 mt-2 {$rantStore ? '' : 'btn-disabled'}"
 					>

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import DOMPurify from 'isomorphic-dompurify';
 	import Typewriter from 'svelte-typewriter';
-	import type { RantResponse } from '$lib/rant-response';
-	import type { RantRequest } from '$lib/rant-request';
+	import type { RantApiResponse } from '$lib/rant-api-response';
+	import type { RantApiRequest } from '$lib/rant-api-request';
 	import { onMount } from 'svelte';
 	import { Personality } from '$lib/query-options';
+	import { marked } from 'marked';
 
 	export let personName = '';
 	export let initialRant = '';
@@ -12,7 +13,7 @@
 	export let onClose: () => void;
 
 	let rantBox: HTMLInputElement;
-	let rantResponse: RantResponse | undefined = undefined;
+	let rantResponse: RantApiResponse | undefined = undefined;
 	let currentRant = '';
 	let rant = '';
 	let rantTime = new Date();
@@ -40,7 +41,7 @@
 	});
 
 	const sendRant = (e?: SubmitEvent) => {
-		const rantRequest: RantRequest = {
+		const rantRequest: RantApiRequest = {
 			rant: currentRant,
 			// TODO: Re-enable sticky personality
 			personality: personality // || rantResponse?.personality
@@ -145,11 +146,13 @@
 					{/if}
 				</div>
 				<div class="chat-bubble mt-2">
-					<div class="m-3">
+					<div class="m-3 prose">
 						{#if waitingForResponse}
 							<span class="loading loading-dots loading-md" />
 						{:else}
-							<Typewriter>{DOMPurify.sanitize(rantResponse?.response)}</Typewriter>
+							<Typewriter mode="cascade">
+								{@html DOMPurify.sanitize(marked.parse(rantResponse?.response))}
+							</Typewriter>
 						{/if}
 					</div>
 				</div>

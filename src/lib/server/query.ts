@@ -1,4 +1,4 @@
-import type { RantRequest } from "$lib/rant-request";
+import type { RantApiRequest } from "$lib/rant-request";
 import {
     Personality,
     Mood,
@@ -11,7 +11,7 @@ import {
 } from "../query-options"
 
 export function buildQuery(
-    rantRequest: RantRequest
+    rantRequest: RantApiRequest
 ): { system: string, prompt: string, personality: Personality, mood: Mood, relationship: Relationship } {
     // TODO: Check input
 

@@ -1,6 +1,6 @@
 import type { Personality, Mood, Relationship } from "./query-options";
 
-export interface RantResponse {
+export interface RantApiResponse {
     personName: string;
     response: string;
     responseTime: Date;

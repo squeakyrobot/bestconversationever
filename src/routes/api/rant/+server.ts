@@ -4,8 +4,8 @@ import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { buildQuery, } from '$lib/server/query';
 import { Personality } from '$lib/query-options';
-import type { RantRequest } from '$lib/rant-request';
-import type { RantResponse } from '$lib/rant-response';
+import type { RantApiRequest } from '$lib/rant-request';
+import type { RantApiResponse } from '$lib/rant-response';
 // import type { Config } from '@sveltejs/adapter-vercel';
 
 // export const config: Config = {
@@ -17,7 +17,7 @@ export const POST: RequestHandler = async ({ request }) => {
     // TODO: Check API key and throw appropriate error
 
     // Get request data
-    const rantRequest = await request.json() as RantRequest;
+    const rantRequest = await request.json() as RantApiRequest;
 
     // TODO: Validate request data
 
@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const response = chatCompletion.data.choices[0].message?.content || 'I have nothing to say.'
 
-    const rantResponse: RantResponse = {
+    const rantResponse: RantApiResponse = {
         personName,
         response,
         responseTime: new Date(),

@@ -12,6 +12,7 @@ export const Personality = {
     Emma: 'foodie',
     Brody: 'fitness enthusiast',
     Navin: 'jerk',
+    Gramps: 'bitter old man; angry;'
 } as const;
 
 export type Personality = (typeof Personality)[keyof typeof Personality];

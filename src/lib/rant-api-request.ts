@@ -1,6 +1,6 @@
 import type { Mood, Personality, Relationship, ResponseLength } from "./query-options";
 
-export interface RantRequest {
+export interface RantApiRequest {
     rant: string;
     personality?: Personality;
     mood?: Mood;
