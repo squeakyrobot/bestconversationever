@@ -3,9 +3,9 @@ import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'ope
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { buildQuery, } from '$lib/server/query';
+import type { RantApiRequest } from '$lib/rant-api-request';
+import type { RantApiResponse } from '$lib/rant-api-response';
 import { Personality } from '$lib/query-options';
-import type { RantApiRequest } from '$lib/rant-request';
-import type { RantApiResponse } from '$lib/rant-response';
 // import type { Config } from '@sveltejs/adapter-vercel';
 
 // export const config: Config = {

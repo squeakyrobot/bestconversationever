@@ -1,3 +1,5 @@
+import { derived, writable, Writable } from "svelte/store";
+
 export interface ConversationItem {
     request: {
         message: string;
@@ -10,3 +12,13 @@ export interface ConversationItem {
         time?: Date;
     };
 }
+
+export interface Conversation {
+    messages: ConversationItem[];
+}
+
+class ConversationStore {
+
+}
+
+export const converstation = new ConversationStore();

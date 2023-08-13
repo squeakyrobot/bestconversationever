@@ -1,14 +1,16 @@
-import type { RantApiRequest } from "$lib/rant-request";
+import type { ChatApiRequest } from "$lib/rant-api-request";
+import type { RantApiRequest } from "$lib/rant-api-request";
 import {
     Personality,
     Mood,
-    ResponseLength,
     Relationship,
     getRandomMood,
     getRandomPersonality,
     getRandomRelationship,
     getRandomResponseLength
 } from "../query-options"
+
+
 
 export function buildQuery(
     rantRequest: RantApiRequest
@@ -27,5 +29,13 @@ export function buildQuery(
         mood,
         relationship,
     };
-    // return `Respond to "${rant}" like a ${mood} ${personality} in ${responseLength}`;
+}
+
+export function buildChatQuery(request: ChatApiRequest): { system: string, prompt: string } {
+    const p = request.personality;
+
+    return {
+        system: `You are a ${p.mood} ${p.person} responding to a ${p.relationship} in ${p.responseLength}`,
+        prompt: `"${request.message}"`,
+    }
 }

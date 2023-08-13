@@ -1,3 +1,4 @@
+import type { PersonalityOptions } from "./personality";
 import type { Personality, Mood, Relationship } from "./query-options";
 
 export interface RantApiResponse {
@@ -10,4 +11,11 @@ export interface RantApiResponse {
     prompt?: string;
     rant?: string;
     rantTime?: Date;
+}
+
+export interface ChatApiResponse {
+    id: string;
+    personality: PersonalityOptions;
+    message: string;
+    time: Date;
 }
