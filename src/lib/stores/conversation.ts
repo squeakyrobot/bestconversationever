@@ -1,7 +1,8 @@
 import { Personality } from "$lib/personality";
-import type { ChatApiRequest } from "$lib/rant-api-request";
-import type { ChatApiResponse } from "$lib/rant-api-response";
+import type { ChatApiRequest } from "$lib/chat-api-request";
+import type { ChatApiResponse } from "$lib/chat-api-response";
 import { writable, get, type Writable, type Unsubscriber } from "svelte/store";
+import { nanoid } from 'nanoid'
 
 export interface ConversationItem {
     role: 'user' | 'assistant';
@@ -24,7 +25,7 @@ export class ConversationStore {
 
     constructor(personality?: Personality) {
         this.personality = personality || new Personality();
-        this.conversationId = 'TODO: add Conversation ID';
+        this.conversationId = nanoid();
         this.store = writable<Conversation>({ messages: [] });
         this.subscribe = this.store.subscribe;
     }
@@ -44,7 +45,7 @@ export class ConversationStore {
 
 
         const apiRequest: ChatApiRequest = {
-            id: 'TODO: Add ID',
+            id: nanoid(),
             conversationId: this.conversationId,
             personality: this.personality.getPersonality(),
             message: userMsg.text || '',
@@ -76,13 +77,6 @@ export class ConversationStore {
 
         const apiResponse = await apiCall.json() as ChatApiResponse;
 
-        // const responseMsg: ConversationItem = {
-        //     name: apiRequest.personality.name,
-        //     role: 'assistant',
-        //     time: new Date(),
-        //     waitingForResponse: false,
-        //     text: apiResponse.message,
-        // };
 
         responseMsg.time = new Date();
         responseMsg.text = apiResponse.message;
@@ -98,5 +92,3 @@ export class ConversationStore {
         this.personality = personality;
     }
 }
-
-// export const converstation = new ConversationStore();

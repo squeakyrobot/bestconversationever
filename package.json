@@ -29,6 +29,7 @@
 		"eslint-plugin-svelte": "^2.30.0",
 		"isomorphic-dompurify": "^1.8.0",
 		"marked": "^7.0.2",
+		"nanoid": "^4.0.2",
 		"openai": "^3.3.0",
 		"postcss": "^8.4.27",
 		"prettier": "^2.8.0",

@@ -1,84 +1,74 @@
 <script lang="ts">
-	import DOMPurify from 'isomorphic-dompurify';
-	import Typewriter from 'svelte-typewriter';
-	import type { RantApiResponse } from '$lib/rant-api-response';
-	import type { RantApiRequest } from '$lib/rant-api-request';
+	import ChatMessage from './ChatMessage.svelte';
 	import { onMount } from 'svelte';
-	import { Personality } from '$lib/query-options';
-	import { marked } from 'marked';
+	import { Person, Personality, Traits } from '$lib/personality';
+	import { ConversationStore } from '$lib/stores/conversation';
+	import PeopleList from './PeopleList.svelte';
 
 	export let personName = '';
 	export let initialRant = '';
 
 	export let onClose: () => void;
 
-	let rantBox: HTMLInputElement;
-	let rantResponse: RantApiResponse | undefined = undefined;
-	let currentRant = '';
-	let rant = '';
-	let rantTime = new Date();
-	let waitingForResponse = false;
-	let personality: Personality;
-	const messages: { role: 'user' | 'assistant'; content: string }[] = [];
+	let chatBox: HTMLInputElement;
 
-	// const init = (el: HTMLElement) => el.focus();
+	let currentRant = '';
+
+	const personality = new Personality();
+	const conversationStore = new ConversationStore(personality);
 
 	onMount(() => {
 		if (personName) {
 			personName = personName.charAt(0).toUpperCase() + personName.slice(1);
-			personality = (Personality as any)[personName];
-			if (!personality) {
-				personName = '';
-			}
+			conversationStore.setPersonality(new Personality({ person: (Person as any)[personName] }));
+		} else {
+			personality.lock(Traits.Person);
 		}
 
 		if (initialRant) {
 			currentRant = initialRant;
 			sendRant();
 		} else {
-			rantBox.focus();
+			chatBox.focus();
 		}
 	});
 
 	const sendRant = (e?: SubmitEvent) => {
-		const rantRequest: RantApiRequest = {
-			rant: currentRant,
-			// TODO: Re-enable sticky personality
-			personality: personality // || rantResponse?.personality
-		};
+		conversationStore.set(currentRant);
+		currentRant = '';
 
-		if (personality) {
-			rantRequest.previousMessages = messages;
+		if (!personName) {
+			personName = personality.getName(personality.person);
 		}
-
-		rant = currentRant;
-		rantTime = new Date();
-		setTimeout(() => (waitingForResponse = true), 250);
-		setTimeout(async () => {
-			currentRant = '';
-			const result = await fetch('/api/rant', {
-				method: 'POST',
-				body: JSON.stringify(rantRequest)
-			});
-
-			rantResponse = await result.json();
-			personName = rantResponse?.personName || '';
-
-			messages.push(
-				{ role: 'user', content: rant },
-				{ role: 'assistant', content: rantResponse?.response || '' }
-			);
-
-			waitingForResponse = false;
-		}, 10);
 	};
 </script>
+
+<dialog id="peopleChooser" class="modal">
+	<form method="dialog" class="modal-box w-11/12 max-w-3xl">
+		<button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+		<h3 class="font-bold text-lg">Choose someone to chat with</h3>
+		<div class="flex-wrap mt-5 text-center">
+			<PeopleList />
+		</div>
+		<div class="flex justify-end bottom-0 border-t-2 border-neutral mt-2 pt-4">
+			<div class="align-bottom">
+				<button class="btn btn-ghost">Close</button>
+			</div>
+		</div>
+	</form>
+	<form method="dialog" class="modal-backdrop">
+		<button>close</button>
+	</form>
+</dialog>
 
 <div class="flex flex-col overflow-hidden h-full p-2 w-full">
 	<div class="sticky z-50 top-0 border-b-2 border-neutral mb-2">
 		<div class="navbar">
 			<div class="flex-1">
-				Chatting with {personName || "anyone who'll listen"}
+				Chatting with &nbsp;
+				<a onclick="peopleChooser.showModal()" class="link link-info"
+					>{personName || "anyone who'll listen"}</a
+				>
 			</div>
 			<div class="flex-none">
 				{#if onClose}
@@ -102,69 +92,18 @@
 		</div>
 	</div>
 	<div class="text-xl flex-grow overflow-y-auto">
-		{#if rant}
-			<div class="chat chat-end">
-				<div class="chat-image avatar">
-					<div class="w-16 rounded-full">
-						<img src="/images/personalities/User.svg" alt="User" />
-					</div>
-				</div>
-				<div class="chat-header">
-					Anonymous
-
-					<time class="text-xs opacity-70">{new Date(rantTime).toLocaleString()}</time>
-				</div>
-				{#key rant}
-					<div class="chat-bubble mt-2 chat-bubble-info">
-						<div class="m-3">
-							{rant}
-						</div>
-					</div>
-				{/key}
-			</div>
-		{/if}
-
-		{#if rantResponse?.response || waitingForResponse}
-			<div class="chat chat-start mt-10 text-xl">
-				{#if personName}
-					<div class="chat-image avatar">
-						<div class="w-16 rounded-full">
-							<img
-								src="/images/personalities/{personName || 'default'}.svg"
-								alt={personName || '[auto]'}
-								title={personName}
-							/>
-						</div>
-					</div>
-				{/if}
-				<div class="chat-header">
-					{personName || 'Finding someone who cares...'}
-					{#if rantResponse}
-						<time class="text-xs opacity-50">
-							{new Date(rantResponse.responseTime).toLocaleString()}
-						</time>
-					{/if}
-				</div>
-				<div class="chat-bubble mt-2">
-					<div class="m-3 prose">
-						{#if waitingForResponse}
-							<span class="loading loading-dots loading-md" />
-						{:else}
-							<Typewriter mode="cascade">
-								{@html DOMPurify.sanitize(marked.parse(rantResponse?.response))}
-							</Typewriter>
-						{/if}
-					</div>
-				</div>
-			</div>
-		{/if}
+		{#each $conversationStore.messages as message, index}
+			{@const currentAnswer =
+				index === $conversationStore.messages.length - 1 && message.role === 'assistant'}
+			<ChatMessage {message} {currentAnswer} />
+		{/each}
 	</div>
 	<div class=" bottom-0 mt-2">
 		<form on:submit|preventDefault={sendRant}>
 			<div class="form-control">
 				<div class="input-group input-group-lg w-full">
 					<input
-						bind:this={rantBox}
+						bind:this={chatBox}
 						type="text"
 						name="rant"
 						placeholder="What do you have to say?"

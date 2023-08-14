@@ -52,9 +52,9 @@
 				{#if message.waitingForResponse}
 					<span class="loading loading-dots loading-md" />
 				{:else if currentAnswer}
-					<Typewriter mode="cascade">
-						{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
-					</Typewriter>
+					<!-- <Typewriter mode="cascade"> -->
+					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
+					<!-- </Typewriter> -->
 				{:else}
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
 				{/if}

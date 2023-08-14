@@ -3,8 +3,8 @@ import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'ope
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { buildChatQuery, } from '$lib/server/query';
-import type { ChatApiRequest } from '$lib/rant-api-request';
-import type { ChatApiResponse } from '$lib/rant-api-response';
+import type { ChatApiRequest } from '$lib/chat-api-request';
+import type { ChatApiResponse } from '$lib/chat-api-response';
 import type { ConversationItem } from '$lib/stores/conversation';
 
 // import type { Config } from '@sveltejs/adapter-vercel';
