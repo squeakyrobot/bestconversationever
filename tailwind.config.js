@@ -10,7 +10,7 @@ export default {
     require('daisyui'),
   ],
   daisyui: {
-    themes: ['light', 'dark', 'dracula', 'night'],
+    themes: ['dracula'],
   },
 }
 

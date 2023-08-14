@@ -17,7 +17,9 @@
 		<div class="hero-content text-center">
 			<div class="">
 				<h1 class="text-5xl font-bold">Need someone to talk to?</h1>
-				<p class="py-6">We'll find someone who will listen to what you have to say.</p>
+				<p class="py-6">
+					Start a conversation and we'll find someone who will listen to what you have to say.
+				</p>
 				<div class="w-full">
 					<input
 						type="text"
