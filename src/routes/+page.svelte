@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Person } from '$lib/personality';
 	import { rantStore } from '$lib/stores';
 	import { fade } from 'svelte/transition';
 
@@ -15,11 +16,8 @@
 	<div class="hero">
 		<div class="hero-content text-center">
 			<div class="">
-				<h1 class="text-5xl font-bold">Know one cares what you have to say?</h1>
-				<p class="py-6">
-					Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi
-					exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.
-				</p>
+				<h1 class="text-5xl font-bold">Need someone to talk to?</h1>
+				<p class="py-6">We'll find someone who will listen to what you have to say.</p>
 				<div class="w-full">
 					<input
 						type="text"
@@ -30,7 +28,7 @@
 						on:keyup={onKeyUp}
 					/>
 					<a
-						href="/rant"
+						href="/chat"
 						bind:this={rantLink}
 						class="btn btn-secondary lg:text-lg ml-2 mt-2 {$rantStore ? '' : 'btn-disabled'}"
 					>
@@ -53,14 +51,26 @@
 	</div>
 
 	<div class="divider mt-10 lg:mt-20">OR</div>
-	<div class="hero mt-10 lg:mt-20">
+	<div class="hero mt-5 lg:mt-10">
 		<div class="hero-content text-center">
-			<div class="max-w-lg">
-				<h1 class="text-3xl font-bold">Choose someon from the team</h1>
-				<p class="py-6">
-					TODO: Add a chooser to chat with a specific person also explain the difference with
-					context remembering
-				</p>
+			<div class="">
+				<h1 class="text-3xl font-bold">Choose someone to chat with</h1>
+				<div class="flex-wrap mt-5">
+					{#each Object.keys(Person) as name}
+						<div class="inline-block m-4">
+							<a href="/chat/{name}">
+								<div class="chat-image avatar">
+									<div class="w-16 rounded-full">
+										<img src="/images/personalities/{name}.svg" alt={name} title={name} />
+									</div>
+								</div>
+								<div>
+									{name}
+								</div>
+							</a>
+						</div>
+					{/each}
+				</div>
 			</div>
 		</div>
 	</div>

@@ -14,7 +14,8 @@ export interface RantApiResponse {
 }
 
 export interface ChatApiResponse {
-    id: string;
+    requestId: string;
+    conversationId: string;
     personality: PersonalityOptions;
     message: string;
     time: Date;

@@ -1,19 +1,19 @@
 import { getEnumKey, randomEnum } from "./util";
 
 export enum Person {
-    Tiffany = 'valley girl',
-    Sky = 'hippie',
-    Chad = 'jock',
-    Luna = 'goth',
-    Sam = 'Samuel L. Jackson',
-    Kai = 'beach bum',
-    Felix = 'hipster',
-    Steve = 'metalhead',
-    Sophia = 'fashionista',
-    Emma = 'foodie',
     Brody = 'fitness enthusiast',
+    Chad = 'jock',
+    Emma = 'foodie',
+    Felix = 'hipster',
+    Gramps = 'bitter old man; angry; responds briefly;',
+    Kai = 'beach bum',
+    Luna = 'goth',
     Navin = 'jerk',
-    Gramps = 'bitter old man; angry;'
+    Sam = 'Samuel L. Jackson',
+    Sky = 'hippie',
+    Sophia = 'fashionista',
+    Steve = 'metalhead',
+    Tiffany = 'valley girl',
 }
 
 export enum Mood {
@@ -76,7 +76,7 @@ export class Personality {
     }
 
     public get person(): Person {
-        return (this.traitLock & Traits.Person && this.options?.person) ?
+        return ((this.traitLock & Traits.Person) && this.options?.person) ?
             this.options.person :
             randomEnum(Person);
     }

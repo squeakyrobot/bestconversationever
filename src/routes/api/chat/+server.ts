@@ -5,6 +5,7 @@ import { json } from '@sveltejs/kit';
 import { buildChatQuery, } from '$lib/server/query';
 import type { ChatApiRequest } from '$lib/rant-api-request';
 import type { ChatApiResponse } from '$lib/rant-api-response';
+import type { ConversationItem } from '$lib/stores/conversation';
 
 // import type { Config } from '@sveltejs/adapter-vercel';
 
@@ -13,7 +14,7 @@ import type { ChatApiResponse } from '$lib/rant-api-response';
 // };
 
 export const POST: RequestHandler = async ({ request }) => {
-    const time = new Date();
+
     // TODO: Check API key and throw appropriate error
 
     // Get request data
@@ -34,7 +35,11 @@ export const POST: RequestHandler = async ({ request }) => {
     ];
 
     if (apiRequest.previousMessages) {
-        messages.push(...apiRequest.previousMessages)
+        messages.push(...apiRequest.previousMessages.map<ChatCompletionRequestMessage>(
+            (value: ConversationItem) => {
+                return { role: value.role, content: value.text };
+            })
+        );
     }
 
     messages.push({ role: 'user', content: query.prompt });
@@ -55,10 +60,13 @@ export const POST: RequestHandler = async ({ request }) => {
     });
 
 
-    const message = chatCompletion.data.choices[0].message?.content || 'I have nothing to say.'
+    const message = chatCompletion.data.choices[0].message?.content || 'I have nothing to say.';
+
+    // TODO: store the data in the DB
 
     return json({
-        id: apiRequest.id,
+        requestId: apiRequest.id,
+        conversationId: apiRequest.conversationId,
         personality: apiRequest.personality,
         message,
         time: new Date(),
