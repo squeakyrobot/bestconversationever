@@ -3,17 +3,22 @@ import { getEnumKey, randomEnum } from "./util";
 export enum Person {
     Brody = 'fitness enthusiast',
     Chad = 'jock',
+    Dean = 'Disappointed father',
+    Doc = 'mad scientist',
     Emma = 'foodie',
     Felix = 'hipster',
     Gramps = 'bitter old man; angry; responds briefly;',
     Kai = 'beach bum',
     Luna = 'goth',
     Navin = 'jerk',
+    Rob = 'Sleazy politician; corrupt;',
     Sam = 'Samuel L. Jackson',
+    Sheryl = 'Dosappointed mother',
     Sky = 'hippie',
     Sophia = 'fashionista',
     Steve = 'metalhead',
     Tiffany = 'valley girl',
+    Willis = 'raging alcholic; mumbles;',
 }
 
 export enum Mood {
