@@ -35,11 +35,10 @@
 		}
 	});
 
-	const sendChatMessage = async (e?: SubmitEvent) => {
+	const sendChatMessage = (e?: SubmitEvent) => {
 		sendingChat = true;
+		conversationStore.set(currentChat).then(() => (sendingChat = false));
 		currentChat = '';
-		await conversationStore.set(currentChat);
-		sendingChat = false;
 
 		if (!personName) {
 			personName = personality.getName(personality.person);
