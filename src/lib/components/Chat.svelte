@@ -13,7 +13,8 @@
 
 	let chatBox: HTMLInputElement;
 
-	let currentRant = '';
+	let currentChat = '';
+	let sendingChat = false;
 
 	const personality = new Personality();
 	const conversationStore = new ConversationStore(personality);
@@ -27,16 +28,18 @@
 		}
 
 		if (initialChat) {
-			currentRant = initialChat;
+			currentChat = initialChat;
 			sendChatMessage();
 		} else {
 			chatBox.focus();
 		}
 	});
 
-	const sendChatMessage = (e?: SubmitEvent) => {
-		conversationStore.set(currentRant);
-		currentRant = '';
+	const sendChatMessage = async (e?: SubmitEvent) => {
+		sendingChat = true;
+		currentChat = '';
+		await conversationStore.set(currentChat);
+		sendingChat = false;
 
 		if (!personName) {
 			personName = personality.getName(personality.person);
@@ -109,9 +112,13 @@
 						name="rant"
 						placeholder="What do you have to say?"
 						class="input input-bordered w-full"
-						bind:value={currentRant}
+						bind:value={currentChat}
 					/>
-					<button type="submit" disabled={!currentRant} class="btn btn-square btn-neutral">
+					<button
+						type="submit"
+						disabled={!currentChat || sendingChat}
+						class="btn btn-square btn-neutral"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"

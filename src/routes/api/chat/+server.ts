@@ -1,4 +1,4 @@
-import { OPENAI_API_KEY, RECAPTCHA_SECRET_KEY } from '$env/static/private';
+import { OPENAI_API_KEY, CHAT_CONTEXT_MESSAGE_COUNT } from '$env/static/private';
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
@@ -18,6 +18,8 @@ import { scoreThresholds } from '$lib/recaptcha-client';
 export const POST: RequestHandler = async ({ request }) => {
     let isValidRequest = true;
     let errorMessage = '';
+
+    const contextMessageCount = CHAT_CONTEXT_MESSAGE_COUNT ? parseInt(CHAT_CONTEXT_MESSAGE_COUNT, 10) : 6
 
     // TODO: Check API key and throw appropriate error
 
@@ -53,6 +55,12 @@ export const POST: RequestHandler = async ({ request }) => {
         ];
 
         if (apiRequest.previousMessages) {
+
+            if (apiRequest.previousMessages.length > contextMessageCount) {
+
+                apiRequest.previousMessages.splice(0, apiRequest.previousMessages.length - contextMessageCount);
+            }
+
             messages.push(...apiRequest.previousMessages.map<ChatCompletionRequestMessage>(
                 (value: ConversationItem) => {
                     return { role: value.role, content: value.text };
@@ -61,6 +69,7 @@ export const POST: RequestHandler = async ({ request }) => {
         }
 
         messages.push({ role: 'user', content: query.prompt });
+
 
         // TODO: Count tokens, error on too large of a query
 
