@@ -6,4 +6,5 @@ export interface ChatApiResponse {
     personality: PersonalityOptions;
     message: string;
     time: Date;
+    recaptchaScore?: number;
 }

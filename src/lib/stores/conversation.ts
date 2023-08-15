@@ -3,6 +3,7 @@ import type { ChatApiRequest } from "$lib/chat-api-request";
 import type { ChatApiResponse } from "$lib/chat-api-response";
 import { writable, get, type Writable, type Unsubscriber } from "svelte/store";
 import { nanoid } from 'nanoid'
+import { getRecaptchaToken } from "$lib/recaptcha-client";
 
 export interface ConversationItem {
     role: 'user' | 'assistant';
@@ -42,7 +43,7 @@ export class ConversationStore {
         };
 
         const previousMessages = get<Conversation>(this.store).messages;
-
+        const token = await getRecaptchaToken('chat');
 
         const apiRequest: ChatApiRequest = {
             id: nanoid(),
@@ -51,6 +52,7 @@ export class ConversationStore {
             message: userMsg.text || '',
             time: userMsg.time || new Date(),
             previousMessages,
+            recaptchaToken: token,
         };
 
 

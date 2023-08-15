@@ -1,6 +1,12 @@
 <script lang="ts">
 	import Footer from '$lib/components/Footer.svelte';
+	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
+	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+
+	onMount(async () => {
+		handlePageRecaptcha(await recaptchaVerify('page_view/about'));
+	});
 </script>
 
 <div class="flex flex-col w-full lg:w-3/4 border-opacity-50 p-4 h-full" in:fade={{ duration: 400 }}>
@@ -41,11 +47,11 @@
 					<a class="link link-primary" href="https://getavataaars.com/" target="_blank">
 						avataaars generator
 					</a>
-					- A great tool for whipping up some cutom avatars!
+					- A great tool for whipping up some custom avatars!
 				</li>
 			</ul>
 
-			<h3 class="text-2xl lg:text-3xl font-bold mt-5">Primary Technologies Used</h3>
+			<!-- <h3 class="text-2xl lg:text-3xl font-bold mt-5">Primary Technologies Used</h3>
 			<div class="py-6 ml-10 text-lg">
 				<ul class="list-disc">
 					<li>
@@ -68,7 +74,7 @@
 						<a class="link link-primary" href="https://daisyui.com/" target="_blank">daisyUI</a>
 					</li>
 				</ul>
-			</div>
+			</div> -->
 		</div>
 
 		<h2 class="text-3xl lg:text-4xl font-bold">Contact</h2>

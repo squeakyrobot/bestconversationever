@@ -1,7 +1,9 @@
 <script lang="ts">
 	import Footer from '$lib/components/Footer.svelte';
 	import PeopleList from '$lib/components/PeopleList.svelte';
+	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { userChat } from '$lib/stores/user-chat';
+	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	let chatLink: HTMLAnchorElement;
@@ -11,6 +13,10 @@
 			chatLink.click();
 		}
 	};
+
+	onMount(async () => {
+		handlePageRecaptcha(await recaptchaVerify('page_view/home'));
+	});
 </script>
 
 <div class="flex flex-col w-full lg:w-3/4 border-opacity-50 p-4 h-full" in:fade={{ duration: 400 }}>

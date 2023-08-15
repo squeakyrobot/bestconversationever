@@ -28,13 +28,13 @@
 
 		if (initialChat) {
 			currentRant = initialChat;
-			sendRant();
+			sendChatMessage();
 		} else {
 			chatBox.focus();
 		}
 	});
 
-	const sendRant = (e?: SubmitEvent) => {
+	const sendChatMessage = (e?: SubmitEvent) => {
 		conversationStore.set(currentRant);
 		currentRant = '';
 
@@ -100,7 +100,7 @@
 		{/each}
 	</div>
 	<div class=" bottom-0 mt-2">
-		<form on:submit|preventDefault={sendRant}>
+		<form on:submit|preventDefault={sendChatMessage}>
 			<div class="form-control">
 				<div class="input-group input-group-lg w-full">
 					<input
