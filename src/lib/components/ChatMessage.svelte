@@ -49,12 +49,13 @@
 			</time>
 		</div>
 		<div class="chat-bubble mt-2">
-			<div class="m-3 overflow-x-auto" use:scrollToElement>
+			<div class="m-3 overflow-x-auto">
 				{#if message.waitingForResponse}
-					<span class="loading loading-dots loading-md" />
+					<span class="loading loading-dots loading-md" use:scrollToElement />
 				{:else if currentAnswer}
 					<!-- TODO: Add animation -->
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
+					<span use:scrollToElement />
 				{:else}
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
 				{/if}
