@@ -4,17 +4,13 @@
 	import { Person, Personality, Traits } from '$lib/personality';
 	import { ConversationStore } from '$lib/stores/conversation';
 	import PeopleList from './PeopleList.svelte';
-	import { nameFormat, randomNumber } from '$lib/util';
+	import { nameFormat } from '$lib/util';
 	import type { User } from '$lib/user';
-	import { avatarCount } from '$lib/stores/user';
 
-	export let user: User;
 	export let personName = '';
 	export let initialChat = '';
 
-	if (!user) {
-		user = { name: 'Anonymous', avatar: `/images/user/${randomNumber(0, avatarCount)}.svg` };
-	}
+	const user: User = { name: 'Anonymous', avatar: `/images/user/missing-user.jpg` };
 
 	export let onClose: () => void;
 
@@ -24,7 +20,7 @@
 	let sendingChat = false;
 
 	const personality = new Personality();
-	const conversationStore = new ConversationStore(personality, user);
+	const conversationStore = new ConversationStore(user, personality);
 
 	onMount(() => {
 		if (personName) {

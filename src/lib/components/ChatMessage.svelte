@@ -3,18 +3,12 @@
 	import { marked } from 'marked';
 	import type { ConversationItem } from '$lib/stores/conversation';
 	import type { User } from '$lib/user';
-	import { randomNumber } from '$lib/util';
-	import { avatarCount } from '$lib/stores/user';
 
-	export let user: User;
 	export let message: ConversationItem;
 	export let currentAnswer: boolean;
+	export let user: User = { name: 'Anonymous', avatar: `/images/user/missing-user.jpg` };
 
 	const scrollToElement = (el: HTMLElement) => el.scrollIntoView();
-
-	if (!user) {
-		user = { name: 'Anonymous', avatar: `/images/user/${randomNumber(1, avatarCount)}.svg` };
-	}
 </script>
 
 {#if message.role === 'user'}

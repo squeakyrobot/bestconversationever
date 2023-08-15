@@ -25,7 +25,7 @@ export class ConversationStore {
     private personality: Personality;
     public subscribe: Unsubscriber;
 
-    constructor(personality?: Personality, private user: User) {
+    constructor(private user: User, personality?: Personality) {
         this.personality = personality || new Personality();
         this.conversationId = nanoid();
         this.store = writable<Conversation>({ messages: [] });
