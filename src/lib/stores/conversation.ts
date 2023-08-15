@@ -4,6 +4,7 @@ import type { ChatApiResponse } from "$lib/chat-api-response";
 import { writable, get, type Writable, type Unsubscriber } from "svelte/store";
 import { nanoid } from 'nanoid'
 import { getRecaptchaToken } from "$lib/recaptcha-client";
+import type { User } from "$lib/user";
 
 export interface ConversationItem {
     role: 'user' | 'assistant';
@@ -24,7 +25,7 @@ export class ConversationStore {
     private personality: Personality;
     public subscribe: Unsubscriber;
 
-    constructor(personality?: Personality) {
+    constructor(personality?: Personality, private user: User) {
         this.personality = personality || new Personality();
         this.conversationId = nanoid();
         this.store = writable<Conversation>({ messages: [] });
@@ -35,7 +36,7 @@ export class ConversationStore {
 
         // Add the user message
         const userMsg: ConversationItem = {
-            name: 'Anonymous',
+            name: this.user.name,
             role: 'user',
             time: new Date(),
             waitingForResponse: false,

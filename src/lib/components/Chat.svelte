@@ -4,10 +4,17 @@
 	import { Person, Personality, Traits } from '$lib/personality';
 	import { ConversationStore } from '$lib/stores/conversation';
 	import PeopleList from './PeopleList.svelte';
-	import { nameFormat } from '$lib/util';
+	import { nameFormat, randomNumber } from '$lib/util';
+	import type { User } from '$lib/user';
+	import { avatarCount } from '$lib/stores/user';
 
+	export let user: User;
 	export let personName = '';
 	export let initialChat = '';
+
+	if (!user) {
+		user = { name: 'Anonymous', avatar: `/images/user/${randomNumber(0, avatarCount)}.svg` };
+	}
 
 	export let onClose: () => void;
 
@@ -17,7 +24,7 @@
 	let sendingChat = false;
 
 	const personality = new Personality();
-	const conversationStore = new ConversationStore(personality);
+	const conversationStore = new ConversationStore(personality, user);
 
 	onMount(() => {
 		if (personName) {
@@ -98,7 +105,7 @@
 		{#each $conversationStore.messages as message, index}
 			{@const currentAnswer =
 				index === $conversationStore.messages.length - 1 && message.role === 'assistant'}
-			<ChatMessage {message} {currentAnswer} />
+			<ChatMessage {message} {currentAnswer} {user} />
 		{/each}
 	</div>
 	<div class=" bottom-0 mt-2">

@@ -14,3 +14,7 @@ export function getEnumKey<T extends { [index: string]: string }>(myEnum: T, enu
 export function nameFormat(name: string): string {
     return name ? name.charAt(0).toUpperCase() + name.slice(1) : '';
 }
+
+export function randomNumber(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}

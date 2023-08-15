@@ -5,9 +5,14 @@
 	import { userChat } from '$lib/stores/user-chat';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { nameFormat } from '$lib/util';
+	import { nameFormat, randomNumber } from '$lib/util';
+	import { user, avatarCount } from '$lib/stores/user';
 
 	let initialChat = '';
+
+	if (!$user) {
+		user.set({ name: 'Anonymous', avatar: `/images/user/${randomNumber(1, avatarCount)}.svg` });
+	}
 
 	userChat.subscribe((value) => {
 		initialChat = value;
@@ -22,6 +27,6 @@
 
 <div class="max-w-4xl h-full w-full overflow-hidden" in:scale={{ duration: 500 }}>
 	{#key $page.url}
-		<Chat {initialChat} {onClose} personName={nameFormat($page.params.person)} />
+		<Chat {initialChat} {onClose} personName={nameFormat($page.params.person)} user={$user} />
 	{/key}
 </div>
