@@ -2,35 +2,26 @@
 	import Chat from '$lib/components/Chat.svelte';
 	import { scale } from 'svelte/transition';
 	import { page } from '$app/stores';
-	import { rantStore } from '$lib/store';
+	import { userChat } from '$lib/stores/user-chat';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { nameFormat } from '$lib/util';
 
-	let initialRant = '';
+	let initialChat = '';
 
-	rantStore.subscribe((value) => {
-		initialRant = value;
+	userChat.subscribe((value) => {
+		initialChat = value;
 	});
 
 	onMount(() => {
-		rantStore.update(() => '');
+		userChat.update(() => '');
 	});
 
 	const onClose = () => goto('/');
-
-	const personName = $page.params.person
-		? $page.params.person.charAt(0).toUpperCase() + $page.params.person.slice(1)
-		: '';
 </script>
 
-{#key $page.url}
-	<div in:scale={{ duration: 500 }} class="max-w-4xl h-full w-full overflow-hidden">
-		<Chat
-			{initialRant}
-			{onClose}
-			personName={$page.params.person
-				? $page.params.person.charAt(0).toUpperCase() + $page.params.person.slice(1)
-				: ''}
-		/>
-	</div>
-{/key}
+<div class="max-w-4xl h-full w-full overflow-hidden" in:scale={{ duration: 500 }}>
+	{#key $page.url}
+		<Chat {initialChat} {onClose} personName={nameFormat($page.params.person)} />
+	{/key}
+</div>

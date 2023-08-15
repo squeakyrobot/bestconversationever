@@ -1,6 +1,5 @@
 <script lang="ts">
 	import DOMPurify from 'isomorphic-dompurify';
-	import Typewriter from 'svelte-typewriter';
 	import { marked } from 'marked';
 	import type { ConversationItem } from '$lib/stores/conversation';
 
@@ -52,9 +51,8 @@
 				{#if message.waitingForResponse}
 					<span class="loading loading-dots loading-md" />
 				{:else if currentAnswer}
-					<!-- <Typewriter mode="cascade"> -->
+					<!-- TODO: Add animation -->
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
-					<!-- </Typewriter> -->
 				{:else}
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
 				{/if}

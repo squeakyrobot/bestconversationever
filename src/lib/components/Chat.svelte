@@ -4,9 +4,10 @@
 	import { Person, Personality, Traits } from '$lib/personality';
 	import { ConversationStore } from '$lib/stores/conversation';
 	import PeopleList from './PeopleList.svelte';
+	import { nameFormat } from '$lib/util';
 
 	export let personName = '';
-	export let initialRant = '';
+	export let initialChat = '';
 
 	export let onClose: () => void;
 
@@ -19,14 +20,14 @@
 
 	onMount(() => {
 		if (personName) {
-			personName = personName.charAt(0).toUpperCase() + personName.slice(1);
+			personName = nameFormat(personName);
 			conversationStore.setPersonality(new Personality({ person: (Person as any)[personName] }));
 		} else {
 			personality.lock(Traits.Person);
 		}
 
-		if (initialRant) {
-			currentRant = initialRant;
+		if (initialChat) {
+			currentRant = initialChat;
 			sendRant();
 		} else {
 			chatBox.focus();

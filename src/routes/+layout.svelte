@@ -1,6 +1,4 @@
 <script lang="ts">
-	// import navbar from './lib/components/navbar.svelte';
-
 	import '../app.css';
 </script>
 

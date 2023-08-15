@@ -1,14 +1,14 @@
 <script lang="ts">
 	import Footer from '$lib/components/Footer.svelte';
 	import PeopleList from '$lib/components/PeopleList.svelte';
-	import { rantStore } from '$lib/store';
+	import { userChat } from '$lib/stores/user-chat';
 	import { fade } from 'svelte/transition';
 
-	let rantLink: HTMLAnchorElement;
+	let chatLink: HTMLAnchorElement;
 
 	const onKeyUp = (e: KeyboardEvent) => {
 		if (e.keyCode === 13) {
-			rantLink.click();
+			chatLink.click();
 		}
 	};
 </script>
@@ -28,13 +28,13 @@
 							name="rant"
 							placeholder="Tell us all about it"
 							class="input input-bordered text-xl mt-2 w-full lg:w-3/5"
-							bind:value={$rantStore}
+							bind:value={$userChat}
 							on:keyup={onKeyUp}
 						/>
 						<a
 							href="/chat"
-							bind:this={rantLink}
-							class="btn btn-secondary lg:text-lg ml-2 mt-2 {$rantStore ? '' : 'btn-disabled'}"
+							bind:this={chatLink}
+							class="btn btn-secondary lg:text-lg ml-2 mt-2 {$userChat ? '' : 'btn-disabled'}"
 						>
 							Start Chatting
 							<svg
