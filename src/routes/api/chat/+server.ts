@@ -28,7 +28,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     if (apiRequest.recaptchaToken) {
         const response = await verifyRecaptcha(apiRequest.recaptchaToken);
-        console.log(response);
+
         if (response.score < scoreThresholds.chat) {
             // TODO: Have a fun way of sending errors, perhaps a system user can send a message.
             isValidRequest = false;
