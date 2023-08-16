@@ -8,12 +8,14 @@ export const load = (({ params }) => {
         return {
             pageTitle: `Chat with ${name}`,
             pageDescription: `Have a conversation with ${name} and see where it goes.`,
+            pageOgImage: `/images/personalities/${name}.svg`,
         };
     }
     else {
         return {
             pageTitle: 'Chat',
             pageDescription: 'Start a conversation and we\'ll find someone who will listen to what you have to say.',
+            pageOgImage: undefined,
         };
     }
 

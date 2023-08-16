@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
+	export let ogImage = $page.data.pageOgImage || '/images/bce-logo-og.png';
 	export let url = $page.url.href;
 	export let title = $page.data.pageTitle || 'Best Conversation Ever';
 	export let description =
@@ -14,10 +15,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content="{$page.url.origin}/images/bce-logo-og.png" />
+<meta property="og:image" content="{$page.url.origin}{ogImage}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="twitter:domain" content={$page.url.hostname} />
 <meta property="twitter:url" content={url} />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content="{$page.url.origin}/images/bce-logo-og.png" />
+<meta name="twitter:image" content="{$page.url.origin}{ogImage}" />
