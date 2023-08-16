@@ -110,6 +110,8 @@ export const POST: RequestHandler = async ({ request }) => {
             personality: apiRequest.personality,
             message,
             time: new Date(),
+            responseTokens: chatCompletion.data.usage?.completion_tokens,
+            totalTokens: chatCompletion.data.usage?.total_tokens,
         } as ChatApiResponse);
     }
     catch (error) {

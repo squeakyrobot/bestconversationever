@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { nameFormat } from '$lib/util';
+	import { ChatEvents, sendChatEvent } from '$lib/analytics';
 
 	let initialChat = '';
 
@@ -13,11 +14,19 @@
 		initialChat = value;
 	});
 
-	onMount(() => {
+	onMount(async () => {
 		userChat.update(() => '');
+
+		const personName = $page.params.person ? nameFormat($page.params.person) : 'not_set';
+
+		sendChatEvent(ChatEvents.chatStart, { character: personName });
 	});
 
-	const onClose = () => goto('/');
+	const onClose = () => {
+		const personName = $page.params.person ? nameFormat($page.params.person) : 'not_set';
+		sendChatEvent(ChatEvents.chatClosed, { character: personName });
+		goto('/');
+	};
 </script>
 
 <div class="max-w-4xl h-full w-full overflow-hidden" in:scale={{ duration: 500 }}>
