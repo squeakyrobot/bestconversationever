@@ -10,8 +10,8 @@ export function estimateGptTokens(text: string | string[]): number {
         text = text.join(' ');
     }
 
-    const charTokens = text.length / 4;
+    const charTokens = text.replace(/\s/g, '').length / 4;
     const wordTokens = text.split(' ').filter((n) => n != '').length * (1 + (1 / 3));
 
-    return Math.floor((charTokens + wordTokens) / 2);
+    return Math.ceil((charTokens + wordTokens) / 2);
 }

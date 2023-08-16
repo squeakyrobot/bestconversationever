@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         const query = buildChatQuery(apiRequest);
         const queryTokens = estimateGptTokens([query.system, query.prompt]);
-        assert(queryTokens <= maxChatTokens, 'Chat too long, try again: ');
+        assert(queryTokens <= maxChatTokens, 'Chat too long, try something shorter.');
 
         const messages: ChatCompletionRequestMessage[] = [
             { role: 'system', content: query.system }
@@ -108,6 +108,7 @@ export const POST: RequestHandler = async ({ request }) => {
             requestId: apiRequest.id,
             conversationId: apiRequest.conversationId,
             personality: apiRequest.personality,
+            isSystemMessage: false,
             message,
             time: new Date(),
             responseTokens: chatCompletion.data.usage?.completion_tokens,
@@ -121,6 +122,7 @@ export const POST: RequestHandler = async ({ request }) => {
             requestId: apiRequest.id || 'NO_ID',
             conversationId: apiRequest.conversationId || 'NO_ID',
             personality: apiRequest.personality || (new Personality({ person: Person.Elvis })).export(),
+            isSystemMessage: true,
             message: message || 'An error occurred',
             time: new Date(),
         } as ChatApiResponse);

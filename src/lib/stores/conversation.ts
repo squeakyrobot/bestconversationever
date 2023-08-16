@@ -109,9 +109,16 @@ export class ConversationStore {
             return { messages: [...conversation.messages, responseMsg] };
         });
 
-        sendChatEvent(ChatEvents.chatReceived, {
-            character: apiRequest.personality.name, gptTokens: apiResponse.responseTokens
-        });
+        if (apiResponse.isSystemMessage) {
+            sendChatEvent(ChatEvents.systemChatReceived, {
+                character: 'system', gptTokens: 0
+            });
+        }
+        else {
+            sendChatEvent(ChatEvents.chatReceived, {
+                character: apiRequest.personality.name, gptTokens: apiResponse.responseTokens
+            });
+        }
     }
 
     public setPersonality(personality: Personality): void {
