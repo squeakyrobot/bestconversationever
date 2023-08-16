@@ -1,8 +1,10 @@
+import { Person } from "$lib/personality";
 import { nameFormat } from "$lib/util";
 import type { PageLoad } from "./$types";
 
 export const load = (({ params }) => {
-    if (params.person) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (params.person && (Person as any)[nameFormat(params.person)]) {
         const name = nameFormat(params.person);
 
         return {
@@ -20,3 +22,9 @@ export const load = (({ params }) => {
     }
 
 }) satisfies PageLoad;
+
+export function entries() {
+    return Object.keys(Person).map((v) => {
+        return { person: v.toLowerCase() };
+    });
+}
