@@ -1,4 +1,11 @@
-import { OPENAI_API_KEY, CHAT_CONTEXT_MESSAGE_COUNT } from '$env/static/private';
+import {
+    OPENAI_API_KEY,
+    CHAT_CONTEXT_MESSAGE_COUNT,
+    MAX_RESPONSE_TOKENS,
+    RECAPTCHA_ENABLED,
+    MAX_REQUEST_TOKENS,
+    MAX_CHAT_MESSAGE_TOKENS
+} from '$env/static/private';
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
@@ -8,6 +15,10 @@ import type { ChatApiResponse } from '$lib/chat-api-response';
 import type { ConversationItem } from '$lib/stores/conversation';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 import { scoreThresholds } from '$lib/recaptcha-client';
+import { getErrorMessage } from '$lib/util';
+import { estimateGptTokens } from '$lib/token-estimator';
+import { assert } from '$lib/assert';
+import { Person, Personality } from '$lib/personality';
 
 // import type { Config } from '@sveltejs/adapter-vercel';
 
@@ -16,52 +27,57 @@ import { scoreThresholds } from '$lib/recaptcha-client';
 // };
 
 export const POST: RequestHandler = async ({ request }) => {
-    let isValidRequest = true;
-    let errorMessage = '';
-
-    const contextMessageCount = CHAT_CONTEXT_MESSAGE_COUNT ? parseInt(CHAT_CONTEXT_MESSAGE_COUNT, 10) : 6
-
-    // TODO: Check API key and throw appropriate error
+    const contextMessageCount = CHAT_CONTEXT_MESSAGE_COUNT ? parseInt(CHAT_CONTEXT_MESSAGE_COUNT, 10) : 6;
+    const maxRequestTokens = MAX_REQUEST_TOKENS ? parseInt(MAX_REQUEST_TOKENS, 10) : 2000;
+    const maxChatTokens = MAX_CHAT_MESSAGE_TOKENS ? parseInt(MAX_CHAT_MESSAGE_TOKENS, 10) : 500;
+    const maxResponseTokens = MAX_RESPONSE_TOKENS ? parseInt(MAX_RESPONSE_TOKENS, 10) : 300;
 
     // Get request data
     const apiRequest = await request.json() as ChatApiRequest;
 
-    // TODO: Validate request data
 
-    if (apiRequest.recaptchaToken) {
-        const response = await verifyRecaptcha(apiRequest.recaptchaToken);
-
-        if (response.score < scoreThresholds.chat) {
-            // TODO: Have a fun way of sending errors, perhaps a system user can send a message.
-            isValidRequest = false;
-            errorMessage = 'Are you a bot?\n```' + JSON.stringify(response, null, 4) + '```';
+    try {
+        if (!OPENAI_API_KEY) {
+            throw new Error('No API Key');
         }
-    } else {
-        isValidRequest = false;
-        errorMessage = 'Cannot chat: Security Token Missing';
-    }
+        // TODO: Validate request data
 
-    // TODO: check chat message 
+        if (RECAPTCHA_ENABLED !== "0") {
+            assert(apiRequest.recaptchaToken, 'No Recaptcha Token Provided');
 
-    // TODO: Use moderation API to check that the rant is allowed
+            const response = await verifyRecaptcha(apiRequest.recaptchaToken);
+
+            assert(response.success, 'Recaptcha verification failed');
+            assert(response.score >= scoreThresholds.chat, 'Are you a bot?\nRecaptcha score too low.');
+        }
+
+        // TODO: Use moderation API to check the data for safe mode
+        // off for now because the adult language is funnier anyway
 
 
-    if (isValidRequest) {
         const query = buildChatQuery(apiRequest);
-        // const personName = Object.keys(Personality)[Object.values(Personality).indexOf(query.personality)];
+        const queryTokens = estimateGptTokens([query.system, query.prompt]);
+        assert(queryTokens <= maxChatTokens, 'Chat too long, try again: ');
 
         const messages: ChatCompletionRequestMessage[] = [
             { role: 'system', content: query.system }
         ];
 
         if (apiRequest.previousMessages) {
+            const prevMessages = apiRequest.previousMessages;
 
-            if (apiRequest.previousMessages.length > contextMessageCount) {
-
-                apiRequest.previousMessages.splice(0, apiRequest.previousMessages.length - contextMessageCount);
+            if (prevMessages.length > contextMessageCount) {
+                prevMessages.splice(0, prevMessages.length - contextMessageCount);
             }
 
-            messages.push(...apiRequest.previousMessages.map<ChatCompletionRequestMessage>(
+            let prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
+
+            while (prevMsgTokens + queryTokens > maxRequestTokens) {
+                prevMessages.splice(0, 1);
+                prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
+            }
+
+            messages.push(...prevMessages.map<ChatCompletionRequestMessage>(
                 (value: ConversationItem) => {
                     return { role: value.role, content: value.text };
                 })
@@ -70,11 +86,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         messages.push({ role: 'user', content: query.prompt });
 
-
-        // TODO: Count tokens, error on too large of a query
-
-
-        // Do OPen API Call
+        // Do Open API Call
         const configuration = new Configuration({
             apiKey: OPENAI_API_KEY,
         });
@@ -84,6 +96,7 @@ export const POST: RequestHandler = async ({ request }) => {
         const chatCompletion = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
             messages,
+            max_tokens: maxResponseTokens,
         });
 
 
@@ -99,14 +112,15 @@ export const POST: RequestHandler = async ({ request }) => {
             time: new Date(),
         } as ChatApiResponse);
     }
-    else {
+    catch (error) {
+        const message = getErrorMessage(error);
+
         return json({
-            requestId: apiRequest.id,
-            conversationId: apiRequest.conversationId,
-            personality: apiRequest.personality,
-            message: errorMessage || 'An error occurred',
+            requestId: apiRequest.id || 'NO_ID',
+            conversationId: apiRequest.conversationId || 'NO_ID',
+            personality: apiRequest.personality || (new Personality({ person: Person.Elvis })).export(),
+            message: message || 'An error occurred',
             time: new Date(),
         } as ChatApiResponse);
     }
-
 };

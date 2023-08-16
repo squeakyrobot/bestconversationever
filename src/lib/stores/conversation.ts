@@ -43,13 +43,28 @@ export class ConversationStore {
             text,
         };
 
+        this.store.update((conversation: Conversation) => {
+            return {
+                messages: [
+                    ...conversation.messages,
+                    userMsg,
+                ]
+            };
+        });
+
         const previousMessages = get<Conversation>(this.store).messages;
+
+        // TODO: store this max client value somewhere else
+        if (previousMessages.length > 15) {
+            previousMessages.splice(0, previousMessages.length - 15);
+        }
+
         const token = await getRecaptchaToken('chat');
 
         const apiRequest: ChatApiRequest = {
             id: nanoid(),
             conversationId: this.conversationId,
-            personality: this.personality.getPersonality(),
+            personality: this.personality.export(),
             message: userMsg.text || '',
             time: userMsg.time || new Date(),
             previousMessages,
@@ -67,7 +82,6 @@ export class ConversationStore {
             return {
                 messages: [
                     ...conversation.messages,
-                    userMsg,
                     responseMsg]
             };
         });

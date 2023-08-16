@@ -1,13 +1,10 @@
-import { goto } from "$app/navigation";
+import { PUBLIC_RECAPTCHA_SITE_KEY } from "$env/static/public";
 
 // TODO: figure out good thresholds and a way to update them
 export const scoreThresholds = {
     homePage: 0.5,
     chat: 0.5,
 } as const;
-
-
-const siteKey = '6Ld7EawnAAAAANU8PRoVSzZzZeom1Yg9aULlh82f';
 
 export type ErrorCodes = 'missing-input-secret' | 'invalid-input-secret' | 'missing-input-response' |
     'invalid-input-response' | 'bad-request' | 'timeout-or-duplicate';
@@ -44,7 +41,7 @@ export async function getRecaptchaToken(action: string): Promise<string> {
         try {
             grecaptcha.ready(() => {
                 grecaptcha
-                    .execute(siteKey, { action })
+                    .execute(PUBLIC_RECAPTCHA_SITE_KEY, { action })
                     .then((token: string) => {
                         resolve(token);
                     });
