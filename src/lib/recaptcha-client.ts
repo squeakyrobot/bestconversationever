@@ -1,4 +1,3 @@
-import { goto } from "$app/navigation";
 
 // TODO: figure out good thresholds and a way to update them
 export const scoreThresholds = {

@@ -8,7 +8,8 @@
 	export let currentAnswer: boolean;
 	export let user: User = { name: 'Anonymous', avatar: `/images/user/missing-user.jpg` };
 
-	const scrollToElement = (el: HTMLElement) => el.scrollIntoView();
+	const scrollToElement = (el: HTMLElement) =>
+		el.scrollIntoView({ block: 'start', behavior: 'smooth' });
 </script>
 
 {#if message.role === 'user'}
@@ -48,18 +49,36 @@
 				{message.time ? new Date(message.time).toLocaleString() : ''}
 			</time>
 		</div>
-		<div class="chat-bubble mt-2">
-			<div class="m-3 overflow-x-auto">
-				{#if message.waitingForResponse}
-					<span class="loading loading-dots loading-md" use:scrollToElement />
-				{:else if currentAnswer}
+		{#if message.waitingForResponse}
+			<div class="chat-bubble mt-2" use:scrollToElement>
+				<div class="m-3 overflow-x-auto">
+					<span class="loading loading-dots loading-md" />
+				</div>
+			</div>
+		{:else if currentAnswer}
+			<div class="chat-bubble mt-2" use:scrollToElement>
+				<div class="m-3 overflow-x-auto">
 					<!-- TODO: Add animation -->
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
-					<span use:scrollToElement />
+				</div>
+			</div>
+		{:else}
+			<div class="chat-bubble mt-2">
+				<div class="m-3 overflow-x-auto">
+					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
+				</div>
+			</div>
+		{/if}
+		<!-- <div class="chat-bubble mt-2">
+			<div class="m-3 overflow-x-auto">
+				{#if message.waitingForResponse}
+					<span class="loading loading-dots loading-md" />
+				{:else if currentAnswer}
+					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
 				{:else}
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
 				{/if}
 			</div>
-		</div>
+		</div> -->
 	</div>
 {/if}

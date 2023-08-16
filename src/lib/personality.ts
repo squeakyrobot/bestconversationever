@@ -112,7 +112,7 @@ export class Personality {
     }
 
 
-    public getPersonality(): PersonalityOptions {
+    public export(): PersonalityOptions {
         const person = this.person;
         const name = this.getName(person);
 
@@ -126,7 +126,7 @@ export class Personality {
     }
 
     public toJSON(): PersonalityOptions {
-        return this.getPersonality();
+        return this.export();
     }
 
     public toString(): string {
