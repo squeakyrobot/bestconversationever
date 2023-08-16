@@ -1,7 +1,6 @@
 import { RECAPTCHA_SECRET_KEY } from "$env/static/private";
 import type { RecaptchaVerifyResponse } from "$lib/recaptcha-client";
 
-
 export async function verifyRecaptcha(token: string): Promise<RecaptchaVerifyResponse> {
     // const remoteip = undefined;
 

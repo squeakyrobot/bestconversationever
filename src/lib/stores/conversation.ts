@@ -1,3 +1,4 @@
+import { PUBLIC_MAX_CLIENT_MESSAGES } from "$env/static/public";
 import { Personality } from "$lib/personality";
 import type { ChatApiRequest } from "$lib/chat-api-request";
 import type { ChatApiResponse } from "$lib/chat-api-response";
@@ -6,6 +7,8 @@ import { nanoid } from 'nanoid'
 import { getRecaptchaToken } from "$lib/recaptcha-client";
 import type { User } from "$lib/user";
 import { ChatEvents, sendChatEvent } from "$lib/analytics";
+
+const MAX_CLIENT_MESSAGES = PUBLIC_MAX_CLIENT_MESSAGES ? parseInt(PUBLIC_MAX_CLIENT_MESSAGES, 10) : 15;
 
 export interface ConversationItem {
     role: 'user' | 'assistant';
@@ -55,9 +58,8 @@ export class ConversationStore {
 
         const previousMessages = get<Conversation>(this.store).messages;
 
-        // TODO: store this max client value somewhere else
-        if (previousMessages.length > 15) {
-            previousMessages.splice(0, previousMessages.length - 15);
+        if (previousMessages.length > MAX_CLIENT_MESSAGES) {
+            previousMessages.splice(0, previousMessages.length - MAX_CLIENT_MESSAGES);
         }
 
         const token = await getRecaptchaToken('chat');

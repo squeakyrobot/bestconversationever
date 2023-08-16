@@ -69,16 +69,5 @@
 				</div>
 			</div>
 		{/if}
-		<!-- <div class="chat-bubble mt-2">
-			<div class="m-3 overflow-x-auto">
-				{#if message.waitingForResponse}
-					<span class="loading loading-dots loading-md" />
-				{:else if currentAnswer}
-					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
-				{:else}
-					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
-				{/if}
-			</div>
-		</div> -->
 	</div>
 {/if}
