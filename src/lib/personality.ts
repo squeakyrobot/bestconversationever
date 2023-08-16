@@ -20,7 +20,7 @@ export enum Person {
     Steve = 'metalhead; you\'re named Steve;',
     Tiffany = 'valley girl; you\'re named Tiffany;',
     Willis = 'raging alcholic; mumbles; responds briefly;; you\'re named Willis;',
-}
+};
 
 export enum Mood {
     None = '',

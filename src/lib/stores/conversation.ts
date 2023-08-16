@@ -5,6 +5,7 @@ import { writable, get, type Writable, type Unsubscriber } from "svelte/store";
 import { nanoid } from 'nanoid'
 import { getRecaptchaToken } from "$lib/recaptcha-client";
 import type { User } from "$lib/user";
+import { ChatEvents, sendChatEvent } from "$lib/analytics";
 
 export interface ConversationItem {
     role: 'user' | 'assistant';
@@ -86,6 +87,8 @@ export class ConversationStore {
             };
         });
 
+        // TODO: Add estimated token count
+        sendChatEvent(ChatEvents.chatSent, { character: apiRequest.personality.name });
 
         const apiCall = await fetch('/api/chat', {
             method: 'POST',
@@ -102,6 +105,10 @@ export class ConversationStore {
         this.store.update((conversation: Conversation) => {
             conversation.messages.pop();
             return { messages: [...conversation.messages, responseMsg] };
+        });
+
+        sendChatEvent(ChatEvents.chatReceived, {
+            character: apiRequest.personality.name, gptTokens: apiResponse.responseTokens
         });
     }
 
