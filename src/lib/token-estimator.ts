@@ -11,7 +11,7 @@ export function estimateGptTokens(text: string | string[]): number {
     }
 
     const charTokens = text.length / 4;
-    const wordTokens = text.split(' ').filter((n) => n != '').length * 0.75;
+    const wordTokens = text.split(' ').filter((n) => n != '').length * (1 + (1 / 3));
 
     return Math.floor((charTokens + wordTokens) / 2);
 }
