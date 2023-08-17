@@ -6,7 +6,7 @@
 </script>
 
 {#if showVersion}
-	<div class="justify-end text-right text-info">
+	<div class="justify-end text-right text-info mt-5">
 		{versionInfo}
 	</div>
 {/if}

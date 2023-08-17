@@ -9,8 +9,8 @@ export const load = (({ params }) => {
 
         return {
             pageTitle: `Chat with ${name}`,
-            pageDescription: `Have a conversation with ${name} and see where it goes.`,
-            pageOgImage: `/images/personalities/${name}.svg`,
+            pageDescription: `Start a conversation with ${name} and see where it goes...`,
+            pageOgImage: `/images/personalities/${name}-og.png`,
         };
     }
     else {

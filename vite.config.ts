@@ -10,7 +10,9 @@ const [version, lastmod] = (
 		pexec('git describe --tags || git rev-parse --short HEAD'),
 		pexec('git log -1 --format=%cd --date=format:"%Y-%m-%d %H:%M:%S"'),
 	])
-).map(v => JSON.stringify(v.stdout.trim()))
+).map(v => JSON.stringify(v.stdout.trim()));
+
+console.log('VITE CONFIG');
 
 export default defineConfig({
 	plugins: [sveltekit()],
