@@ -20,7 +20,6 @@ export interface ConversationItem {
 
 export interface Conversation {
     messages: ConversationItem[];
-    // waitingForResponse: boolean;
 }
 
 export class ConversationStore {

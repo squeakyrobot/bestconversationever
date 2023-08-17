@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { PUBLIC_RECAPTCHA_SITE_KEY } from '$env/static/public';
-	import HeadMeta from '$lib/components/HeadMeta.svelte';
 	import '../app.css';
+	import HeadMeta from '$lib/components/HeadMeta.svelte';
+	import { PUBLIC_RECAPTCHA_SITE_KEY } from '$env/static/public';
+	import { page } from '$app/stores';
 </script>
 
 <svelte:head>

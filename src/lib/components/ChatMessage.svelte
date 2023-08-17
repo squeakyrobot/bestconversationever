@@ -1,11 +1,11 @@
 <script lang="ts">
 	import DOMPurify from 'isomorphic-dompurify';
-	import { marked } from 'marked';
 	import type { ConversationItem } from '$lib/stores/conversation';
 	import type { User } from '$lib/user';
+	import { marked } from 'marked';
 
-	export let message: ConversationItem;
 	export let currentAnswer: boolean;
+	export let message: ConversationItem;
 	export let user: User = { name: 'Anonymous', avatar: `/images/user/missing-user.jpg` };
 
 	const scrollToElement = (el: HTMLElement) =>
@@ -36,11 +36,7 @@
 	<div class="chat chat-start mt-5 mb-10 text-xl">
 		<div class="chat-image avatar">
 			<div class="w-16 rounded-full">
-				<img
-					src="/images/personalities/{message.name}.svg"
-					alt={message.name}
-					title={message.name}
-				/>
+				<img src="/images/characters/{message.name}.svg" alt={message.name} title={message.name} />
 			</div>
 		</div>
 		<div class="chat-header">
@@ -58,7 +54,7 @@
 		{:else if currentAnswer}
 			<div class="chat-bubble mt-2" use:scrollToElement>
 				<div class="m-3 overflow-x-auto">
-					<!-- TODO: Add animation -->
+					<!-- TODO: Add animation & audio -->
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
 				</div>
 			</div>

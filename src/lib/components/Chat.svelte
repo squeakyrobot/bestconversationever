@@ -1,13 +1,13 @@
 <script lang="ts">
+	import CharacterList from './CharacterList.svelte';
 	import ChatMessage from './ChatMessage.svelte';
-	import { onMount } from 'svelte';
-	import { Person, Personality, Traits } from '$lib/personality';
-	import { ConversationStore } from '$lib/stores/conversation';
-	import PeopleList from './PeopleList.svelte';
-	import { nameFormat } from '$lib/util';
 	import type { User } from '$lib/user';
+	import { Character, Personality, Traits } from '$lib/personality';
+	import { ConversationStore } from '$lib/stores/conversation';
+	import { nameFormat } from '$lib/util';
+	import { onMount } from 'svelte';
 
-	export let personName = '';
+	export let characterName = '';
 	export let initialChat = '';
 
 	const user: User = { name: 'Anonymous', avatar: `/images/user/missing-user.jpg` };
@@ -23,11 +23,13 @@
 	const conversationStore = new ConversationStore(user, personality);
 
 	onMount(() => {
-		if (personName) {
-			personName = nameFormat(personName);
-			conversationStore.setPersonality(new Personality({ person: (Person as any)[personName] }));
+		if (characterName) {
+			characterName = nameFormat(characterName);
+			conversationStore.setPersonality(
+				new Personality({ character: (Character as any)[characterName] })
+			);
 		} else {
-			personality.lock(Traits.Person);
+			personality.lock(Traits.Character);
 		}
 
 		if (initialChat) {
@@ -43,18 +45,18 @@
 		conversationStore.set(currentChat).then(() => (sendingChat = false));
 		currentChat = '';
 
-		if (!personName) {
-			personName = personality.getName(personality.person);
+		if (!characterName) {
+			characterName = personality.getName(personality.character);
 		}
 	};
 </script>
 
-<dialog id="peopleChooser" class="modal">
+<dialog id="characterChooser" class="modal">
 	<form method="dialog" class="modal-box w-11/12 max-w-3xl">
 		<button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
 		<h3 class="font-bold text-lg">Choose someone to chat with</h3>
 		<div class="flex-wrap mt-5 text-center">
-			<PeopleList />
+			<CharacterList />
 		</div>
 		<div class="flex justify-end bottom-0 border-t-2 border-neutral mt-2 pt-4">
 			<div class="align-bottom">
@@ -72,9 +74,9 @@
 		<div class="navbar">
 			<div class="flex-1">
 				Chatting with &nbsp;
-				<a onclick="peopleChooser.showModal()" class="link link-info"
-					>{personName || "anyone who'll listen"}</a
-				>
+				<a onclick="characterChooser.showModal()" class="link link-info">
+					{characterName || "anyone who'll listen"}
+				</a>
 			</div>
 			<div class="flex-none">
 				{#if onClose}

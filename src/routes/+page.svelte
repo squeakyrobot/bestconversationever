@@ -1,10 +1,10 @@
 <script lang="ts">
+	import CharacterList from '$lib/components/CharacterList.svelte';
 	import Footer from '$lib/components/Footer.svelte';
-	import PeopleList from '$lib/components/PeopleList.svelte';
-	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
-	import { userChat } from '$lib/stores/user-chat';
-	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
+	import { onMount } from 'svelte';
+	import { userChat } from '$lib/stores/user-chat';
 
 	let chatLink: HTMLAnchorElement;
 
@@ -66,7 +66,7 @@
 				<div class="">
 					<h2 class="text-3xl font-bold">Choose someone to chat with</h2>
 					<div class="flex-wrap mt-5">
-						<PeopleList />
+						<CharacterList />
 					</div>
 				</div>
 			</div>

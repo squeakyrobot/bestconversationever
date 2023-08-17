@@ -1,16 +1,16 @@
-import { Person } from "$lib/personality";
-import { nameFormat } from "$lib/util";
 import type { PageLoad } from "./$types";
+import { Character } from "$lib/personality";
+import { nameFormat } from "$lib/util";
 
 export const load = (({ params }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (params.person && (Person as any)[nameFormat(params.person)]) {
-        const name = nameFormat(params.person);
+    if (params.character && (Character as any)[nameFormat(params.character)]) {
+        const name = nameFormat(params.character);
 
         return {
             pageTitle: `Chat with ${name}`,
             pageDescription: `Start a conversation with ${name} and see where it goes...`,
-            pageOgImage: `/images/personalities/${name}-og.png`,
+            pageOgImage: `/images/characters/${name}-og.png`,
         };
     }
     else {
@@ -24,7 +24,7 @@ export const load = (({ params }) => {
 }) satisfies PageLoad;
 
 export function entries() {
-    return Object.keys(Person).map((v) => {
+    return Object.keys(Character).map((v) => {
         return { person: v.toLowerCase() };
     });
 }

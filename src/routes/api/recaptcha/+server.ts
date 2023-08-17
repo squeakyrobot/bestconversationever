@@ -1,7 +1,7 @@
 import type { RecaptchaVerifyRequest } from '$lib/recaptcha-client';
-import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { json } from '@sveltejs/kit';
+import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 
 export const POST: RequestHandler = async ({ request }) => {
 

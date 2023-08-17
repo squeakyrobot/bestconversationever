@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Footer from '$lib/components/Footer.svelte';
+	import { fade } from 'svelte/transition';
 	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
 
 	onMount(async () => {
 		handlePageRecaptcha(await recaptchaVerify('page_view/about'));

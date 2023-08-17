@@ -10,7 +10,7 @@ export function buildChatQuery(request: ChatApiRequest): { system: string, promp
     const p = request.personality;
 
     return {
-        system: `You are a ${p.mood} ${p.person} responding to a ${p.relationship} in ${p.responseLength}`,
+        system: `You are a ${p.mood} ${p.character} responding to a ${p.relationship} in ${p.responseLength}`,
         prompt: `"${request.message}"`,
     }
 }

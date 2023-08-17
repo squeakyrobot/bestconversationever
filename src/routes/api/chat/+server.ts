@@ -1,35 +1,29 @@
 import {
-    OPENAI_API_KEY,
     CHAT_CONTEXT_MESSAGE_COUNT,
-    MAX_RESPONSE_TOKENS,
-    RECAPTCHA_ENABLED,
+    MAX_CHAT_MESSAGE_TOKENS,
     MAX_REQUEST_TOKENS,
-    MAX_CHAT_MESSAGE_TOKENS
+    MAX_RESPONSE_TOKENS,
+    OPENAI_API_KEY,
+    RECAPTCHA_ENABLED,
 } from '$env/static/private';
-import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
-import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
-import { buildChatQuery, } from '$lib/server/query';
 import type { ChatApiRequest } from '$lib/chat-api-request';
 import type { ChatApiResponse } from '$lib/chat-api-response';
 import type { ConversationItem } from '$lib/stores/conversation';
-import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
-import { scoreThresholds } from '$lib/recaptcha-client';
-import { getErrorMessage } from '$lib/util';
-import { estimateGptTokens } from '$lib/token-estimator';
+import type { RequestHandler } from './$types';
+import { Character, Personality } from '$lib/personality';
+import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
 import { assert } from '$lib/assert';
-import { Person, Personality } from '$lib/personality';
-
-// import type { Config } from '@sveltejs/adapter-vercel';
-
-// export const config: Config = {
-//   runtime: 'edge'
-// };
+import { buildChatQuery, } from '$lib/server/query';
+import { estimateGptTokens } from '$lib/token-estimator';
+import { getErrorMessage } from '$lib/util';
+import { json } from '@sveltejs/kit';
+import { scoreThresholds } from '$lib/recaptcha-client';
+import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 
 export const POST: RequestHandler = async ({ request }) => {
     const contextMessageCount = CHAT_CONTEXT_MESSAGE_COUNT ? parseInt(CHAT_CONTEXT_MESSAGE_COUNT, 10) : 6;
-    const maxRequestTokens = MAX_REQUEST_TOKENS ? parseInt(MAX_REQUEST_TOKENS, 10) : 2000;
     const maxChatTokens = MAX_CHAT_MESSAGE_TOKENS ? parseInt(MAX_CHAT_MESSAGE_TOKENS, 10) : 500;
+    const maxRequestTokens = MAX_REQUEST_TOKENS ? parseInt(MAX_REQUEST_TOKENS, 10) : 2000;
     const maxResponseTokens = MAX_RESPONSE_TOKENS ? parseInt(MAX_RESPONSE_TOKENS, 10) : 300;
 
     // Get request data
@@ -121,7 +115,7 @@ export const POST: RequestHandler = async ({ request }) => {
         return json({
             requestId: apiRequest.id || 'NO_ID',
             conversationId: apiRequest.conversationId || 'NO_ID',
-            personality: apiRequest.personality || (new Personality({ person: Person.Elvis })).export(),
+            personality: apiRequest.personality || (new Personality({ character: Character.Elvis })).export(),
             isSystemMessage: true,
             message: message || 'An error occurred',
             time: new Date(),

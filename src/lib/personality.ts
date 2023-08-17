@@ -1,6 +1,6 @@
 import { getEnumKey, randomEnum } from "./util";
 
-export enum Person {
+export enum Character {
     Brody = 'fitness enthusiast; you are named Brody;',
     Chad = 'jock; you are named Chad;',
     Dean = 'Disappointed father; you are named Dean;',
@@ -46,14 +46,14 @@ export enum ResponseLength {
 
 export enum Traits {
     None = 0,
-    Person = 1,
+    Character = 1,
     Mood = 2,
     Relationship = 4,
     ResponseLength = 8,
 }
 
 export interface PersonalityOptions {
-    person: Person;
+    character: Character;
     name: string;
     mood: Mood;
     relationship: Relationship;
@@ -64,8 +64,8 @@ export class Personality {
     private traitLock = Traits.None;
 
     public constructor(private options?: Partial<PersonalityOptions>) {
-        if (options?.person) {
-            this.traitLock |= Traits.Person;
+        if (options?.character) {
+            this.traitLock |= Traits.Character;
         }
 
         if (options?.mood) {
@@ -81,10 +81,10 @@ export class Personality {
         }
     }
 
-    public get person(): Person {
-        return ((this.traitLock & Traits.Person) && this.options?.person) ?
-            this.options.person :
-            randomEnum(Person);
+    public get character(): Character {
+        return ((this.traitLock & Traits.Character) && this.options?.character) ?
+            this.options.character :
+            randomEnum(Character);
     }
 
     public get mood(): Mood {
@@ -105,20 +105,20 @@ export class Personality {
             randomEnum(ResponseLength);
     }
 
-    public getName(person: Person): string {
-        const name = getEnumKey(Person, person);
+    public getName(character: Character): string {
+        const name = getEnumKey(Character, character);
 
         return name || '???';
     }
 
 
     public export(): PersonalityOptions {
-        const person = this.person;
-        const name = this.getName(person);
+        const character = this.character;
+        const name = this.getName(character);
 
         return {
             name,
-            person,
+            character,
             mood: this.mood,
             relationship: this.relationship,
             responseLength: this.responseLength,
@@ -136,8 +136,8 @@ export class Personality {
     public lock(traits: Traits): void {
         this.options = this.options || {};
 
-        if (traits & Traits.Person) {
-            this.options.person = this.person;
+        if (traits & Traits.Character) {
+            this.options.character = this.character;
         }
 
         if (traits & Traits.Mood) {
