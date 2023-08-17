@@ -1,7 +1,15 @@
 <script lang="ts">
 	export let disabled = false;
+	export let showVersion = false;
+
+	const versionInfo = `Version ${__VERSION__}, ${__LASTMOD__}`;
 </script>
 
+{#if showVersion}
+	<div class="justify-end text-right text-info">
+		{versionInfo}
+	</div>
+{/if}
 <div class="flex justify-between bottom-0 border-t-2 border-neutral mt-2 pt-4">
 	<div class="align-bottom">
 		<a href="/" class="items-center inline-flex" title="BestConversationEver.com">

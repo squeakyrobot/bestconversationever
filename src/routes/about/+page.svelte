@@ -82,5 +82,5 @@
 
 		<a href="/" class="link link-primary text-xl lg:text-2xl">Back Home</a>
 	</div>
-	<Footer disabled={true} />
+	<Footer disabled={true} showVersion={true} />
 </div>
