@@ -1,13 +1,18 @@
 <script lang="ts">
+	import { PUBLIC_GITHUB_URL } from '$env/static/public';
+
 	export let disabled = false;
 	export let showVersion = false;
 
-	const versionInfo = `Version ${__VERSION__}, ${__LASTMOD__}`;
+	const versionInfo = `${__VERSION__}, ${__LASTMOD__}`;
+	const commitUrl = `${PUBLIC_GITHUB_URL}/commit/${__VERSION__}`;
 </script>
 
 {#if showVersion}
-	<div class="justify-end text-right text-info mt-5">
-		{versionInfo}
+	<div class="justify-end text-right text-info mt-5 pt-2">
+		<a href={commitUrl} target="_blank">
+			{versionInfo}
+		</a>
 	</div>
 {/if}
 <div class="flex justify-between bottom-0 border-t-2 border-neutral mt-2 pt-4">
