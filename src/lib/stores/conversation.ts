@@ -1,16 +1,17 @@
-import { PUBLIC_MAX_CLIENT_MESSAGES } from "$env/static/public";
-import { Personality } from "$lib/personality";
 import type { ChatApiRequest } from "$lib/chat-api-request";
 import type { ChatApiResponse } from "$lib/chat-api-response";
-import { writable, get, type Writable, type Unsubscriber } from "svelte/store";
-import { nanoid } from 'nanoid'
-import { getRecaptchaToken } from "$lib/recaptcha-client";
-import type { User } from "$lib/user";
+import type { User } from "$lib/session";
 import { ChatEvents, sendChatEvent } from "$lib/analytics";
+import { PUBLIC_MAX_CLIENT_MESSAGES } from "$env/static/public";
+import { Personality } from "$lib/personality";
+import { getRecaptchaToken } from "$lib/recaptcha-client";
+import { nanoid } from 'nanoid'
+import { writable, get, type Writable, type Unsubscriber } from "svelte/store";
 
 const MAX_CLIENT_MESSAGES = PUBLIC_MAX_CLIENT_MESSAGES ? parseInt(PUBLIC_MAX_CLIENT_MESSAGES, 10) : 15;
 
 export interface ConversationItem {
+    requestId: string;
     role: 'user' | 'assistant';
     name: string;
     time?: Date;
@@ -19,6 +20,9 @@ export interface ConversationItem {
 }
 
 export interface Conversation {
+    userId: string;
+    character: string;
+    conversationId: string;
     messages: ConversationItem[];
 }
 
@@ -26,12 +30,22 @@ export class ConversationStore {
     public store: Writable<Conversation>;
     private conversationId: string;
     private personality: Personality;
+    private character: string;
     public subscribe: Unsubscriber;
 
     constructor(private user: User, personality?: Personality) {
         this.personality = personality || new Personality();
-        this.conversationId = nanoid();
-        this.store = writable<Conversation>({ messages: [] });
+        this.conversationId = nanoid(10);
+
+        this.character = this.personality.export().character;
+
+        this.store = writable<Conversation>({
+            userId: this.user.id,
+            character: this.character,
+            conversationId: this.conversationId,
+            messages: []
+        });
+
         this.subscribe = this.store.subscribe;
     }
 
@@ -39,6 +53,7 @@ export class ConversationStore {
 
         // Add the user message
         const userMsg: ConversationItem = {
+            requestId: nanoid(10),
             name: this.user.name,
             role: 'user',
             time: new Date(),
@@ -48,6 +63,9 @@ export class ConversationStore {
 
         this.store.update((conversation: Conversation) => {
             return {
+                userId: this.user.id,
+                character: this.character,
+                conversationId: this.conversationId,
                 messages: [
                     ...conversation.messages,
                     userMsg,
@@ -64,8 +82,10 @@ export class ConversationStore {
         const token = await getRecaptchaToken('chat');
 
         const apiRequest: ChatApiRequest = {
-            id: nanoid(),
+            id: userMsg.requestId,
             conversationId: this.conversationId,
+            userId: this.user.id,
+            userName: this.user.name,
             personality: this.personality.export(),
             message: userMsg.text || '',
             time: userMsg.time || new Date(),
@@ -75,6 +95,7 @@ export class ConversationStore {
 
 
         const responseMsg: ConversationItem = {
+            requestId: userMsg.requestId,
             name: apiRequest.personality.name,
             role: 'assistant',
             waitingForResponse: true,
@@ -82,6 +103,9 @@ export class ConversationStore {
 
         this.store.update((conversation: Conversation) => {
             return {
+                userId: this.user.id,
+                character: this.character,
+                conversationId: this.conversationId,
                 messages: [
                     ...conversation.messages,
                     responseMsg]
@@ -105,7 +129,12 @@ export class ConversationStore {
 
         this.store.update((conversation: Conversation) => {
             conversation.messages.pop();
-            return { messages: [...conversation.messages, responseMsg] };
+            return {
+                userId: this.user.id,
+                character: this.character,
+                conversationId: this.conversationId,
+                messages: [...conversation.messages, responseMsg]
+            };
         });
 
         if (apiResponse.isSystemMessage) {

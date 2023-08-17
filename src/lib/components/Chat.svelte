@@ -1,16 +1,17 @@
 <script lang="ts">
 	import CharacterList from './CharacterList.svelte';
 	import ChatMessage from './ChatMessage.svelte';
-	import type { User } from '$lib/user';
+	import type { User } from '$lib/session';
 	import { Character, Personality, Traits } from '$lib/personality';
 	import { ConversationStore } from '$lib/stores/conversation';
 	import { nameFormat } from '$lib/util';
 	import { onMount } from 'svelte';
+	import { session } from '$lib/stores/session-store';
 
 	export let characterName = '';
 	export let initialChat = '';
 
-	const user: User = { name: 'Anonymous', avatar: `/images/user/missing-user.jpg` };
+	const user = $session.user;
 
 	export let onClose: () => void;
 
@@ -22,7 +23,7 @@
 	const personality = new Personality();
 	const conversationStore = new ConversationStore(user, personality);
 
-	onMount(() => {
+	onMount(async () => {
 		if (characterName) {
 			characterName = nameFormat(characterName);
 			conversationStore.setPersonality(

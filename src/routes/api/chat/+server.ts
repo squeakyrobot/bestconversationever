@@ -1,5 +1,7 @@
 import {
     CHAT_CONTEXT_MESSAGE_COUNT,
+    KV_REST_API_TOKEN,
+    KV_REST_API_URL,
     MAX_CHAT_MESSAGE_TOKENS,
     MAX_REQUEST_TOKENS,
     MAX_RESPONSE_TOKENS,
@@ -8,7 +10,7 @@ import {
 } from '$env/static/private';
 import type { ChatApiRequest } from '$lib/chat-api-request';
 import type { ChatApiResponse } from '$lib/chat-api-response';
-import type { ConversationItem } from '$lib/stores/conversation';
+import { Conversation, type ConversationItem } from '$lib/stores/conversation';
 import type { RequestHandler } from './$types';
 import { Character, Personality } from '$lib/personality';
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
@@ -17,8 +19,10 @@ import { buildChatQuery, } from '$lib/server/query';
 import { estimateGptTokens } from '$lib/token-estimator';
 import { getErrorMessage } from '$lib/util';
 import { json } from '@sveltejs/kit';
+import { kv } from '@vercel/kv';
 import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
+import { generateChatKey, redisKeyExists } from '$lib/server/redis';
 
 export const POST: RequestHandler = async ({ request }) => {
     const contextMessageCount = CHAT_CONTEXT_MESSAGE_COUNT ? parseInt(CHAT_CONTEXT_MESSAGE_COUNT, 10) : 6;
@@ -96,9 +100,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         const message = chatCompletion.data.choices[0].message?.content || 'I have nothing to say.';
 
-        // TODO: store the data in the DB
-
-        return json({
+        const apiResponse = {
             requestId: apiRequest.id,
             conversationId: apiRequest.conversationId,
             personality: apiRequest.personality,
@@ -107,7 +109,54 @@ export const POST: RequestHandler = async ({ request }) => {
             time: new Date(),
             responseTokens: chatCompletion.data.usage?.completion_tokens,
             totalTokens: chatCompletion.data.usage?.total_tokens,
-        } as ChatApiResponse);
+        } as ChatApiResponse;
+
+        // TODO: store the data in the DB
+        const conversation: Conversation = {
+            userId: apiRequest.userId,
+            character: apiRequest.personality.name,
+            conversationId: apiRequest.conversationId,
+            messages: [
+                {
+                    requestId: apiRequest.id,
+                    role: 'user',
+                    name: apiRequest.userName,
+                    time: apiRequest.time,
+                    text: apiRequest.message,
+                    waitingForResponse: false,
+                },
+                {
+                    requestId: apiRequest.id,
+                    role: 'assistant',
+                    name: apiResponse.personality.name,
+                    time: apiResponse.time,
+                    text: apiResponse.message,
+                    waitingForResponse: false,
+                }
+            ]
+        }
+
+        const chatKey = generateChatKey(apiRequest);
+        const keyExists = await redisKeyExists(chatKey.key);
+        const kvPromises: Promise<unknown>[] = [];
+
+        if (keyExists) {
+            // append to messages using JSONpath
+            kvPromises.push(kv.json.arrappend(chatKey.key, '$.messages', conversation.messages));
+
+        }
+        else {
+            // create new item and indexes
+            kvPromises.push(kv.json.set(chatKey.key, '$', conversation as unknown as Record<string, unknown>));
+
+            for (const item of chatKey.indexes) {
+                kvPromises.push(kv.zadd(item.key, { score: item.score, member: item.member }));
+            }
+        }
+
+        await Promise.all(kvPromises);
+
+        return json(apiResponse);
     }
     catch (error) {
         const message = getErrorMessage(error);

@@ -13,7 +13,8 @@
 		"format": "prettier --plugin-search-dir . --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"node": "vite build && ORIGIN=http://127.0.0.1:3000 node build/"
+		"node": "vite build && ORIGIN=http://127.0.0.1:3000 node build/",
+		"vercel-dev": "vercel dev --yes"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
@@ -27,6 +28,7 @@
 		"@types/web": "^0.0.113",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
+		"@vercel/kv": "^0.2.2",
 		"autoprefixer": "^10.4.14",
 		"daisyui": "^3.5.1",
 		"eslint": "^8.28.0",
@@ -44,6 +46,7 @@
 		"tailwindcss": "^3.3.3",
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
+		"vercel": "^31.4.0",
 		"vite": "^4.4.2",
 		"vitest": "^0.32.2"
 	},

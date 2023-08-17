@@ -1,12 +1,13 @@
 <script lang="ts">
 	import DOMPurify from 'isomorphic-dompurify';
 	import type { ConversationItem } from '$lib/stores/conversation';
-	import type { User } from '$lib/user';
+	import type { User } from '$lib/session';
 	import { marked } from 'marked';
+	import { session } from '$lib/stores/session-store';
 
 	export let currentAnswer: boolean;
 	export let message: ConversationItem;
-	export let user: User = { name: 'Anonymous', avatar: `/images/user/missing-user.jpg` };
+	export let user: User = $session.user;
 
 	const scrollToElement = (el: HTMLElement) =>
 		el.scrollIntoView({ block: 'start', behavior: 'smooth' });
@@ -16,7 +17,7 @@
 	<div class="chat chat-end">
 		<div class="chat-image avatar">
 			<div class="w-16 rounded-full">
-				<img src={user.avatar} alt="User" />
+				<img src={user.avatarUrl} alt="User" />
 			</div>
 		</div>
 		<div class="chat-header">
