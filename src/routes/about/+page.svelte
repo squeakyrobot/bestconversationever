@@ -3,13 +3,17 @@
 	import { fade } from 'svelte/transition';
 	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { onMount } from 'svelte';
+	import CharacterList from '$lib/components/CharacterList.svelte';
 
 	onMount(async () => {
 		handlePageRecaptcha(await recaptchaVerify('page_view/about'));
 	});
 </script>
 
-<div class="flex flex-col w-full lg:w-3/4 border-opacity-50 p-4 h-full" in:fade={{ duration: 400 }}>
+<div
+	class="flex flex-col w-full lg:w-3/4 max-w-6xl border-opacity-50 p-4 h-full"
+	in:fade={{ duration: 400 }}
+>
 	<div class="hero mt-20">
 		<div class="hero-content flex-col md:flex-row">
 			<img src="/images/bce-logo.svg" alt="BCE Logo" class="md:w-1/3 w-2/5" />
@@ -36,6 +40,19 @@
 			GPT. Initially it was going to be a quick throw away experiment to try out a few new things. Next
 			thing I know, I have been nerding out way longer than planned and this is what came out. It happens.
 		</p>
+		<h2 class="text-3xl lg:text-4xl font-bold">About the Characters</h2>
+		<p class="py-6 text-lg">
+			The characters each have a different set personality as well as some randomness with each
+			response. The random elements are things like their mood and thier feelings or relationship
+			towards the user chatting with them. All the characters know each other very well and the best
+			way to learn about their personalities is to ask someone.
+			<br /><br />
+			Just click on someone and say something like, <em>"Tell me about Rob"</em>.
+		</p>
+		<div class="pb-10 lg:text-center">
+			<CharacterList />
+		</div>
+
 		<h2 class="text-3xl lg:text-4xl font-bold">Credits & Thanks</h2>
 		<div class="py-6 ml-5 text-lg">
 			<ul class="list-disc">
