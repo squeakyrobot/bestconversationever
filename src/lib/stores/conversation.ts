@@ -73,7 +73,7 @@ export class ConversationStore {
             };
         });
 
-        const previousMessages = get<Conversation>(this.store).messages;
+        const previousMessages = [...get<Conversation>(this.store).messages];
 
         if (previousMessages.length > MAX_CLIENT_MESSAGES) {
             previousMessages.splice(0, previousMessages.length - MAX_CLIENT_MESSAGES);

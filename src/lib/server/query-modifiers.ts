@@ -12,9 +12,8 @@ const characterModifiers: QueryModifier[] = Object.values(Character).map((charac
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const characterName = getEnumKey(Character, character)!.toLowerCase();
     const systemModifier = `you know ${characterName} who is a ${character.split(';')[0]};`;
-    const tokens = estimateGptTokens(systemModifier);
 
-    return { search: characterName, systemModifier, tokens };
+    return { search: characterName, systemModifier };
 });
 
 
