@@ -1,13 +1,13 @@
 <script lang="ts">
 	import DOMPurify from 'isomorphic-dompurify';
 	import type { ConversationItem } from '$lib/stores/conversation';
-	import type { User } from '$lib/session';
+	import type { User } from '$lib/user';
 	import { marked } from 'marked';
-	import { session } from '$lib/stores/session-store';
+	import { page } from '$app/stores';
 
 	export let currentAnswer: boolean;
 	export let message: ConversationItem;
-	export let user: User = $session.user;
+	export let user: User = $page.data.session.user;
 
 	const scrollToElement = (el: HTMLElement) =>
 		el.scrollIntoView({ block: 'start', behavior: 'smooth' });

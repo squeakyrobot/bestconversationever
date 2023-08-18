@@ -22,7 +22,7 @@ import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 import { generateChatKey, redisKeyExists } from '$lib/server/redis';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
     const contextMessageCount = CHAT_CONTEXT_MESSAGE_COUNT ? parseInt(CHAT_CONTEXT_MESSAGE_COUNT, 10) : 6;
     const maxChatTokens = MAX_CHAT_MESSAGE_TOKENS ? parseInt(MAX_CHAT_MESSAGE_TOKENS, 10) : 500;
     const maxRequestTokens = MAX_REQUEST_TOKENS ? parseInt(MAX_REQUEST_TOKENS, 10) : 2000;
@@ -111,7 +111,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         // TODO: store the data in the DB
         const conversation: Conversation = {
-            userId: apiRequest.userId,
+            userId: locals.session.user.id,
             character: apiRequest.personality.name,
             conversationId: apiRequest.conversationId,
             messages: [

@@ -1,3 +1,4 @@
+import { getSession, packSession } from "$lib/session";
 import type { Handle } from "@sveltejs/kit";
 
 const securityHeaders = {
@@ -17,7 +18,18 @@ const securityHeaders = {
 } as const;
 
 export const handle: Handle = async ({ event, resolve }) => {
+    // Session Management
+    const { cookies, locals } = event;
+
+    const sessionData = cookies.get('session');
+
+    locals.session = getSession(sessionData);
+
+    cookies.set('session', packSession(locals.session), { expires: new Date(locals.session.expires) });
+
     const response = await resolve(event);
+
+    // Security Headers
     Object.entries(securityHeaders).forEach(
         ([header, value]) => response.headers.set(header, value)
     );

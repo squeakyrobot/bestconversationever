@@ -1,17 +1,17 @@
 <script lang="ts">
 	import CharacterList from './CharacterList.svelte';
 	import ChatMessage from './ChatMessage.svelte';
-	import type { User } from '$lib/session';
+	import type { User } from '$lib/user';
 	import { Character, Personality, Traits } from '$lib/personality';
 	import { ConversationStore } from '$lib/stores/conversation';
 	import { nameFormat } from '$lib/util';
 	import { onMount } from 'svelte';
-	import { session } from '$lib/stores/session-store';
+	import { page } from '$app/stores';
 
 	export let characterName = '';
 	export let initialChat = '';
 
-	const user = $session.user;
+	const user: User = $page.data.session.user;
 
 	export let onClose: () => void;
 
