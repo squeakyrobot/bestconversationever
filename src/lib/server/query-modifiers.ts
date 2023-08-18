@@ -30,10 +30,11 @@ characterModifiers.push(
         search: 'bo',
         systemModifier: ';you know Bo who is a sweet boy, who is from La Mesa, CA, he plays saxaphone and likes video games. He plays roblox a lot but also likes five nights at freddy\'s (FNAF) and cuphead. BO is Ryan\'s son.;',
     },
+    { search: 'ryan', systemModifier: ';you know Ryan who is the creator of this site, bestconversationever.com. He is the father of Bo, Bela, and Seamus and Husband to Marissa. His dog is Elvis. He like robots, skateboards and unicycles.;' },
     // { search: 'aidan', systemModifier: ';you know Bela who is a super smart you lady, who is from La Mesa, CA that you respect a lot;' },
     // { search: 'damon', systemModifier: ';you know Bela who is a super smart you lady, who is from La Mesa, CA that you respect a lot;' },
     // { search: 'seamus', systemModifier: ';you know Bela who is a super smart you lady, who is from La Mesa, CA that you respect a lot;' },
-    // { search: 'ryan', systemModifier: ';you know Bela who is a super smart you lady, who is from La Mesa, CA that you respect a lot;' },
+
 );
 
 export const queryModifiers = characterModifiers;
