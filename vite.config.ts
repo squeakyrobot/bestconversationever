@@ -12,7 +12,6 @@ const [version, lastmod] = (
 	])
 ).map(v => JSON.stringify(v.stdout.trim()));
 
-console.log('VITE CONFIG');
 
 export default defineConfig({
 	plugins: [sveltekit()],
