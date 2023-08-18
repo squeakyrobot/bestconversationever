@@ -15,15 +15,15 @@ export interface ChatKey {
 
 export function generateChatKey(apiRequest: ChatApiRequest): ChatKey {
     const prefix = getEnvironmentPrefix();
-    const time = Date.now();
+    // const time = Date.now();
     const convoKey = `${prefix}:convo:${apiRequest.conversationId}`;
 
     return {
         key: convoKey,
         indexes: [
-            { key: `${prefix}:idx_convo_time`, score: time, member: convoKey },
-            { key: `${prefix}:idx_convo_user_time:${apiRequest.userId}`, score: time, member: convoKey },
-            { key: `${prefix}:idx_convo_char_time:${apiRequest.personality.name.toLowerCase()}`, score: time, member: convoKey },
+            // { key: `${prefix}:idx_convo_time`, score: time, member: convoKey },
+            // { key: `${prefix}:idx_convo_user_time:${apiRequest.userId}`, score: time, member: convoKey },
+            // { key: `${prefix}:idx_convo_char_time:${apiRequest.personality.name.toLowerCase()}`, score: time, member: convoKey },
         ]
     }
 }
