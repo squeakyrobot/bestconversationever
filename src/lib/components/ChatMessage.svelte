@@ -5,7 +5,7 @@
 	import { marked } from 'marked';
 	import { page } from '$app/stores';
 
-	export let currentAnswer: boolean;
+	export let currentAnswer: boolean = false;
 	export let message: ConversationItem;
 	export let user: User = $page.data.session.user;
 
