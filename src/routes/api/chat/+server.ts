@@ -1,7 +1,5 @@
 import {
     CHAT_CONTEXT_MESSAGE_COUNT,
-    KV_REST_API_TOKEN,
-    KV_REST_API_URL,
     MAX_CHAT_MESSAGE_TOKENS,
     MAX_REQUEST_TOKENS,
     MAX_RESPONSE_TOKENS,
@@ -10,7 +8,7 @@ import {
 } from '$env/static/private';
 import type { ChatApiRequest } from '$lib/chat-api-request';
 import type { ChatApiResponse } from '$lib/chat-api-response';
-import { Conversation, type ConversationItem } from '$lib/stores/conversation';
+import type { Conversation, ConversationItem } from '$lib/stores/conversation';
 import type { RequestHandler } from './$types';
 import { Character, Personality } from '$lib/personality';
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
@@ -54,7 +52,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 
         const query = buildChatQuery(apiRequest);
-        const queryTokens = estimateGptTokens([query.system, query.prompt]);
+        const queryTokens = estimateGptTokens(query.prompt);
         assert(queryTokens <= maxChatTokens, 'Chat too long, try something shorter.');
 
         const messages: ChatCompletionRequestMessage[] = [
@@ -70,7 +68,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
             let prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
 
-            while (prevMsgTokens + queryTokens > maxRequestTokens) {
+            while (prevMsgTokens + queryTokens > maxRequestTokens + query.systemTokens) {
                 prevMessages.splice(0, 1);
                 prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
             }
