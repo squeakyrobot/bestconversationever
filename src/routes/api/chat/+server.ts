@@ -134,25 +134,30 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             ]
         }
 
-        const chatKey = generateChatKey(apiRequest);
-        const keyExists = await redisKeyExists(chatKey.key);
-        const kvPromises: Promise<unknown>[] = [];
+        try {
+            const chatKey = generateChatKey(apiRequest);
+            const keyExists = await redisKeyExists(chatKey.key);
+            const kvPromises: Promise<unknown>[] = [];
 
-        if (keyExists) {
-            // append to messages using JSONpath
-            kvPromises.push(kv.json.arrappend(chatKey.key, '$.messages', conversation.messages));
+            if (keyExists) {
+                // append to messages using JSONpath
+                kvPromises.push(kv.json.arrappend(chatKey.key, '$.messages', conversation.messages));
 
-        }
-        else {
-            // create new item and indexes
-            kvPromises.push(kv.json.set(chatKey.key, '$', conversation as unknown as Record<string, unknown>));
-
-            for (const item of chatKey.indexes) {
-                kvPromises.push(kv.zadd(item.key, { score: item.score, member: item.member }));
             }
-        }
+            else {
+                // create new item and indexes
+                kvPromises.push(kv.json.set(chatKey.key, '$', conversation as unknown as Record<string, unknown>));
 
-        await Promise.all(kvPromises);
+                for (const item of chatKey.indexes) {
+                    kvPromises.push(kv.zadd(item.key, { score: item.score, member: item.member }));
+                }
+            }
+
+            await Promise.all(kvPromises);
+        }
+        catch (e) {
+            console.log(e);
+        }
 
         return json(apiResponse);
     }
