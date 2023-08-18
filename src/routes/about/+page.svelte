@@ -35,12 +35,12 @@
 		<h2 class="text-3xl lg:text-4xl font-bold">Why?</h2>
 		<p class="py-6 text-lg">
 			Why not? 🤷️<br />
-			Actually, this site started as a small sample app because I wanted to try out SvelteKit. I also
+			<!-- Actually, this site started as a small sample app because I wanted to try out SvelteKit. I also
 			wanted to play with OpenAI’s ChatGPT API so I set off to make a simple chat app just like Chat
 			GPT. Initially it was going to be a quick throw away experiment to try out a few new things. Next
-			thing I know, I have been nerding out way longer than planned and this is what came out. It happens.
+			thing I know, I have been nerding out way longer than planned and this is what came out. It happens. -->
 		</p>
-		<h2 class="text-3xl lg:text-4xl font-bold">About the Characters</h2>
+		<h2 class="text-3xl lg:text-4xl font-bold pt-10">About the Characters</h2>
 		<p class="py-6 text-lg">
 			The characters each have a different set personality as well as some randomness with each
 			response. The random elements are things like their mood and thier feelings or relationship
@@ -49,11 +49,11 @@
 			<br /><br />
 			Just click on someone and say something like, <em>"Tell me about Rob"</em>.
 		</p>
-		<div class="pb-10 lg:text-center">
+		<div class="lg:text-center">
 			<CharacterList />
 		</div>
 
-		<h2 class="text-3xl lg:text-4xl font-bold">Credits & Thanks</h2>
+		<h2 class="text-3xl lg:text-4xl font-bold pt-10">Credits & Thanks</h2>
 		<div class="py-6 ml-5 text-lg">
 			<ul class="list-disc">
 				<li>
@@ -94,7 +94,7 @@
 			</div> -->
 		</div>
 
-		<h2 class="text-3xl lg:text-4xl font-bold">Contact</h2>
+		<h2 class="text-3xl lg:text-4xl font-bold pt-10">Contact</h2>
 		<p class="py-6 text-lg">TODO</p>
 
 		<a href="/" class="link link-primary text-xl lg:text-2xl">Back Home</a>
