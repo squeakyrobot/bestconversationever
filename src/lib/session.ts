@@ -1,4 +1,4 @@
-import type { User } from "./user";
+import { GoatFrequency, type User, type UserSettings } from "./user";
 import { SESSION_DAYS } from "$env/static/private";
 import { base64 } from '@scure/base';
 import { nanoid } from "nanoid";
@@ -20,6 +20,11 @@ export function getSession(sessionData?: string): Session {
                 session.expires = expires;
                 return session;
             }
+
+            // Migration
+            if (!session.user.settings) {
+                session.user.settings = { goatFreq: GoatFrequency.Normal };
+            }
         }
     } catch (e) {
         console.error('Failed to unpack session');
@@ -33,6 +38,7 @@ export function getSession(sessionData?: string): Session {
             name: 'Anonymous',
             type: 'anonymous',
             avatarUrl: '/images/user/missing-user.jpg',
+            settings: { goatFreq: GoatFrequency.Normal },
         }
     }
 }
@@ -40,4 +46,3 @@ export function getSession(sessionData?: string): Session {
 export function packSession(session: Session): string {
     return base64.encode((new TextEncoder()).encode(JSON.stringify(session)));
 }
-

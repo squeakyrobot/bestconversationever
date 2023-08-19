@@ -3,6 +3,9 @@
 	import HeadMeta from '$lib/components/HeadMeta.svelte';
 	import { PUBLIC_RECAPTCHA_SITE_KEY } from '$env/static/public';
 	import { page } from '$app/stores';
+	import { userSession } from '$lib/stores/sessionStore';
+
+	$userSession = $page.data.session;
 </script>
 
 <svelte:head>
