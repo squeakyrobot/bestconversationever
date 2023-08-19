@@ -14,6 +14,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         cookies.set('session-v2', packSession(session), { path: '/', expires: new Date(session.expires) });
 
         return json({ success: true });
+
     }
     catch (e) {
         console.error('Failed to update settings', e);
