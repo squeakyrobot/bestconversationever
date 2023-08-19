@@ -141,4 +141,4 @@
 		</form>
 	</div>
 </div>
-{@html `<!-- ConversationId: ${$conversationStore.ConversationId} --->`}
+{@html `<!-- ConversationId: ${$conversationStore.conversationId} --->`}
