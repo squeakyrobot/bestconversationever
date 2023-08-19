@@ -1,4 +1,3 @@
-import type { ChatApiRequest } from "$lib/chat-api-request";
 import { kv } from "@vercel/kv";
 import { getEnvironmentPrefix } from "./environment";
 import type { Conversation } from "$lib/stores/conversation";

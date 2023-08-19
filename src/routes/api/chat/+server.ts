@@ -49,7 +49,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         // off for now because the adult language is funnier anyway
 
 
-        const query = buildChatQuery(apiRequest);
+        const query = buildChatQuery(apiRequest, locals.session.user.settings);
         assert(query.promptTokens <= maxChatTokens, 'Chat too long, try something shorter.');
 
         const messages: ChatCompletionRequestMessage[] = createChatGptMessages(query, apiRequest);

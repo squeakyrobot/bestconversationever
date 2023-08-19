@@ -25,7 +25,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     locals.session = getSession(sessionData);
 
-    cookies.set('session', packSession(locals.session), { expires: new Date(locals.session.expires) });
+    cookies.set('session', packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
     const response = await resolve(event);
 
