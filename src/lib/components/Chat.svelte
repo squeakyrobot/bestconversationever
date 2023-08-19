@@ -19,6 +19,8 @@
 
 	let currentChat = '';
 	let sendingChat = false;
+	let shareUrl: string = '';
+	let disableLinkButton = false;
 
 	const personality = new Personality();
 	const conversationStore = new ConversationStore(user, personality);
@@ -40,6 +42,12 @@
 			chatBox.focus();
 		}
 
+		shareUrl = `${location.origin}/view/${conversationStore.conversationId}`;
+
+		if (!navigator.clipboard) {
+			disableLinkButton = true;
+		}
+
 		console.log(conversationStore.conversationId);
 	});
 
@@ -58,16 +66,21 @@
 			navigator
 				.share({
 					title: $page.data.pageTitle,
-					url: `/view/${conversationStore.conversationId}`
+					text: $page.data.pageDescription,
+					url: shareUrl
 				})
 				.then(() => {
 					console.log('Thanks for sharing!');
 				})
 				.catch(console.error);
 		} else {
-			// shareDialog.classList.add('is-open');
-			console.log('No share api');
+			copyLinkModal.showModal();
+			document.getElementById('shareUrlInput').select();
 		}
+	};
+
+	const copyShareUrl = async () => {
+		await navigator.clipboard.writeText(shareUrl);
 	};
 </script>
 
@@ -79,13 +92,44 @@
 			<CharacterList />
 		</div>
 		<div class="flex justify-end bottom-0 border-t-2 border-neutral mt-2 pt-4">
-			<div class="align-bottom">
-				<button class="btn btn-ghost">Close</button>
-			</div>
+			<button class="btn btn-ghost">Close</button>
 		</div>
 	</form>
 	<form method="dialog" class="modal-backdrop">
 		<button>close</button>
+	</form>
+</dialog>
+
+<dialog id="copyLinkModal" class="modal">
+	<form method="dialog" class="modal-box md:w-4/5 max-w-3xl">
+		<h3 class="font-bold text-lg">Share this Conversation</h3>
+
+		<div class="input-group w-full mt-10">
+			<input
+				type="text"
+				id="shareUrlInput"
+				value={shareUrl}
+				class="input input-bordered w-full input-disabled"
+			/>
+			{#if !disableLinkButton}
+				<button class="btn btn-neutral" on:click={copyShareUrl}>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						height="1em"
+						viewBox="0 0 448 512"
+						stroke="currentColor"
+						fill="currentColor"
+						><path
+							d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"
+						/></svg
+					>
+					Copy Link
+				</button>
+			{/if}
+		</div>
+		<div class="modal-action flex justify-end bottom-0 border-t-2 border-neutral mt-10 pt-2">
+			<button class="btn btn-ghost">Close</button>
+		</div>
 	</form>
 </dialog>
 
