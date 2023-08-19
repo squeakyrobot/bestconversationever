@@ -52,6 +52,23 @@
 			characterName = personality.getName(personality.character);
 		}
 	};
+
+	const shareConvoClick = () => {
+		if (navigator.share) {
+			navigator
+				.share({
+					title: $page.data.pageTitle,
+					url: `/view/${conversationStore.conversationId}`
+				})
+				.then(() => {
+					console.log('Thanks for sharing!');
+				})
+				.catch(console.error);
+		} else {
+			// shareDialog.classList.add('is-open');
+			console.log('No share api');
+		}
+	};
 </script>
 
 <dialog id="characterChooser" class="modal">
@@ -99,6 +116,42 @@
 						>
 					</button>
 				{/if}
+
+				<div class="dropdown dropdown-end">
+					<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+					<!-- svelte-ignore a11y-label-has-associated-control -->
+					<label tabindex="0" class="btn btn-square btn-sm btn-ghost">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							height="1em"
+							viewBox="0 0 128 512"
+							stroke="currentColor"
+							fill="currentColor"
+						>
+							<path
+								d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"
+							/>
+						</svg>
+					</label>
+					<ul class="dropdown-content z-[1] menu p-2 shadow bg-neutral rounded-box w-52">
+						<li>
+							<button on:click={shareConvoClick}>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									height="1em"
+									viewBox="0 0 448 512"
+									stroke="currentColor"
+									fill="currentColor"
+								>
+									<path
+										d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
+									/></svg
+								>
+								Share Conversation
+							</button>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>

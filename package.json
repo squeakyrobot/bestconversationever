@@ -14,7 +14,7 @@
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
 		"node": "vite build && ORIGIN=http://127.0.0.1:3000 node build/",
-		"vercel-dev": "vercel dev --yes"
+		"vercel-dev": "vercel dev --yes --host"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
