@@ -30,7 +30,7 @@ export class ConversationStore {
     public store: Writable<Conversation>;
     public conversationId: string;
     private personality: Personality;
-    private character: string;
+    public character: string;
     public subscribe: Unsubscriber;
 
     constructor(private user: User, personality?: Personality) {

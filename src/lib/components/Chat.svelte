@@ -66,7 +66,7 @@
 			navigator
 				.share({
 					title: $page.data.pageTitle,
-					text: $page.data.pageDescription,
+					text: `Check out my conversation with ${conversationStore.character}\n\n`,
 					url: shareUrl
 				})
 				.then(() => {
