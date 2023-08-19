@@ -13,19 +13,17 @@ import type { RequestHandler } from './$types';
 import { Character, Personality } from '$lib/personality';
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
 import { assert } from '$lib/assert';
-import { buildChatQuery, } from '$lib/server/query';
+import { buildChatQuery, type QueryResult, } from '$lib/server/query';
 import { estimateGptTokens } from '$lib/token-estimator';
 import { getErrorMessage } from '$lib/util';
 import { json } from '@sveltejs/kit';
-import { kv } from '@vercel/kv';
+import { saveConversation } from '$lib/server/redis';
 import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
-import { generateChatKey, redisKeyExists } from '$lib/server/redis';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-    const contextMessageCount = CHAT_CONTEXT_MESSAGE_COUNT ? parseInt(CHAT_CONTEXT_MESSAGE_COUNT, 10) : 6;
+
     const maxChatTokens = MAX_CHAT_MESSAGE_TOKENS ? parseInt(MAX_CHAT_MESSAGE_TOKENS, 10) : 500;
-    const maxRequestTokens = MAX_REQUEST_TOKENS ? parseInt(MAX_REQUEST_TOKENS, 10) : 2000;
     const maxResponseTokens = MAX_RESPONSE_TOKENS ? parseInt(MAX_RESPONSE_TOKENS, 10) : 300;
 
     // Get request data
@@ -52,35 +50,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 
         const query = buildChatQuery(apiRequest);
-        const queryTokens = estimateGptTokens(query.prompt);
-        assert(queryTokens <= maxChatTokens, 'Chat too long, try something shorter.');
+        assert(query.promptTokens <= maxChatTokens, 'Chat too long, try something shorter.');
 
-        const messages: ChatCompletionRequestMessage[] = [
-            { role: 'system', content: query.system }
-        ];
-
-        if (apiRequest.previousMessages) {
-            const prevMessages = apiRequest.previousMessages;
-
-            if (prevMessages.length > contextMessageCount) {
-                prevMessages.splice(0, prevMessages.length - contextMessageCount);
-            }
-
-            let prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
-
-            while (prevMsgTokens + queryTokens > maxRequestTokens + query.systemTokens) {
-                prevMessages.splice(0, 1);
-                prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
-            }
-
-            messages.push(...prevMessages.map<ChatCompletionRequestMessage>(
-                (value: ConversationItem) => {
-                    return { role: value.role, content: value.text };
-                })
-            );
-        }
-
-        messages.push({ role: 'user', content: query.prompt });
+        const messages: ChatCompletionRequestMessage[] = createChatGptMessages(query, apiRequest);
 
         // Do Open API Call
         const configuration = new Configuration({
@@ -109,57 +81,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             totalTokens: chatCompletion.data.usage?.total_tokens,
         } as ChatApiResponse;
 
-        // TODO: store the data in the DB
-        const conversation: Conversation = {
-            userId: locals.session.user.id,
-            character: apiRequest.personality.name,
-            conversationId: apiRequest.conversationId,
-            messages: [
-                {
-                    requestId: apiRequest.id,
-                    role: 'user',
-                    name: apiRequest.userName,
-                    time: apiRequest.time,
-                    text: apiRequest.message,
-                    waitingForResponse: false,
-                },
-                {
-                    requestId: apiRequest.id,
-                    role: 'assistant',
-                    name: apiResponse.personality.name,
-                    time: apiResponse.time,
-                    text: apiResponse.message,
-                    waitingForResponse: false,
-                }
-            ]
-        }
 
-        // try {
-        //     const chatKey = generateChatKey(apiRequest);
-        //     const keyExists = await redisKeyExists(chatKey.key);
-        //     const kvPromises: Promise<unknown>[] = [];
+        const convo: Conversation = createConversation(locals, apiRequest, apiResponse)
 
-        //     if (keyExists) {
-        //         // append to messages using JSONpath
-        //         kvPromises.push(kv.json.arrappend(chatKey.key, '$.messages', conversation.messages));
-
-        //     }
-        //     else {
-
-        //         // TODO: Fix append
-        //         // create new item and indexes
-        //         kvPromises.push(kv.json.set(chatKey.key, '$', conversation as unknown as Record<string, unknown>));
-
-        //         for (const item of chatKey.indexes) {
-        //             kvPromises.push(kv.zadd(item.key, { score: item.score, member: item.member }));
-        //         }
-        //     }
-
-        //     await Promise.all(kvPromises);
-        // }
-        // catch (e) {
-        //     console.log(e);
-        // }
+        // TODO: handle db errors - This simply returns false if the save fails
+        await saveConversation(convo);
 
         return json(apiResponse);
     }
@@ -176,3 +102,65 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         } as ChatApiResponse);
     }
 };
+
+
+function createChatGptMessages(query: QueryResult, apiRequest: ChatApiRequest) {
+    const maxRequestTokens = parseInt(MAX_REQUEST_TOKENS || "2000", 10);
+    const contextMessageCount = parseInt(CHAT_CONTEXT_MESSAGE_COUNT || "10", 10);
+
+    const messages: ChatCompletionRequestMessage[] = [
+        { role: 'system', content: query.system }
+    ];
+
+    if (apiRequest.previousMessages) {
+        const prevMessages = apiRequest.previousMessages;
+
+        if (prevMessages.length > contextMessageCount) {
+            prevMessages.splice(0, prevMessages.length - contextMessageCount);
+        }
+
+        let prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
+
+        while (prevMsgTokens + query.promptTokens > maxRequestTokens + query.systemTokens) {
+            prevMessages.splice(0, 1);
+            prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
+        }
+
+        messages.push(...prevMessages.map<ChatCompletionRequestMessage>(
+            (value: ConversationItem) => {
+                return { role: value.role, content: value.text };
+            })
+        );
+    }
+
+    messages.push({ role: 'user', content: query.prompt });
+
+    return messages;
+}
+
+function createConversation(locals: App.Locals, apiRequest: ChatApiRequest, apiResponse: ChatApiResponse): Conversation {
+    return {
+        userId: locals.session.user.id,
+        character: apiRequest.personality.name,
+        conversationId: apiRequest.conversationId,
+        messages: [
+            {
+                requestId: apiRequest.id,
+                role: 'user',
+                name: apiRequest.userName,
+                time: apiRequest.time,
+                text: apiRequest.message,
+                waitingForResponse: false,
+            },
+            {
+                requestId: apiRequest.id,
+                role: 'assistant',
+                name: apiResponse.personality.name,
+                time: apiResponse.time,
+                text: apiResponse.message,
+                waitingForResponse: false,
+            }
+        ]
+    };
+}
+

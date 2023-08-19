@@ -25,6 +25,7 @@
 	const onClose = () => {
 		const characterName = $page.params.character ? nameFormat($page.params.character) : 'not_set';
 		sendChatEvent(ChatEvents.chatClosed, { character: characterName });
+
 		goto('/');
 	};
 </script>
