@@ -11,12 +11,14 @@
 	const versionInfo = `${__VERSION__}, ${__LASTMOD__}`;
 	const commitUrl = `${PUBLIC_GITHUB_URL}/commit/${__VERSION__}`;
 
-	const settings = $page.data.session.user?.settings as UserSettings;
+	let settings = $page.data.session.user?.settings as UserSettings;
 
 	let selectedGoatFreq = GoatFrequency.Normal;
 
 	onMount(() => {
-		selectedGoatFreq = settings.goatFreq;
+		if (!settings) {
+			settings = { goatFreq: GoatFrequency.Normal };
+		}
 	});
 
 	const saveSettings = async () => {
