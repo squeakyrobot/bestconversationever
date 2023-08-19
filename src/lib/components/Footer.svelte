@@ -17,6 +17,7 @@
 
 	onMount(() => {
 		if (!settings) {
+			$page.data.session.user.settings = { goatFreq: GoatFrequency.Normal };
 			settings = { goatFreq: GoatFrequency.Normal };
 		}
 
