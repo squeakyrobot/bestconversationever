@@ -21,11 +21,11 @@ export const handle: Handle = async ({ event, resolve }) => {
     // Session Management
     const { cookies, locals } = event;
 
-    const sessionData = cookies.get('session');
+    const sessionData = cookies.get('session-v2');
 
     locals.session = getSession(sessionData);
 
-    cookies.set('session', packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
+    cookies.set('session-v2', packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
     const response = await resolve(event);
 

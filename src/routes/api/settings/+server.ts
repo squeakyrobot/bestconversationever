@@ -6,14 +6,14 @@ import { json } from '@sveltejs/kit';
 export const POST: RequestHandler = async ({ request, cookies }) => {
     try {
         const updatedSettings = await request.json() as UserSettings
-        const sessionData = cookies.get('session');
+        const sessionData = cookies.get('session-v2');
         const session = getSession(sessionData) as Session;
 
         session.user.settings = updatedSettings;
 
         console.log(session);
 
-        cookies.set('session', packSession(session), { path: '/', expires: new Date(session.expires) });
+        cookies.set('session-v2', packSession(session), { path: '/', expires: new Date(session.expires) });
 
         return json({ success: true });
     }
