@@ -8,9 +8,13 @@
 	export let currentAnswer: boolean = false;
 	export let message: ConversationItem;
 	export let user: User = $page.data.session.user;
+	export let autoScroll = true;
 
-	const scrollToElement = (el: HTMLElement) =>
-		el.scrollIntoView({ block: 'start', behavior: 'smooth' });
+	const doAutoScroll = (el: HTMLElement) => {
+		if (autoScroll) {
+			el.scrollIntoView({ block: 'start', behavior: 'smooth' });
+		}
+	};
 </script>
 
 {#if message.role === 'user'}
@@ -28,7 +32,7 @@
 		</div>
 
 		<div class="chat-bubble mt-2 chat-bubble-info">
-			<div class="m-3" use:scrollToElement>
+			<div class="m-3" use:doAutoScroll>
 				{message.text || ''}
 			</div>
 		</div>
@@ -47,13 +51,13 @@
 			</time>
 		</div>
 		{#if message.waitingForResponse}
-			<div class="chat-bubble mt-2" use:scrollToElement>
+			<div class="chat-bubble mt-2" use:doAutoScroll>
 				<div class="m-3 overflow-x-auto">
 					<span class="loading loading-dots loading-md" />
 				</div>
 			</div>
 		{:else if currentAnswer}
-			<div class="chat-bubble mt-2" use:scrollToElement>
+			<div class="chat-bubble mt-2" use:doAutoScroll>
 				<div class="m-3 overflow-x-auto">
 					<!-- TODO: Add animation & audio -->
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}

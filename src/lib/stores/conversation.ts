@@ -28,9 +28,9 @@ export interface Conversation {
 
 export class ConversationStore {
     public store: Writable<Conversation>;
-    private conversationId: string;
+    public conversationId: string;
     private personality: Personality;
-    private character: string;
+    public character: string;
     public subscribe: Unsubscriber;
 
     constructor(private user: User, personality?: Personality) {
