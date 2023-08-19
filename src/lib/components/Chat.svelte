@@ -39,6 +39,8 @@
 		} else {
 			chatBox.focus();
 		}
+
+		console.log(conversationStore.conversationId);
 	});
 
 	const sendChatMessage = (e?: SubmitEvent) => {
@@ -141,4 +143,3 @@
 		</form>
 	</div>
 </div>
-{@html `<!-- ConversationId: ${$conversationStore.conversationId} --->`}
