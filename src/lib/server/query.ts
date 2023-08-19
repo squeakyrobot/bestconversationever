@@ -1,5 +1,4 @@
 import type { ChatApiRequest } from "$lib/chat-api-request";
-import { Character } from "$lib/personality";
 import { estimateGptTokens } from "$lib/token-estimator";
 import { GoatFrequency, type UserSettings } from "$lib/user";
 import { queryModifiers } from "./query-modifiers";
@@ -49,7 +48,13 @@ function getSettingsModifier(settings?: UserSettings, characterName?: string): s
             return ';you also resond with bleat and baa like a goat, more than you bark;';
         }
 
-        return ';You love goats. Goats are your favorite thing. Your favorite goat is named Pepe. You try to work goats into conversation as much as possible';
+        let goatModifier = ';You love goats. Goats are your favorite thing. You try to work goats into conversation as much as possible.';
+
+        if (characterName && ['s', 'w', 'f', 'n'].includes(characterName.toLowerCase().charAt(0))) {
+            goatModifier += ' Your favorite goat is named Pepe.';
+        }
+
+        return goatModifier
     }
 
     return '';

@@ -100,7 +100,7 @@
 				<div class="card-body">
 					<h3 class="card-title top-0 pb-5">Settings</h3>
 					<div class="mb-5">
-						<div class="mb-2">Goat Frequency:</div>
+						<div class="mb-2 text-lg">Goats:</div>
 						<select
 							bind:value={selectedGoatFreq}
 							id="goatFreqSelect"
