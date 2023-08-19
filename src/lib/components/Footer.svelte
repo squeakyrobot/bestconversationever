@@ -19,6 +19,8 @@
 		if (!settings) {
 			settings = { goatFreq: GoatFrequency.Normal };
 		}
+
+		selectedGoatFreq = settings.goatFreq;
 	});
 
 	const saveSettings = async () => {
