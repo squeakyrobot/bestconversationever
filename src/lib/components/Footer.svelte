@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { PUBLIC_GITHUB_URL } from '$env/static/public';
-	import { updateUserSettings } from '$lib/settings';
 	import { GoatFrequency, type UserSettings } from '$lib/user';
+	import { PUBLIC_GITHUB_URL } from '$env/static/public';
 	import { onMount } from 'svelte';
+	import { updateUserSettings } from '$lib/settings';
+	import { userSession } from '$lib/stores/sessionStore';
 
 	export let disabled = false;
 	export let showVersion = false;
@@ -11,14 +11,13 @@
 	const versionInfo = `${__VERSION__}, ${__LASTMOD__}`;
 	const commitUrl = `${PUBLIC_GITHUB_URL}/commit/${__VERSION__}`;
 
-	let settings = $page.data.session.user?.settings as UserSettings;
-
 	let selectedGoatFreq = GoatFrequency.Normal;
+	let settings = $userSession.user.settings;
 
 	onMount(() => {
 		if (!settings) {
-			// $page.data.session.user.settings = { goatFreq: GoatFrequency.Normal };
 			settings = { goatFreq: GoatFrequency.Normal };
+			$userSession.user.settings = settings;
 		}
 
 		selectedGoatFreq = settings.goatFreq;
@@ -33,7 +32,13 @@
 
 		settings.goatFreq = parseInt(goatFreqSelect.value, 10);
 
-		await updateUserSettings(updatedSettings); // TODO: notify of failure
+		const result = await updateUserSettings(updatedSettings); // TODO: notify of failure
+
+		if (result) {
+			$userSession.user.settings = settings;
+		} else {
+			console.log('Could not update settings');
+		}
 
 		const settingsPanel = document.querySelector('#settingsPanel');
 		settingsPanel?.removeAttribute('open');
