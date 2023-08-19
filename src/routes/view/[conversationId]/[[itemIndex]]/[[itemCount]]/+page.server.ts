@@ -17,11 +17,11 @@ export const load = (async ({ params }) => {
 
     const userName = conversation.messages[0].name; // TODO: Fix
 
-    const pageTitle = `Chat between ${conversation.character} and ${userName}`;
+    const pageTitle = `Chat with ${conversation.character}`;
     const pageDescription = `Conversation between ${conversation.character} and ${userName}`;
 
     // TODO: have a different og image
-    const pageOgImage = `/images/characters/${conversation.character}-og.png`;
+    const pageOgImage = `/images/characters/${conversation.character}-view-og.png`;
 
     return { conversation, pageTitle, pageDescription, pageOgImage };
 }) satisfies PageServerLoad;

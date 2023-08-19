@@ -77,6 +77,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             isSystemMessage: false,
             message,
             time: new Date(),
+            sharable: false,
             responseTokens: chatCompletion.data.usage?.completion_tokens,
             totalTokens: chatCompletion.data.usage?.total_tokens,
         } as ChatApiResponse;
@@ -85,7 +86,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const convo: Conversation = createConversation(locals, apiRequest, apiResponse)
 
         // TODO: handle db errors - This simply returns false if the save fails
-        await saveConversation(convo);
+        const saved = await saveConversation(convo);
+
+        apiResponse.sharable = saved;
 
         return json(apiResponse);
     }
