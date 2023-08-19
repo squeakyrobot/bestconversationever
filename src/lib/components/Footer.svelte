@@ -17,7 +17,7 @@
 
 	onMount(() => {
 		if (!settings) {
-			$page.data.session.user.settings = { goatFreq: GoatFrequency.Normal };
+			// $page.data.session.user.settings = { goatFreq: GoatFrequency.Normal };
 			settings = { goatFreq: GoatFrequency.Normal };
 		}
 
@@ -26,8 +26,14 @@
 
 	const saveSettings = async () => {
 		const goatFreqSelect = document.querySelector('#goatFreqSelect') as HTMLSelectElement;
+
+		const updatedSettings: UserSettings = settings || {
+			goatFreq: parseInt(goatFreqSelect.value, 10)
+		};
+
 		settings.goatFreq = parseInt(goatFreqSelect.value, 10);
-		await updateUserSettings(settings); // TODO: notify of failure
+
+		await updateUserSettings(updatedSettings); // TODO: notify of failure
 
 		const settingsPanel = document.querySelector('#settingsPanel');
 		settingsPanel?.removeAttribute('open');
