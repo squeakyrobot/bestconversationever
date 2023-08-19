@@ -13,7 +13,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
         cookies.set('session-v2', packSession(session), { path: '/', expires: new Date(session.expires) });
 
-        // NOOP
 
         return json({ success: true });
 
