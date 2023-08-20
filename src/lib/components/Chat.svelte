@@ -89,7 +89,7 @@
 		<button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
 		<h3 class="font-bold text-lg">Choose someone to chat with</h3>
 		<div class="flex-wrap mt-5 text-center">
-			<CharacterList />http://127.0.0.1:3000/
+			<CharacterList />
 		</div>
 		<div class="flex justify-end bottom-0 border-t-2 border-neutral mt-2 pt-4">
 			<button class="btn btn-ghost">Close</button>
