@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GoatFrequency, type UserSettings } from '$lib/user';
+	import { SettingsQueryModifier, type UserSettings } from '$lib/user';
 	import { PUBLIC_GITHUB_URL } from '$env/static/public';
 	import { onMount } from 'svelte';
 	import { updateUserSettings } from '$lib/settings';
@@ -11,26 +11,46 @@
 	const versionInfo = `${__VERSION__}, ${__LASTMOD__}`;
 	const commitUrl = `${PUBLIC_GITHUB_URL}/commit/${__VERSION__}`;
 
-	let selectedGoatFreq = GoatFrequency.Normal;
+	let selectedGoatFreq = SettingsQueryModifier.Normal;
+	let selectedRobotFreq = SettingsQueryModifier.Normal;
+	let selectedSkateboardFreq = SettingsQueryModifier.Normal;
+	let selectedUnicycleFreq = SettingsQueryModifier.Normal;
 	let settings = $userSession.user.settings;
 
 	onMount(() => {
 		if (!settings) {
-			settings = { goatFreq: GoatFrequency.Normal };
+			settings = {
+				goatFreq: SettingsQueryModifier.Normal,
+				robotFreq: SettingsQueryModifier.Normal,
+				skateboardFreq: SettingsQueryModifier.Normal,
+				unicycleFreq: SettingsQueryModifier.Normal
+			};
+
 			$userSession.user.settings = settings;
 		}
 
 		selectedGoatFreq = settings.goatFreq;
+		selectedRobotFreq = settings.robotFreq;
+		selectedSkateboardFreq = settings.skateboardFreq;
+		selectedUnicycleFreq = settings.unicycleFreq;
 	});
 
 	const saveSettings = async () => {
 		const goatFreqSelect = document.querySelector('#goatFreqSelect') as HTMLSelectElement;
+		const robotFreqSelect = document.querySelector('#robotFreqSelect') as HTMLSelectElement;
+		const skateboardFreqSelect = document.querySelector(
+			'#skateboardFreqSelect'
+		) as HTMLSelectElement;
+		const unicycleFreqSelect = document.querySelector('#unicycleFreqSelect') as HTMLSelectElement;
 
-		const updatedSettings: UserSettings = settings || {
-			goatFreq: parseInt(goatFreqSelect.value, 10)
+		const updatedSettings: UserSettings = {
+			goatFreq: parseInt(goatFreqSelect.value, 10),
+			robotFreq: parseInt(robotFreqSelect.value, 10),
+			skateboardFreq: parseInt(skateboardFreqSelect.value, 10),
+			unicycleFreq: parseInt(unicycleFreqSelect.value, 10)
 		};
 
-		settings.goatFreq = parseInt(goatFreqSelect.value, 10);
+		settings = updatedSettings;
 
 		const result = await updateUserSettings(updatedSettings); // TODO: notify of failure
 
@@ -98,16 +118,50 @@
 				class="dropdown-content z-[1] card card-compact p-2 shadow rounded-box w-80 bg-neutral"
 			>
 				<div class="card-body">
-					<h3 class="card-title top-0 pb-5">Settings</h3>
-					<div class="mb-5">
-						<div class="mb-2 text-lg">Goats:</div>
+					<h3 class="card-title top-0 pb-1">Settings</h3>
+					<div class="">
+						<div class="pl-2 mt-2 mb-1 text-lg">Goats:</div>
 						<select
 							bind:value={selectedGoatFreq}
 							id="goatFreqSelect"
 							class="select select-bordered w-full max-w-xs"
 						>
-							<option value={GoatFrequency.Normal}>Normal</option>
-							<option value={GoatFrequency.Absurd}>Absurd</option>
+							<option value={SettingsQueryModifier.Normal}>Normal</option>
+							<option value={SettingsQueryModifier.Extra}>Extra</option>
+							<option value={SettingsQueryModifier.Absurd}>Absurd</option>
+						</select>
+
+						<div class="pl-2 mt-4 mb-1 text-lg">Robots:</div>
+						<select
+							bind:value={selectedRobotFreq}
+							id="robotFreqSelect"
+							class="select select-bordered w-full max-w-xs"
+						>
+							<option value={SettingsQueryModifier.Normal}>Normal</option>
+							<option value={SettingsQueryModifier.Extra}>Extra</option>
+							<option value={SettingsQueryModifier.Absurd}>Absurd</option>
+						</select>
+
+						<div class="pl-2 mt-4 mb-1 text-lg">Skateboards:</div>
+						<select
+							bind:value={selectedSkateboardFreq}
+							id="skateboardFreqSelect"
+							class="select select-bordered w-full max-w-xs"
+						>
+							<option value={SettingsQueryModifier.Normal}>Normal</option>
+							<option value={SettingsQueryModifier.Extra}>Extra</option>
+							<option value={SettingsQueryModifier.Absurd}>Absurd</option>
+						</select>
+
+						<div class="pl-2 mt-4 mb-1 text-lg">Unicycles:</div>
+						<select
+							bind:value={selectedUnicycleFreq}
+							id="unicycleFreqSelect"
+							class="select select-bordered w-full max-w-xs"
+						>
+							<option value={SettingsQueryModifier.Normal}>Normal</option>
+							<option value={SettingsQueryModifier.Extra}>Extra</option>
+							<option value={SettingsQueryModifier.Absurd}>Absurd</option>
 						</select>
 					</div>
 					<div class="flex justify-end bottom-0 border-t-2 border-slate-500 mt-2">

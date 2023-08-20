@@ -19,7 +19,10 @@
 	});
 </script>
 
-<div class="flex flex-col w-full lg:w-3/4 border-opacity-50 p-4 h-full" in:fade={{ duration: 400 }}>
+<div
+	class="flex flex-col w-full lg:w-3/4 max-w-6xl border-opacity-50 p-4 h-full"
+	in:fade={{ duration: 400 }}
+>
 	<div class="flex-grow">
 		<div class="hero mt-20">
 			<div class="hero-content text-center">

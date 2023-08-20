@@ -1,3 +1,4 @@
+import { SESSION_COOKIE_NAME } from "$env/static/private";
 import { getSession, packSession } from "$lib/session";
 import type { Handle } from "@sveltejs/kit";
 
@@ -21,11 +22,11 @@ export const handle: Handle = async ({ event, resolve }) => {
     // Session Management
     const { cookies, locals } = event;
 
-    const sessionData = cookies.get('session-v2');
+    const sessionData = cookies.get(SESSION_COOKIE_NAME);
 
     locals.session = getSession(sessionData);
 
-    cookies.set('session-v2', packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
+    cookies.set(SESSION_COOKIE_NAME, packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
     const response = await resolve(event);
 
