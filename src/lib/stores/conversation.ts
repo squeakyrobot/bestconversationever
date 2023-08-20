@@ -7,6 +7,7 @@ import { Personality } from "$lib/personality";
 import { getRecaptchaToken } from "$lib/recaptcha-client";
 import { nanoid } from 'nanoid'
 import { writable, get, type Writable, type Unsubscriber } from "svelte/store";
+import { estimateGptTokens } from "$lib/token-estimator";
 
 const MAX_CLIENT_MESSAGES = PUBLIC_MAX_CLIENT_MESSAGES ? parseInt(PUBLIC_MAX_CLIENT_MESSAGES, 10) : 15;
 
@@ -112,8 +113,12 @@ export class ConversationStore {
             };
         });
 
-        // TODO: Add estimated token count
-        sendChatEvent(ChatEvents.chatSent, { character: apiRequest.personality.name });
+        // This is an estimate based on the MAX_CLIENT_MESSAGES setting, the
+        // actual ammount will be based on CHAT_CONTEXT_MESSAGE_COUNT and
+        // MAX_REQUEST_TOKENS setting
+        const estimatedTokens = estimateGptTokens([text, ...previousMessages.map((m) => m.text || '')]);
+
+        sendChatEvent(ChatEvents.chatSent, { character: apiRequest.personality.name, gptTokens: estimatedTokens });
 
         const apiCall = await fetch('/api/chat', {
             method: 'POST',
