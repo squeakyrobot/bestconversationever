@@ -66,6 +66,9 @@
 					</a>
 					- A great tool for whipping up some custom avatars!
 				</li>
+				<li>
+					<strong>Shaun</strong> - Asked for more goats
+				</li>
 			</ul>
 
 			<!-- <h3 class="text-2xl lg:text-3xl font-bold mt-5">Primary Technologies Used</h3>
