@@ -44,6 +44,8 @@
 
 		shareUrl = `${location.origin}/view/${conversationStore.conversationId}`;
 
+		console.log(conversationStore.sharable);
+
 		if (!navigator.clipboard) {
 			disableLinkButton = true;
 		}
@@ -179,7 +181,10 @@
 					</label>
 					<ul class="dropdown-content z-[1] menu p-2 shadow bg-neutral rounded-box w-52">
 						<li>
-							<button on:click={shareConvoClick}>
+							<button
+								on:click={shareConvoClick}
+								class={$conversationStore.shareable !== true ? 'btn-disabled text-base-100' : ''}
+							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									height="1em"

@@ -100,6 +100,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             conversationId: apiRequest.conversationId || 'NO_ID',
             personality: apiRequest.personality || (new Personality({ character: Character.Elvis })).export(),
             isSystemMessage: true,
+            sharable: false,
             message: message || 'An error occurred',
             time: new Date(),
         } as ChatApiResponse);

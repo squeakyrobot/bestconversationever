@@ -24,6 +24,7 @@ export interface Conversation {
     userId: string;
     character: string;
     conversationId: string;
+    shareable: boolean;
     messages: ConversationItem[];
 }
 
@@ -32,18 +33,20 @@ export class ConversationStore {
     public conversationId: string;
     private personality: Personality;
     public character: string;
+    public shareable: boolean;
     public subscribe: Unsubscriber;
 
     constructor(private user: User, personality?: Personality) {
         this.personality = personality || new Personality();
         this.conversationId = nanoid(10);
-
+        this.shareable = false;
         this.character = this.personality.export().character;
 
         this.store = writable<Conversation>({
             userId: this.user.id,
             character: this.character,
             conversationId: this.conversationId,
+            shareable: this.shareable,
             messages: []
         });
 
@@ -67,6 +70,7 @@ export class ConversationStore {
                 userId: this.user.id,
                 character: this.character,
                 conversationId: this.conversationId,
+                shareable: this.shareable,
                 messages: [
                     ...conversation.messages,
                     userMsg,
@@ -107,6 +111,7 @@ export class ConversationStore {
                 userId: this.user.id,
                 character: this.character,
                 conversationId: this.conversationId,
+                shareable: this.shareable,
                 messages: [
                     ...conversation.messages,
                     responseMsg]
@@ -132,12 +137,15 @@ export class ConversationStore {
         responseMsg.text = apiResponse.message;
         responseMsg.waitingForResponse = false;
 
+        this.shareable = apiResponse.sharable;
+
         this.store.update((conversation: Conversation) => {
             conversation.messages.pop();
             return {
                 userId: this.user.id,
                 character: this.character,
                 conversationId: this.conversationId,
+                shareable: this.shareable,
                 messages: [...conversation.messages, responseMsg]
             };
         });
