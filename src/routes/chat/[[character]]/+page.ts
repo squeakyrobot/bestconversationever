@@ -1,10 +1,15 @@
 import type { PageLoad } from "./$types";
-import { Character } from "$lib/personality";
+import { Character, characterExists } from "$lib/personality";
 import { nameFormat } from "$lib/util";
+import { assert } from "$lib/assert";
+import { error } from '@sveltejs/kit';
 
 export const load = (({ params }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (params.character && (Character as any)[nameFormat(params.character)]) {
+    if (params.character) {
+
+        assert(characterExists(params.character),
+            error(404, { message: `Character ${params.character} does not exist` }));
+
         const name = nameFormat(params.character);
 
         return {

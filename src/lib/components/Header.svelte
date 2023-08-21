@@ -1,13 +1,20 @@
 <script lang="ts">
 	export let title = 'Best Conversation Ever';
-	export let titleLink = '/';
+	export let titleLink: string | null = '/';
 </script>
 
 <div class="flex justify-between top-0 border-b-2 border-neutral mb-10 pb-4">
-	<a href={titleLink} class="items-center inline-flex text-xl" title="BestConversationEver.com">
-		<img src="/images/bce-logo.svg" alt="BCE Logo" class="w-12 mr-3" />
-		<div class="pl-2">{title}</div>
-	</a>
+	{#if titleLink}
+		<a href={titleLink} class="items-center inline-flex text-xl" title="BestConversationEver.com">
+			<img src="/images/bce-logo.svg" alt="BCE Logo" class="w-12 mr-3" />
+			<div class="pl-2">{title}</div>
+		</a>
+	{:else}
+		<div class="items-center inline-flex text-xl">
+			<img src="/images/bce-logo.svg" alt="BCE Logo" class="w-12 mr-3" />
+			<div class="pl-2">{title}</div>
+		</div>
+	{/if}
 
 	<div>
 		<!-- TODO: Add Menu-->

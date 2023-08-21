@@ -17,7 +17,7 @@ export const load = (async ({ params }) => {
 
     const userName = conversation.messages[0].name; // TODO: Fix
 
-    const pageTitle = `Chat with ${conversation.character}`;
+    const pageTitle = `View my chat with ${conversation.character}`;
     const pageDescription = `Conversation between ${conversation.character} and ${userName}`;
 
     // TODO: have a different og image
