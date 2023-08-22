@@ -5,6 +5,7 @@ import {
     MAX_RESPONSE_TOKENS,
     OPENAI_API_KEY,
     RECAPTCHA_ENABLED,
+    USE_DB,
 } from '$env/static/private';
 import type { ChatApiRequest } from '$lib/chat-api-request';
 import type { ChatApiResponse } from '$lib/chat-api-response';
@@ -23,8 +24,8 @@ import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 
-    const maxChatTokens = MAX_CHAT_MESSAGE_TOKENS ? parseInt(MAX_CHAT_MESSAGE_TOKENS, 10) : 500;
-    const maxResponseTokens = MAX_RESPONSE_TOKENS ? parseInt(MAX_RESPONSE_TOKENS, 10) : 300;
+    const maxChatTokens = parseInt(MAX_CHAT_MESSAGE_TOKENS || '500', 10);
+    const maxResponseTokens = parseInt(MAX_RESPONSE_TOKENS || '300', 10);
 
     // Get request data
     const apiRequest = await request.json() as ChatApiRequest;
@@ -86,7 +87,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const convo: Conversation = createConversation(locals, apiRequest, apiResponse)
 
         // TODO: handle db errors - This simply returns false if the save fails
-        const saved = await (new RedisClient()).saveConversation(convo);
+        const saved = (USE_DB !== '0') ? await (new RedisClient()).saveConversation(convo) : false;
+
 
         apiResponse.sharable = saved;
 

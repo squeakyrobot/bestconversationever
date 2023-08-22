@@ -1,12 +1,12 @@
 <script lang="ts">
+	import CharacterList from '$lib/components/CharacterList.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import type { PageData } from './$types';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { applyAction, enhance } from '$app/forms';
 	import { fade } from 'svelte/transition';
 	import { getRecaptchaToken, handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { onMount } from 'svelte';
-	import CharacterList from '$lib/components/CharacterList.svelte';
-	import { applyAction, enhance } from '$app/forms';
-	import type { PageData } from './$types';
-	import type { SubmitFunction } from '@sveltejs/kit';
 
 	export let form: FormData;
 	export let data: PageData;
@@ -17,13 +17,7 @@
 		handlePageRecaptcha(await recaptchaVerify('page_view/about'));
 	});
 
-	const contactSubmit: SubmitFunction = async ({
-		formElement,
-		formData,
-		action,
-		cancel,
-		submitter
-	}) => {
+	const contactSubmit: SubmitFunction = async ({ formData }) => {
 		formLoading = true;
 		formData.set('token', await getRecaptchaToken('contact/submit'));
 
