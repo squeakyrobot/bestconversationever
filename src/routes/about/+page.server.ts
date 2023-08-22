@@ -1,15 +1,15 @@
-import { assert } from "$lib/assert";
 import type { Actions } from "@sveltejs/kit";
-import { getErrorMessage } from "$lib/util";
 import type { PageServerLoad } from "./$types";
+import { CONTACT_SENT_COOKIE_NAME, RESEND_API_KEY } from "$env/static/private";
 import { Resend } from 'resend';
-import { RESEND_API_KEY } from "$env/static/private";
-import { verifyRecaptcha } from "$lib/server/recaptcha-verify";
+import { assert } from "$lib/assert";
+import { getErrorMessage } from "$lib/util";
 import { scoreThresholds } from "$lib/recaptcha-client";
+import { verifyRecaptcha } from "$lib/server/recaptcha-verify";
 
 export const load = (({ cookies }) => {
 
-    const formSubmitted = !!cookies.get('BCEM');
+    const formSubmitted = !!cookies.get(CONTACT_SENT_COOKIE_NAME);
 
     return {
         formSubmitted,
@@ -48,7 +48,7 @@ export const actions = {
             });
 
 
-            cookies.set('BCEM', "1", { path: '/', expires: new Date(Date.now() + 8.64e+7) });
+            cookies.set(CONTACT_SENT_COOKIE_NAME, "1", { path: '/', expires: new Date(Date.now() + 8.64e+7) });
 
             return { success: true }
         }
