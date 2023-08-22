@@ -18,5 +18,6 @@
 <div class="grid place-items-center h-[calc(100dvh)]">
 	<slot />
 </div>
+
 <!-- TEMP -->
 {@html `<!-- ${JSON.stringify($page.data.session, null, 4)} -->`}

@@ -4,6 +4,7 @@ import { PUBLIC_RECAPTCHA_SITE_KEY } from "$env/static/public";
 export const scoreThresholds = {
     homePage: 0.5,
     chat: 0.5,
+    contactForm: 0.5,
 } as const;
 
 export type ErrorCodes = 'missing-input-secret' | 'invalid-input-secret' | 'missing-input-response' |
