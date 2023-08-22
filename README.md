@@ -22,6 +22,7 @@ This applicatioin is my first time using all the technologies listed except Goog
 * [SvelteKit](https://kit.svelte.dev/)
 * [Tailwind CSS](https://tailwindcss.com/)
 * [daisyUI](https://daisyui.com/)
+* [Redis](https://redis.com/)
 * 3rd Pary Services
     * [OpenAI](https://platform.openai.com/docs/api-reference) - For the chat bots
     * [Upstash](https://upstash.com/) - Managed Redis for saving conversations
