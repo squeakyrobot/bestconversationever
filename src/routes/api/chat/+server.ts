@@ -5,6 +5,7 @@ import {
     MAX_RESPONSE_TOKENS,
     OPENAI_API_KEY,
     RECAPTCHA_ENABLED,
+    USE_DB,
 } from '$env/static/private';
 import type { ChatApiRequest } from '$lib/chat-api-request';
 import type { ChatApiResponse } from '$lib/chat-api-response';
@@ -12,19 +13,19 @@ import type { Conversation, ConversationItem } from '$lib/stores/conversation';
 import type { RequestHandler } from './$types';
 import { Character, Personality } from '$lib/personality';
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
+import { RedisClient } from '$lib/server/redis';
 import { assert } from '$lib/assert';
 import { buildChatQuery, type QueryResult, } from '$lib/server/query';
 import { estimateGptTokens } from '$lib/token-estimator';
 import { getErrorMessage } from '$lib/util';
 import { json } from '@sveltejs/kit';
-import { saveConversation } from '$lib/server/redis';
 import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 
-    const maxChatTokens = MAX_CHAT_MESSAGE_TOKENS ? parseInt(MAX_CHAT_MESSAGE_TOKENS, 10) : 500;
-    const maxResponseTokens = MAX_RESPONSE_TOKENS ? parseInt(MAX_RESPONSE_TOKENS, 10) : 300;
+    const maxChatTokens = parseInt(MAX_CHAT_MESSAGE_TOKENS || '500', 10);
+    const maxResponseTokens = parseInt(MAX_RESPONSE_TOKENS || '300', 10);
 
     // Get request data
     const apiRequest = await request.json() as ChatApiRequest;
@@ -86,7 +87,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const convo: Conversation = createConversation(locals, apiRequest, apiResponse)
 
         // TODO: handle db errors - This simply returns false if the save fails
-        const saved = await saveConversation(convo);
+        const saved = (USE_DB !== '0') ? await (new RedisClient()).saveConversation(convo) : false;
 
         apiResponse.sharable = saved;
 
@@ -119,12 +120,14 @@ function createChatGptMessages(query: QueryResult, apiRequest: ChatApiRequest) {
     if (apiRequest.previousMessages) {
         const prevMessages = apiRequest.previousMessages;
 
+        // Remove any messages as needed so we don't exceed the CHAT_CONTEXT_MESSAGE_COUNT
         if (prevMessages.length > contextMessageCount) {
             prevMessages.splice(0, prevMessages.length - contextMessageCount);
         }
 
         let prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
 
+        // If we are over the MAX_REQUEST_TOKENS limit, remove messages until we are under
         while (prevMsgTokens + query.promptTokens > maxRequestTokens + query.systemTokens) {
             prevMessages.splice(0, 1);
             prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
@@ -145,8 +148,10 @@ function createChatGptMessages(query: QueryResult, apiRequest: ChatApiRequest) {
 function createConversation(locals: App.Locals, apiRequest: ChatApiRequest, apiResponse: ChatApiResponse): Conversation {
     return {
         userId: locals.session.user.id,
+        userName: apiRequest.userName,
         character: apiRequest.personality.name,
         conversationId: apiRequest.conversationId,
+        shareable: true,
         messages: [
             {
                 requestId: apiRequest.id,

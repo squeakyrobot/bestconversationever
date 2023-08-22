@@ -13,7 +13,11 @@ declare global {
 		interface Locals {
 			session: Session,
 		}
-		// interface PageData {}
+		interface PageData {
+			session: Session,
+			pageTitle: string,
+			pageDescription: string,
+		}
 		// interface Platform {}
 	}
 }
@@ -22,5 +26,6 @@ declare global {
 declare const __VERSION__: string
 // Date of last commit
 declare const __LASTMOD__: string
+
 
 export { };

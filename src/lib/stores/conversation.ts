@@ -1,6 +1,6 @@
 import type { ChatApiRequest } from "$lib/chat-api-request";
 import type { ChatApiResponse } from "$lib/chat-api-response";
-import type { User } from "$lib/session";
+import type { User } from "$lib/user";
 import { ChatEvents, sendChatEvent } from "$lib/analytics";
 import { PUBLIC_MAX_CLIENT_MESSAGES } from "$env/static/public";
 import { Personality } from "$lib/personality";
@@ -9,9 +9,12 @@ import { nanoid } from 'nanoid'
 import { writable, get, type Writable, type Unsubscriber } from "svelte/store";
 import { estimateGptTokens } from "$lib/token-estimator";
 
+// TODO: This whole thing could probably use a rewrite since I had no idea 
+// what I was doing when I started it and have benn just adding crap since
+
 const MAX_CLIENT_MESSAGES = PUBLIC_MAX_CLIENT_MESSAGES ? parseInt(PUBLIC_MAX_CLIENT_MESSAGES, 10) : 15;
 
-export interface ConversationItem {
+export type ConversationItem = {
     requestId: string;
     role: 'user' | 'assistant';
     name: string;
@@ -20,8 +23,9 @@ export interface ConversationItem {
     waitingForResponse: boolean;
 }
 
-export interface Conversation {
+export type Conversation = {
     userId: string;
+    userName: string;
     character: string;
     conversationId: string;
     shareable: boolean;
@@ -44,6 +48,7 @@ export class ConversationStore {
 
         this.store = writable<Conversation>({
             userId: this.user.id,
+            userName: this.user.name,
             character: this.character,
             conversationId: this.conversationId,
             shareable: this.shareable,
@@ -68,6 +73,7 @@ export class ConversationStore {
         this.store.update((conversation: Conversation) => {
             return {
                 userId: this.user.id,
+                userName: this.user.name,
                 character: this.character,
                 conversationId: this.conversationId,
                 shareable: this.shareable,
@@ -109,6 +115,7 @@ export class ConversationStore {
         this.store.update((conversation: Conversation) => {
             return {
                 userId: this.user.id,
+                userName: this.user.name,
                 character: this.character,
                 conversationId: this.conversationId,
                 shareable: this.shareable,
@@ -143,6 +150,7 @@ export class ConversationStore {
             conversation.messages.pop();
             return {
                 userId: this.user.id,
+                userName: this.user.name,
                 character: this.character,
                 conversationId: this.conversationId,
                 shareable: this.shareable,

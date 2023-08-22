@@ -58,6 +58,12 @@ export function getSession(sessionData?: string): Session {
     }
 }
 
+/**
+ * This packing is probably overkill and premature optimization but its here 
+ * and makes the cookie a little smaller 
+ * @param session 
+ * @returns 
+ */
 export function packSession(session: Session): string {
     const minified = {
         v: session.version,

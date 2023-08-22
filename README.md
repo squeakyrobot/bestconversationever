@@ -1,38 +1,34 @@
-# create-svelte
+# Best Conversation Ever
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+TODO: Write a real readme
 
-## Creating a project
+1. Copy `..env.example` to `.env`
+2. Add correct values
+3. Run `npm run dev`
 
-If you're seeing this, you've probably already done this step. Congrats!
+If you want to skip the Redis setup you can set `USE_DB="0"` But then you cannot share links 
+and no data will be saved.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+If you want to skip the recaptcha setup you can set `RECAPTCHA_ENABLED="0"` which is probably 
+fine for running locally or in a site that no one knows about like this one. But you do run 
+a higher risk of bots using up you OpenAI tokens.
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+If you want to skip setting up [resend](https://resend.com/) then just don't set it up. The 
+contact form will fail when submitting.
 
-## Developing
+## Tech Stack
+This applicatioin is my first time using all the technologies listed except Google analytics and reCAPTCHA.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+* [SvelteKit](https://kit.svelte.dev/)
+* [Tailwind CSS](https://tailwindcss.com/)
+* [daisyUI](https://daisyui.com/)
+* [Redis](https://redis.com/)
+* 3rd Pary Services
+    * [OpenAI](https://platform.openai.com/docs/api-reference) - For the chat bots
+    * [Upstash](https://upstash.com/) - Managed Redis for saving conversations
+    * [reCAPTCHA v3](https://www.google.com/recaptcha/about/) - For bot protection
+    * [Google Analytics](https://marketingplatform.google.com/about/analytics/) - For site analytics
+    * [Resend](https://resend.com/) - For sending contact emails
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Deployment
+[BestConversationEver.com](https://bestconversationever.com/) is deployed to [Vercel](https://vercel.com/) and I have been pleased with the experience so far.

@@ -1,12 +1,12 @@
 <script lang="ts">
+	import CharacterList from '$lib/components/CharacterList.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import type { PageData } from './$types';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { applyAction, enhance } from '$app/forms';
 	import { fade } from 'svelte/transition';
 	import { getRecaptchaToken, handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { onMount } from 'svelte';
-	import CharacterList from '$lib/components/CharacterList.svelte';
-	import { applyAction, enhance } from '$app/forms';
-	import type { PageData } from './$types';
-	import type { SubmitFunction } from '@sveltejs/kit';
 
 	export let form: FormData;
 	export let data: PageData;
@@ -17,13 +17,7 @@
 		handlePageRecaptcha(await recaptchaVerify('page_view/about'));
 	});
 
-	const contactSubmit: SubmitFunction = async ({
-		formElement,
-		formData,
-		action,
-		cancel,
-		submitter
-	}) => {
+	const contactSubmit: SubmitFunction = async ({ formData }) => {
 		formLoading = true;
 		formData.set('token', await getRecaptchaToken('contact/submit'));
 
@@ -59,10 +53,6 @@
 		<h2 class="text-3xl lg:text-4xl font-bold">Why?</h2>
 		<p class="py-6 text-lg">
 			Why not? 🤷️<br />
-			<!-- Actually, this site started as a small sample app because I wanted to try out SvelteKit. I also
-			wanted to play with OpenAI’s ChatGPT API so I set off to make a simple chat app just like Chat
-			GPT. Initially it was going to be a quick throw away experiment to try out a few new things. Next
-			thing I know, I have been nerding out way longer than planned and this is what came out. It happens. -->
 		</p>
 		<h2 class="text-3xl lg:text-4xl font-bold pt-10">About the Characters</h2>
 		<p class="py-6 text-lg">
@@ -94,31 +84,6 @@
 					<strong>Shaun</strong> - Asked for more goats
 				</li>
 			</ul>
-
-			<!-- <h3 class="text-2xl lg:text-3xl font-bold mt-5">Primary Technologies Used</h3>
-			<div class="py-6 ml-10 text-lg">
-				<ul class="list-disc">
-					<li>
-						<a class="link link-primary" href="https://kit.svelte.dev/" target="_blank">SvelteKit</a
-						>
-					</li>
-					<li>
-						<a
-							class="link link-primary"
-							href="https://platform.openai.com/docs/guides/gpt"
-							target="_blank">OpenAI GPT</a
-						>
-					</li>
-					<li>
-						<a class="link link-primary" href="https://tailwindcss.com/" target="_blank"
-							>Tailwind CSS</a
-						>
-					</li>
-					<li>
-						<a class="link link-primary" href="https://daisyui.com/" target="_blank">daisyUI</a>
-					</li>
-				</ul>
-			</div> -->
 		</div>
 
 		<h2 class="text-3xl lg:text-4xl font-bold pt-10">Contact</h2>
