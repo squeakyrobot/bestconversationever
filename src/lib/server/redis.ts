@@ -4,7 +4,7 @@ import { createClient, type RedisClientType } from 'redis';
 import { getEnvironmentPrefix } from "./environment";
 
 
-export interface SetIndex {
+export interface SortedSetIndex {
     key: string;
     score: number;
     value: string;
@@ -12,7 +12,7 @@ export interface SetIndex {
 
 export interface ChatKey {
     key: string;
-    indexes: SetIndex[];
+    indexes: SortedSetIndex[];
 }
 
 export class RedisClient {
@@ -27,13 +27,14 @@ export class RedisClient {
         const prefix = getEnvironmentPrefix();
         const time = Date.now();
         const convoKey = `${prefix}:convo:${convo.conversationId}`;
+        const idxValue = `${convoKey}|${convo.character}|${convo.userName}`;
 
         return {
             key: convoKey,
             indexes: [
                 // { key: `${prefix}:idx_convo_time`, score: time, member: convoKey },
-                { key: `${prefix}:idx_convo_user_time:${convo.userId}`, score: time, value: convoKey },
-                { key: `${prefix}:idx_convo_char_time:${convo.character.toLowerCase()}`, score: time, value: convoKey },
+                { key: `${prefix}:idx_convo_user_time:${convo.userId}`, score: time, value: idxValue },
+                { key: `${prefix}:idx_convo_char_time:${convo.character.toLowerCase()}`, score: time, value: idxValue },
             ]
         }
     }

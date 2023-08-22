@@ -147,6 +147,7 @@ function createChatGptMessages(query: QueryResult, apiRequest: ChatApiRequest) {
 function createConversation(locals: App.Locals, apiRequest: ChatApiRequest, apiResponse: ChatApiResponse): Conversation {
     return {
         userId: locals.session.user.id,
+        userName: apiRequest.userName,
         character: apiRequest.personality.name,
         conversationId: apiRequest.conversationId,
         shareable: true,

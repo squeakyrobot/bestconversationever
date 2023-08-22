@@ -10,10 +10,9 @@
 
 	export let characterName = '';
 	export let initialChat = '';
+	export let onClose: () => void;
 
 	const user: User = $page.data.session.user;
-
-	export let onClose: () => void;
 
 	let chatBox: HTMLInputElement;
 

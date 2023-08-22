@@ -22,6 +22,7 @@ export type ConversationItem = {
 
 export type Conversation = {
     userId: string;
+    userName: string;
     character: string;
     conversationId: string;
     shareable: boolean;
@@ -44,6 +45,7 @@ export class ConversationStore {
 
         this.store = writable<Conversation>({
             userId: this.user.id,
+            userName: this.user.name,
             character: this.character,
             conversationId: this.conversationId,
             shareable: this.shareable,
@@ -68,6 +70,7 @@ export class ConversationStore {
         this.store.update((conversation: Conversation) => {
             return {
                 userId: this.user.id,
+                userName: this.user.name,
                 character: this.character,
                 conversationId: this.conversationId,
                 shareable: this.shareable,
@@ -109,6 +112,7 @@ export class ConversationStore {
         this.store.update((conversation: Conversation) => {
             return {
                 userId: this.user.id,
+                userName: this.user.name,
                 character: this.character,
                 conversationId: this.conversationId,
                 shareable: this.shareable,
@@ -143,6 +147,7 @@ export class ConversationStore {
             conversation.messages.pop();
             return {
                 userId: this.user.id,
+                userName: this.user.name,
                 character: this.character,
                 conversationId: this.conversationId,
                 shareable: this.shareable,

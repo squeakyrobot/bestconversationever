@@ -8,7 +8,6 @@ export interface ChatApiRequest {
     time: Date;
     userId: string;
     userName: string;
-    // sessionId: string;
     personality: PersonalityOptions;
     previousMessages?: ConversationItem[];
     recaptchaToken?: string;
