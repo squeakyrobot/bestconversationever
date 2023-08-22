@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import HeadMeta from '$lib/components/HeadMeta.svelte';
-	import { PUBLIC_RECAPTCHA_SITE_KEY, PUBLIC_ANALYTICS_ID } from '$env/static/public';
+	import { PUBLIC_RECAPTCHA_SITE_KEY } from '$env/static/public';
 	import { page } from '$app/stores';
 	import { userSession } from '$lib/stores/sessionStore';
 
@@ -9,16 +9,6 @@
 </script>
 
 <svelte:head>
-	<script async src="https://www.googletagmanager.com/gtag/js?id={PUBLIC_ANALYTICS_ID}"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag() {
-			dataLayer.push(arguments);
-		}
-		gtag('js', new Date());
-
-		gtag('config', PUBLIC_ANALYTICS_ID);
-	</script>
 	<script
 		src="https://www.google.com/recaptcha/api.js?render={PUBLIC_RECAPTCHA_SITE_KEY}&trustedtypes=true"
 	></script>
