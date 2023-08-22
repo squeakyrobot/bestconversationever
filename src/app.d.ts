@@ -5,7 +5,11 @@ import type { Session } from "$lib/session";
 // for information about these interfaces
 declare global {
 	namespace App {
-		// interface Error {}
+		interface Error {
+			code?: string;
+			id?: string;
+			message: string;
+		}
 		interface Locals {
 			session: Session,
 		}

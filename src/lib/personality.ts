@@ -1,4 +1,4 @@
-import { getEnumKey, randomEnum } from "./util";
+import { getEnumKey, nameFormat, randomEnum } from "./util";
 
 export enum Character {
     Brody = 'fitness enthusiast; you are named Brody;',
@@ -154,4 +154,8 @@ export class Personality {
 
         this.traitLock |= traits;
     }
+}
+
+export function characterExists(character: string): boolean {
+    return Object.keys(Character).includes(nameFormat(character));
 }
