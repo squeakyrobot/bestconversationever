@@ -44,8 +44,6 @@
 
 		shareUrl = `${location.origin}/view/${conversationStore.conversationId}`;
 
-		console.log(conversationStore.sharable);
-
 		if (!navigator.clipboard) {
 			disableLinkButton = true;
 		}

@@ -1,6 +1,6 @@
 import type { ChatApiRequest } from "$lib/chat-api-request";
 import type { ChatApiResponse } from "$lib/chat-api-response";
-import type { User } from "$lib/session";
+import type { User } from "$lib/user";
 import { ChatEvents, sendChatEvent } from "$lib/analytics";
 import { PUBLIC_MAX_CLIENT_MESSAGES } from "$env/static/public";
 import { Personality } from "$lib/personality";
@@ -11,7 +11,7 @@ import { estimateGptTokens } from "$lib/token-estimator";
 
 const MAX_CLIENT_MESSAGES = PUBLIC_MAX_CLIENT_MESSAGES ? parseInt(PUBLIC_MAX_CLIENT_MESSAGES, 10) : 15;
 
-export interface ConversationItem {
+export type ConversationItem = {
     requestId: string;
     role: 'user' | 'assistant';
     name: string;
@@ -20,7 +20,7 @@ export interface ConversationItem {
     waitingForResponse: boolean;
 }
 
-export interface Conversation {
+export type Conversation = {
     userId: string;
     character: string;
     conversationId: string;

@@ -5,7 +5,7 @@ export enum SettingsQueryModifier {
     Absurd = 2,
 }
 
-export interface UserSettings {
+export type UserSettings = {
     goatFreq: SettingsQueryModifier;
     robotFreq: SettingsQueryModifier;
     skateboardFreq: SettingsQueryModifier;
@@ -17,7 +17,7 @@ export enum UserType {
     Authenticated = 2,
 }
 
-export interface User {
+export type User = {
     type: UserType;
     name: string;
     id: string;

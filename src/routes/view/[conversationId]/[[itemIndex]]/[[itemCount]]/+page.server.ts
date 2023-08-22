@@ -1,13 +1,10 @@
-import { kv } from '@vercel/kv';
 import type { PageServerLoad } from './$types';
-import type { Conversation } from '$lib/stores/conversation';
 import { error } from '@sveltejs/kit';
-import { getEnvironmentPrefix } from '$lib/server/environment';
+import { RedisClient } from '$lib/server/redis';
 
 export const load = (async ({ params }) => {
 
-    const convoKey = `${getEnvironmentPrefix()}:convo:${params.conversationId}`;
-    const conversation = await kv.json.get(convoKey) as Conversation;
+    const conversation = await (new RedisClient()).getConversation(params.conversationId);
 
     if (!conversation) {
         throw error(404, 'Conversation not found');

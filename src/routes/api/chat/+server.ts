@@ -17,7 +17,7 @@ import { buildChatQuery, type QueryResult, } from '$lib/server/query';
 import { estimateGptTokens } from '$lib/token-estimator';
 import { getErrorMessage } from '$lib/util';
 import { json } from '@sveltejs/kit';
-import { saveConversation } from '$lib/server/redis';
+import { RedisClient } from '$lib/server/redis';
 import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 
@@ -86,7 +86,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const convo: Conversation = createConversation(locals, apiRequest, apiResponse)
 
         // TODO: handle db errors - This simply returns false if the save fails
-        const saved = await saveConversation(convo);
+        const saved = await (new RedisClient()).saveConversation(convo);
 
         apiResponse.sharable = saved;
 
@@ -147,6 +147,7 @@ function createConversation(locals: App.Locals, apiRequest: ChatApiRequest, apiR
         userId: locals.session.user.id,
         character: apiRequest.personality.name,
         conversationId: apiRequest.conversationId,
+        shareable: true,
         messages: [
             {
                 requestId: apiRequest.id,
