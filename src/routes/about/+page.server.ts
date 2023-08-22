@@ -1,6 +1,6 @@
 import type { Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { CONTACT_SENT_COOKIE_NAME, RESEND_API_KEY } from "$env/static/private";
+import { CONTACT_EMAIL, CONTACT_SENT_COOKIE_NAME, RESEND_API_KEY } from "$env/static/private";
 import { Resend } from 'resend';
 import { assert } from "$lib/assert";
 import { getErrorMessage } from "$lib/util";
@@ -41,9 +41,9 @@ export const actions = {
             const resend = new Resend(RESEND_API_KEY);
 
             await resend.emails.send({
-                from: 'bce-info@squeakyrobot.com',
-                to: 'bce-info@squeakyrobot.com',
-                subject: `BCE CONTACT FORM: ${subject.toString()}`,
+                from: CONTACT_EMAIL,
+                to: CONTACT_EMAIL,
+                subject: `CONTACT FORM: ${subject.toString()}`,
                 text: `From: ${email}\n\n${message.toString()}`,
             });
 

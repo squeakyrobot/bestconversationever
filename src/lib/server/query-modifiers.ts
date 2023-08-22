@@ -1,13 +1,17 @@
 import { Character } from "$lib/personality";
-import { estimateGptTokens } from "$lib/token-estimator";
 import { getEnumKey } from "$lib/util";
 
+/**
+ * When a chat is requested the system looks for the `search `term and
+ * if found it will add the `systemModifier` to the system prompt.
+ */
 interface QueryModifier {
     search: string;
     systemModifier: string;
 }
 
 
+// THis makes so the cahracters are aware of each other if they are mentioned by name
 const characterModifiers: QueryModifier[] = Object.values(Character).map((character) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const characterName = getEnumKey(Character, character)!.toLowerCase();
@@ -16,7 +20,7 @@ const characterModifiers: QueryModifier[] = Object.values(Character).map((charac
     return { search: ` ${characterName}`, systemModifier };
 });
 
-
+// Add extrat characters
 characterModifiers.push(
     {
         search: ' bela',
@@ -30,10 +34,10 @@ characterModifiers.push(
         search: ' bo',
         systemModifier: ';you know Bo who is a sweet boy, who is from La Mesa, CA, he plays saxaphone and likes video games. He plays roblox a lot but also likes five nights at freddy\'s (FNAF) and cuphead. BO is Ryan\'s son.;',
     },
-    { search: ' ryan', systemModifier: ';you know Ryan who is the creator of this site, bestconversationever.com. He is the father of Bo, Bela, and Seamus and Husband to Marissa. His dog is Elvis. He like robots, skateboards and unicycles.;' },
-    // { search: 'aidan', systemModifier: ';you know Bela who is a super smart you lady, who is from La Mesa, CA that you respect a lot;' },
-    // { search: 'damon', systemModifier: ';you know Bela who is a super smart you lady, who is from La Mesa, CA that you respect a lot;' },
-    // { search: 'seamus', systemModifier: ';you know Bela who is a super smart you lady, who is from La Mesa, CA that you respect a lot;' },
+    {
+        search: ' ryan',
+        systemModifier: ';you know Ryan who is the creator of this site, bestconversationever.com. He is the father of Bo, Bela, and Seamus and Husband to Marissa. His dog is Elvis. He like robots, skateboards and unicycles.; You think he\'s lame.'
+    },
 
 );
 

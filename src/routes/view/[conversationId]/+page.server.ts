@@ -16,8 +16,6 @@ export const load = (async ({ params }) => {
 
     const pageTitle = `View my chat with ${conversation.character}`;
     const pageDescription = `Conversation between ${conversation.character} and ${userName}`;
-
-    // TODO: have a different og image
     const pageOgImage = `/images/characters/${conversation.character}-view-og.png`;
 
     return { conversation, pageTitle, pageDescription, pageOgImage };

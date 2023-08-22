@@ -11,7 +11,7 @@ export interface QueryResult {
 }
 
 /**
- * Creates the ChatGPT promts from the api request
+ * Creates the ChatGPT promts from the api request and user settings
  * 
  * @param request 
  * @returns 
@@ -55,7 +55,7 @@ function getSettingsModifier(settings?: UserSettings, characterName?: string): s
                 modifier += ';you also resond with bleats and baa like a goat;';
                 break;
             case SettingsQueryModifier.Absurd:
-                modifier += ';you mostly respond with bleats and baa like a goat;'
+                modifier += ';you always respond with bleats and baa like a goat;'
                 break;
         }
 
@@ -64,7 +64,7 @@ function getSettingsModifier(settings?: UserSettings, characterName?: string): s
                 modifier += ';you also resond with beeps and boops like a robot;';
                 break;
             case SettingsQueryModifier.Absurd:
-                modifier += ';you mostly resond with beeps and boops like a robot;'
+                modifier += ';you always resond with beeps and boops like a robot;'
                 break;
         }
 
@@ -106,21 +106,6 @@ function getSettingsModifier(settings?: UserSettings, characterName?: string): s
             modifier += ';You love unicycles. You try to work unicycles into conversation as much as possible;'
             break;
     }
-
-
-    // if (settings && settings.goatFreq === SettingsQueryModifier.Absurd) {
-    //     if (characterName && characterName.toLowerCase() === 'elvis') {
-    //         return ';you also resond with bleat and baa like a goat, more than you bark;';
-    //     }
-
-    //     let goatModifier = ';You love goats. Goats are your favorite thing. You try to work goats into conversation as much as possible.';
-
-    //     if (characterName && ['s', 'w', 'f', 'n'].includes(characterName.toLowerCase().charAt(0))) {
-    //         goatModifier += ' Your favorite goat is named Pepe.';
-    //     }
-
-    //     return goatModifier
-    // }
 
     return modifier;
 }

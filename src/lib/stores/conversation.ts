@@ -9,6 +9,9 @@ import { nanoid } from 'nanoid'
 import { writable, get, type Writable, type Unsubscriber } from "svelte/store";
 import { estimateGptTokens } from "$lib/token-estimator";
 
+// TODO: This whole thing could probably use a rewrite since I had no idea 
+// what I was doing when I started it and have benn just adding crap since
+
 const MAX_CLIENT_MESSAGES = PUBLIC_MAX_CLIENT_MESSAGES ? parseInt(PUBLIC_MAX_CLIENT_MESSAGES, 10) : 15;
 
 export type ConversationItem = {

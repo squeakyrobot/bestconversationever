@@ -1,6 +1,6 @@
+import type { Handle } from "@sveltejs/kit";
 import { SESSION_COOKIE_NAME } from "$env/static/private";
 import { getSession, packSession } from "$lib/session";
-import type { Handle } from "@sveltejs/kit";
 
 const securityHeaders = {
     'cross-origin-embedder-policy': 'require-corp',

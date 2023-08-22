@@ -11,6 +11,7 @@
 	const versionInfo = `${__VERSION__}, ${__LASTMOD__}`;
 	const commitUrl = `${PUBLIC_GITHUB_URL}/commit/${__VERSION__}`;
 
+	// TODO: cleanup all this ugly settings stuff
 	let selectedGoatFreq = SettingsQueryModifier.Normal;
 	let selectedRobotFreq = SettingsQueryModifier.Normal;
 	let selectedSkateboardFreq = SettingsQueryModifier.Normal;

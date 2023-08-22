@@ -13,12 +13,12 @@ import type { Conversation, ConversationItem } from '$lib/stores/conversation';
 import type { RequestHandler } from './$types';
 import { Character, Personality } from '$lib/personality';
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
+import { RedisClient } from '$lib/server/redis';
 import { assert } from '$lib/assert';
 import { buildChatQuery, type QueryResult, } from '$lib/server/query';
 import { estimateGptTokens } from '$lib/token-estimator';
 import { getErrorMessage } from '$lib/util';
 import { json } from '@sveltejs/kit';
-import { RedisClient } from '$lib/server/redis';
 import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 
@@ -89,7 +89,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         // TODO: handle db errors - This simply returns false if the save fails
         const saved = (USE_DB !== '0') ? await (new RedisClient()).saveConversation(convo) : false;
 
-
         apiResponse.sharable = saved;
 
         return json(apiResponse);
@@ -121,12 +120,14 @@ function createChatGptMessages(query: QueryResult, apiRequest: ChatApiRequest) {
     if (apiRequest.previousMessages) {
         const prevMessages = apiRequest.previousMessages;
 
+        // Remove any messages as needed so we don't exceed the CHAT_CONTEXT_MESSAGE_COUNT
         if (prevMessages.length > contextMessageCount) {
             prevMessages.splice(0, prevMessages.length - contextMessageCount);
         }
 
         let prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));
 
+        // If we are over the MAX_REQUEST_TOKENS limit, remove messages until we are under
         while (prevMsgTokens + query.promptTokens > maxRequestTokens + query.systemTokens) {
             prevMessages.splice(0, 1);
             prevMsgTokens = estimateGptTokens(prevMessages.map(v => v.text || ''));

@@ -28,6 +28,7 @@ export const load = (({ params }) => {
 
 }) satisfies PageLoad;
 
+// This is used if prerendering is on
 export function entries() {
     return Object.keys(Character).map((v) => {
         return { person: v.toLowerCase() };
