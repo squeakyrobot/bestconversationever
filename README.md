@@ -17,7 +17,7 @@ If you want to skip setting up [resend](https://resend.com/) then just don't set
 contact form will fail when submitting.
 
 ## Tech Stack
-This applicatioin is my first time using all the technologies listed.
+This applicatioin is my first time using all the technologies listed except Google analytics and reCAPTCHA.
 
 * [SvelteKit](https://kit.svelte.dev/)
 * [Tailwind CSS](https://tailwindcss.com/)
