@@ -66,7 +66,13 @@
 		<div class="lg:text-center">
 			<CharacterList />
 		</div>
-
+		<div class="mt-10">
+			<strong>Hint:</strong>
+			<em
+				>If you are looking for real help, try
+				<a href="/chat/randy" class="link">Randy</a>.</em
+			>
+		</div>
 		<h2 class="text-3xl lg:text-4xl font-bold pt-10">Credits & Thanks</h2>
 		<div class="py-6 ml-5 text-lg">
 			<ul class="list-disc">
