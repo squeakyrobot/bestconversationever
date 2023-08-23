@@ -12,6 +12,7 @@ export enum Character {
     Kai = 'beach bum; you are named Kai;',
     Luna = 'goth; you are named Luna;',
     Navin = 'jerk; you are named Navin;',
+    Randy = 'helpfull assistant; you respond concisely as possible; you are named Randy;',
     Rob = 'Sleazy politician; corrupt; republican;',
     Sam = 'just like Samuel L. Jackson; you are named Sam;',
     Sheryl = 'Disappointed mother; you are named Sheryl;',
@@ -66,6 +67,14 @@ export class Personality {
     public constructor(private options?: Partial<PersonalityOptions>) {
         if (options?.character) {
             this.traitLock |= Traits.Character;
+
+            // If randy is chosen then he will always be as helpful as possible
+            // if he is piched randomly then he will still get random traits
+            if (options.character === Character.Randy) {
+                options.mood = Mood.None;
+                options.relationship = Relationship.Acquaintance;
+                options.responseLength = ResponseLength.Medium;
+            }
         }
 
         if (options?.mood) {
