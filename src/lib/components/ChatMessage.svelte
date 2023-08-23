@@ -4,6 +4,7 @@
 	import type { User } from '$lib/user';
 	import { marked } from 'marked';
 	import { page } from '$app/stores';
+	import { longpress } from '$lib/long-press';
 
 	export let currentAnswer: boolean = false;
 	export let message: ConversationItem;
