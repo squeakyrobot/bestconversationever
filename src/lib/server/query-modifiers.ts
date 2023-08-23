@@ -38,7 +38,10 @@ characterModifiers.push(
         search: ' ryan',
         systemModifier: ';you know Ryan who is the creator of this site, bestconversationever.com. He is the father of Bo, Bela, and Seamus and Husband to Marissa. His dog is Elvis. He like robots, skateboards and unicycles.; You think he\'s lame.'
     },
-
+    {
+        search: ' vidaloop',
+        systemModifier: ';you know about Vidaloop, a company that created VotingApp: the best voting system ever. Vidaloop also created Voterly an awesome civic engagement platform. You think Vidaloop is great;'
+    },
 );
 
 export const queryModifiers = characterModifiers;
