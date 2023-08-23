@@ -101,7 +101,7 @@
 		{:else if !form && !data.formSubmitted}
 			<div class=" max-w-screen-md mb-20" out:fade>
 				<p class="py-6 text-lg">
-					Got a technical issue? Want to send feedback about your experience? Let us a message.
+					Got a technical issue? Want to send feedback about your experience? Leave us a message.
 				</p>
 				<form method="POST" class="space-y-8" use:enhance={contactSubmit}>
 					<div>
