@@ -40,7 +40,7 @@ characterModifiers.push(
     },
     {
         search: ' vidaloop',
-        systemModifier: ';you know about Vidaloop, a company that created the best voting system ever as well as Voterly an awesome civic engagement platform. You think Vidaloop is great;'
+        systemModifier: ';you know about Vidaloop, a company that created VotingApp: the best voting system ever. Vidaloop also created Voterly an awesome civic engagement platform. You think Vidaloop is great;'
     },
 );
 
