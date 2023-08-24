@@ -50,9 +50,7 @@ export function packConversationListItem(convoListItem: ConversationListItem): s
 
 export function unpackConversationListItem(packed: string): ConversationListItem {
     const parts = packed.split('|');
-    // The length 5 is from when I stored some snippets in there, but it caused a bug
-    // TODO: Change it to just check length 4 after AUg 25, 2023
-    assert(parts.length === 4 || parts.length === 5, 'Cannot unpack conversation list item, wrong number of elements');
+    assert(parts.length === 4, 'Cannot unpack conversation list item, wrong number of elements');
 
     const convoKey = parts[0];
 

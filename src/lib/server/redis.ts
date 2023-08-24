@@ -104,12 +104,14 @@ export class RedisClient {
                 }
             });
 
-            const snippits = (await this.internalClient.json.mGet(
-                convoList.map(v => v.convoKey), '$.messages[-1].text'
-            )) as Array<string[]>;
+            if (convoList.length > 0) {
+                const snippits = (await this.internalClient.json.mGet(
+                    convoList.map(v => v.convoKey), '$.messages[-1].text'
+                )) as Array<string[]>;
 
-            for (let i = 0; i < convoList.length; i++) {
-                convoList[i].snippet = truncateSnippet(snippits[i][0] as string);
+                for (let i = 0; i < convoList.length; i++) {
+                    convoList[i].snippet = truncateSnippet(snippits[i][0] as string);
+                }
             }
 
 

@@ -10,7 +10,7 @@
 	import { conversationId } from '$lib/stores/conversation-id';
 	import type { Conversation } from '$lib/conversation';
 
-	export let conversation: Conversation;
+	export let conversation: Conversation | undefined = undefined;
 	export let characterName = '';
 	export let initialChat = '';
 	export let onClose: () => void;
@@ -141,6 +141,7 @@
 	<div class="sticky z-50 top-0 border-b-2 border-neutral mb-2 navbar">
 		<div class="flex-1">
 			Chatting with &nbsp;
+			<!-- svelte-ignore a11y-missing-attribute -->
 			<a onclick="characterChooser.showModal()" class="link link-info">
 				{characterName || "anyone who'll listen"}
 			</a>
