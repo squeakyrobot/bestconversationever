@@ -11,6 +11,13 @@ export function getEnumKey<T extends { [index: string]: string }>(myEnum: T, enu
     return keys.length > 0 ? keys[0] : null;
 }
 
+export function getEnumValue<T extends { [index: string]: string }>(myEnum: T, enumKey: string): T[keyof T] | undefined {
+    const idx = Object.keys(myEnum).indexOf(enumKey);
+
+
+    return (idx === -1) ? undefined : Object.values(myEnum)[idx] as unknown as T[keyof T];
+}
+
 export function nameFormat(name: string): string {
     return name ? name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() : '';
 }

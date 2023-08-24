@@ -3,7 +3,7 @@
 	import ChatMessage from './ChatMessage.svelte';
 	import type { User } from '$lib/user';
 	import { Character, Personality, Traits } from '$lib/personality';
-	import { ConversationStore } from '$lib/stores/conversation';
+	import { ConversationStore } from '$lib/stores/conversation-store';
 	import { nameFormat } from '$lib/util';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
@@ -52,7 +52,7 @@
 
 	const sendChatMessage = (e?: SubmitEvent) => {
 		sendingChat = true;
-		conversationStore.set(currentChat).then(() => (sendingChat = false));
+		conversationStore.sendUserExchange(currentChat).then(() => (sendingChat = false));
 		currentChat = '';
 
 		if (!characterName) {

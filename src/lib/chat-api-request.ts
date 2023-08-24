@@ -1,5 +1,5 @@
 import type { PersonalityOptions } from '$lib/personality';
-import type { ConversationItem } from "./stores/conversation";
+import type { MessageExchange } from "./conversation";
 
 export interface ChatApiRequest {
     id: string;
@@ -9,6 +9,6 @@ export interface ChatApiRequest {
     userId: string;
     userName: string;
     personality: PersonalityOptions;
-    previousMessages?: ConversationItem[];
+    previousMessages?: MessageExchange[];
     recaptchaToken?: string;
 }

@@ -1,8 +1,7 @@
-import type { Conversation } from "$lib/stores/conversation";
+import type { Conversation } from "$lib/conversation";
 import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from "$env/static/private";
 import { createClient, type RedisClientType } from 'redis';
 import { getEnvironmentPrefix } from "./environment";
-
 
 export interface SortedSetIndex {
     key: string;
@@ -96,6 +95,9 @@ export class RedisClient {
                 redisPromises.push(
                     this.internalClient.json.arrAppend(
                         chatKey.key, '$.messages', ...convo.messages));
+
+                // TODO: Should we readd the time index with new time so for convos
+                // that are resumed???
 
             }
             else {
