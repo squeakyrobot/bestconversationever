@@ -1,4 +1,4 @@
-import { packConversationListItem, type Conversation, type ConversationList, unpackConversationListItem } from "$lib/conversation";
+import { packConversationListItem, type Conversation, type ConversationList, unpackConversationListItem, truncateSnippet } from "$lib/conversation";
 import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from "$env/static/private";
 import { createClient, type RedisClientType } from 'redis';
 import { getEnvironmentPrefix } from "./environment";
@@ -92,7 +92,9 @@ export class RedisClient {
 
             const result = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
 
-            return result.map(item => {
+
+
+            const convoList = result.map(item => {
                 const time = new Date(item.score);
                 const convoListItem = unpackConversationListItem(item.value);
 
@@ -101,9 +103,21 @@ export class RedisClient {
                     ...convoListItem,
                 }
             });
+
+            const snippits = (await this.internalClient.json.mGet(
+                convoList.map(v => v.convoKey), '$.messages[-1].text'
+            )) as Array<string[]>;
+
+            for (let i = 0; i < convoList.length; i++) {
+                convoList[i].snippet = truncateSnippet(snippits[i][0] as string);
+            }
+
+
+            return convoList;
         }
         catch (e) {
             // TODO: log
+            console.error(e);
             return [];
         }
         finally {

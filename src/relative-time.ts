@@ -13,7 +13,7 @@ export function getDisplayTime(time: Date, from?: Date): string {
     }
 
     if (diff <= 8.64e+7) {
-        return time.toLocaleTimeString(undefined, { minute: '2-digit', hour: '2-digit' });
+        return time.toLocaleTimeString(undefined, { minute: '2-digit', hour: 'numeric' });
     }
 
     if (diff <= 6.048e+8) {

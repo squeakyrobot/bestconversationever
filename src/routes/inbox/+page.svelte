@@ -22,7 +22,7 @@
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
 					on:click={loadConversation(item.convoKey)}
-					class="flex p-5 hover:bg-neutral hover:rounded-xl hover:cursor-pointer"
+					class="flex pt-4 pb-4 hover:bg-neutral hover:rounded-xl hover:cursor-pointer"
 				>
 					<div class="flex-none avatar inline">
 						<div class="w-12 rounded-full">
@@ -34,7 +34,7 @@
 						</div>
 					</div>
 
-					<div class="grow ml-5 overflow-hidden">
+					<div class="grow ml-4 overflow-hidden">
 						<div class="text-xl">{item.characterName}</div>
 						<div class="opacity-60 truncate">
 							{item.snippet}
