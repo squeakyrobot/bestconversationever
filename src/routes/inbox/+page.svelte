@@ -35,8 +35,8 @@
 					</div>
 
 					<div class="grow ml-5 overflow-hidden">
-						<div class="text-sm sm:text-lg md:text-xl">{item.characterName}</div>
-						<div class="opacity-60 text-xs sm:text-sm md:text-lg truncate">
+						<div class="text-xl">{item.characterName}</div>
+						<div class="opacity-60 truncate">
 							{item.snippet}
 						</div>
 					</div>

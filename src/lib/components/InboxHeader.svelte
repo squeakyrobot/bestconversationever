@@ -3,7 +3,7 @@
 	import type { PageData } from '../../routes/$types';
 </script>
 
-<div class="flex justify-between top-0 border-b-2 border-neutral mb-10 pb-4">
+<div class="flex justify-between top-0 border-b-2 border-neutral mt-2 mb-2 pl-2 pb-4">
 	<div class="items-center inline-flex text-xl">
 		<div class="avatar inline">
 			<div class="w-12 rounded-full">
