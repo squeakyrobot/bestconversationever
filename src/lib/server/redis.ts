@@ -32,6 +32,7 @@ export class RedisClient {
             characterName: convo.character,
             userId: convo.userId,
             userName: convo.userName,
+            snippet: convo.messages[convo.messages.length - 1].text,
         });
 
         return {
@@ -89,8 +90,7 @@ export class RedisClient {
                 await this.internalClient.connect();
             }
 
-            const result = await this.internalClient.zRangeWithScores(key, 0, -1);
-
+            const result = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
 
             return result.map(item => {
                 const time = new Date(item.score);

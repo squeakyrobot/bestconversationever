@@ -7,7 +7,10 @@
 	import { nameFormat } from '$lib/util';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { conversationId } from '$lib/stores/conversation-id';
+	import type { Conversation } from '$lib/conversation';
 
+	export let conversation: Conversation;
 	export let characterName = '';
 	export let initialChat = '';
 	export let onClose: () => void;
@@ -22,7 +25,9 @@
 	let disableLinkButton = false;
 
 	const personality = new Personality();
-	const conversationStore = new ConversationStore(user, personality);
+	const conversationStore = conversation
+		? ConversationStore.fromConversation(user, conversation)
+		: new ConversationStore(user, personality);
 
 	onMount(async () => {
 		if (characterName) {

@@ -175,6 +175,7 @@
 			</div>
 		{/if}
 		<a href="/" class="link link-primary text-xl lg:text-2xl">Back Home</a>
+		<a href="/inbox" class="link link-primary text-xl lg:text-2xl">Inbox</a>
 	</div>
 	<Footer disabled={true} showVersion={true} />
 </div>
