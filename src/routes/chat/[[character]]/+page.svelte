@@ -7,6 +7,9 @@
 	import { page } from '$app/stores';
 	import { scale } from 'svelte/transition';
 	import { userChat } from '$lib/stores/user-chat';
+	import { returnPage } from '$lib/stores/return-page';
+
+	export let closeRedirect: string | undefined;
 
 	let initialChat = '';
 
@@ -15,6 +18,10 @@
 	});
 
 	onMount(async () => {
+		if (!closeRedirect) {
+			closeRedirect = $returnPage;
+		}
+
 		userChat.update(() => '');
 
 		const characterName = $page.params.character ? nameFormat($page.params.character) : 'not_set';
@@ -26,7 +33,7 @@
 		const characterName = $page.params.character ? nameFormat($page.params.character) : 'not_set';
 		sendChatEvent(ChatEvents.chatClosed, { character: characterName });
 
-		goto('/');
+		goto(closeRedirect || '/');
 	};
 </script>
 
