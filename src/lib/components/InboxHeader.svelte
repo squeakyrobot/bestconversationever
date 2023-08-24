@@ -30,7 +30,9 @@
 				/>
 			</div>
 		</div>
-		<div class="pl-4 text-sm sm:text-xl">{$page.data.session.user.name}</div>
+		<div class="pl-4 text-sm sm:text-xl">
+			{$page.data.session.user.name}
+		</div>
 	</div>
 
 	<div>
