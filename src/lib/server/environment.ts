@@ -1,5 +1,5 @@
-
 const ENVIRONMENT = process.env.VERCEL_ENV || process.env.NODE_ENV || 'production';
+
 
 /**
  * Gets a previx for an environment which is used to namespace the data

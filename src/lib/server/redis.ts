@@ -2,6 +2,7 @@ import { packConversationListItem, type Conversation, type ConversationList, unp
 import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from "$env/static/private";
 import { createClient, type RedisClientType } from 'redis';
 import { getEnvironmentPrefix } from "./environment";
+import type { User } from "$lib/user";
 
 export interface SortedSetIndex {
     key: string;
@@ -82,6 +83,27 @@ export class RedisClient {
         }
     }
 
+    public async getConversationKey(userId: string, characterName: string): Promise<string | undefined> {
+        const key = `${getEnvironmentPrefix()}:idx_convo_user:${userId}`;
+
+        if (!this.internalClient.isReady) {
+            await this.internalClient.connect();
+        }
+
+        const results = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
+        characterName = characterName.toLowerCase();
+
+        for (const item of results) {
+            const convoListItem = unpackConversationListItem(item.value);
+
+            if (convoListItem.characterName.toLowerCase() === characterName) {
+                return convoListItem.convoKey;
+            }
+        }
+
+        return undefined;
+    }
+
     public async getConversationList(userId: string): Promise<ConversationList> {
         try {
             const key = `${getEnvironmentPrefix()}:idx_convo_user:${userId}`;
@@ -91,7 +113,6 @@ export class RedisClient {
             }
 
             const result = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
-
 
 
             const convoList = result.map(item => {
