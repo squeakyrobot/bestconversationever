@@ -174,7 +174,8 @@
 				<span>Your message was sent</span>
 			</div>
 		{/if}
-		<a href="/" class="link link-primary text-xl lg:text-2xl">Back Home</a>
+		<a href="/" class="link link-primary text-xl lg:text-2xl">Back Home</a><br />
+		<a href="/inbox" class="link link-primary text-xl lg:text-2xl">Inbox (Experimental)</a>
 	</div>
 	<Footer disabled={true} showVersion={true} />
 </div>

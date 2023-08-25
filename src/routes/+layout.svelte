@@ -3,9 +3,15 @@
 	import HeadMeta from '$lib/components/HeadMeta.svelte';
 	import { PUBLIC_RECAPTCHA_SITE_KEY } from '$env/static/public';
 	import { page } from '$app/stores';
-	import { userSession } from '$lib/stores/sessionStore';
+	import { userSession } from '$lib/stores/session-store';
+	import { afterUpdate } from 'svelte';
+	import { returnPage } from '$lib/stores/return-page';
 
 	$userSession = $page.data.session;
+
+	afterUpdate(() => {
+		$returnPage = $page.url.pathname;
+	});
 </script>
 
 <svelte:head>

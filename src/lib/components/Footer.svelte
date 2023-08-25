@@ -3,7 +3,7 @@
 	import { PUBLIC_GITHUB_URL } from '$env/static/public';
 	import { onMount } from 'svelte';
 	import { updateUserSettings } from '$lib/settings';
-	import { userSession } from '$lib/stores/sessionStore';
+	import { userSession } from '$lib/stores/session-store';
 
 	export let disabled = false;
 	export let showVersion = false;
