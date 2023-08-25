@@ -14,15 +14,13 @@ const securityHeaders = {
     'x-download-options': 'noopen',
     'x-frame-options': 'SAMEORIGIN',
     'x-permitted-cross-domain-policies': 'none',
-    'x-xss-protection': '1',
+    'x-xss-protection': '0',
     'x-powered-by': 'best-conversation-ever',
 } as const;
 
 export const handle: Handle = async ({ event, resolve }) => {
     // Session Management
     const { cookies, locals } = event;
-
-
 
     const sessionData = cookies.get(SESSION_COOKIE_NAME);
 
