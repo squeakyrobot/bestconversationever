@@ -30,8 +30,7 @@ export class ConversationStore {
     public conversationId: string;
     public shareable: boolean;
     public store: Writable<Conversation>;
-
-    private personality: Personality;
+    public personality: Personality;
     private userId: string;
     private userName: string;
 
@@ -61,14 +60,12 @@ export class ConversationStore {
      * @returns a store that can be used to continue a conversation
      */
     public static fromConversation(user: User, convo: Conversation): ConversationStore {
-        const convoStore = new ConversationStore(user);
         const character = getEnumValue(Character, convo.character);
         assert(character !== undefined, 'Could not load conversation. Invalid character');
-
         assert(user.id === convo.userId, 'Cannot load conversations from a different user');
 
-        convoStore.personality = new Personality({ character });
-        convoStore.character = convo.character;
+        const convoStore = new ConversationStore(user, new Personality({ character }));
+
         convoStore.conversationId = convo.conversationId;
         convoStore.shareable = convo.shareable;
         convoStore.userId = convo.userId;

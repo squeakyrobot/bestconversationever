@@ -4,60 +4,42 @@
 	import type { PageData } from './$types';
 	import { UserType } from '$lib/user';
 	import { getDisplayTime } from '../../lib/relative-time';
-	import { conversationId } from '$lib/stores/conversation-id';
-	import { goto } from '$app/navigation';
+	import { fade } from 'svelte/transition';
 
 	export let data: PageData;
-
-	let clickedCharName = '';
-
-	const loadConversation = async (convoKey: string, characterName: string) => {
-		clickedCharName = characterName;
-
-		conversationId.update(() => {
-			return convoKey.substring(convoKey.lastIndexOf(':') + 1);
-		});
-	};
-
-	conversationId.subscribe((id) => {
-		if (id) {
-			goto('/chat/' + clickedCharName.toLowerCase());
-		}
-	});
 </script>
 
-<div class="max-w-4xl h-full w-full overflow-hidden">
+<div class="max-w-4xl h-full w-full overflow-hidden" in:fade>
 	<div class="flex flex-col overflow-hidden h-full p-2 w-full">
 		<InboxHeader />
-		{#if data.session.user.type !== UserType.Authenticated}
-			<div class="alert sm:alert">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="stroke-warning shrink-0 h-6 w-6"
-					fill="none"
-					viewBox="0 0 24 24"
-					><path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-					/></svg
-				>
-				<span
-					>You are not logged in. Create an account or login to save your chats. (Signup isn't ready
-					yet)</span
-				>
-				<div>
-					<!-- <button class="btn btn-sm btn-neutral">Join for free</button> -->
-				</div>
-			</div>
-		{/if}
+
 		<div class="flex-grow overflow-y-auto">
+			{#if data.session.user.type !== UserType.Authenticated}
+				<div class="alert sm:alert">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						class="stroke-warning shrink-0 h-6 w-6"
+						fill="none"
+						viewBox="0 0 24 24"
+						><path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+						/></svg
+					>
+					<span
+						>You are not logged in. Create an account or login to save your chats. (Signup isn't
+						ready yet)</span
+					>
+					<div>
+						<!-- <button class="btn btn-sm btn-neutral">Join for free</button> -->
+					</div>
+				</div>
+			{/if}
 			{#each data.convoList as item}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<div
-					on:click={loadConversation(item.convoKey, item.characterName)}
+				<a
+					href="/inbox/{item.consversationId}"
 					class="flex pt-4 pb-4 pl-2 pr-2 hover:bg-neutral hover:rounded-xl hover:cursor-pointer"
 				>
 					<div class="flex-none avatar inline">
@@ -80,7 +62,7 @@
 					<div class="flex-none">
 						<div class="text-sm whitespace-nowrap">{getDisplayTime(item.time)}</div>
 					</div>
-				</div>
+				</a>
 			{/each}
 		</div>
 		<Footer />

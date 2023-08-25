@@ -4,7 +4,7 @@
 	import type { User } from '$lib/user';
 	import { Character, Personality, Traits } from '$lib/personality';
 	import { ConversationStore } from '$lib/stores/conversation-store';
-	import { nameFormat } from '$lib/util';
+	import { getEnumValue, nameFormat } from '$lib/util';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import type { Conversation } from '$lib/conversation';
@@ -23,27 +23,27 @@
 	let shareUrl: string = '';
 	let disableLinkButton = false;
 
-	const personality = new Personality();
-	let conversationStore = new ConversationStore(user, personality);
+	// const personality = new Personality();
+	const conversationStore = conversation
+		? ConversationStore.fromConversation(user, conversation)
+		: new ConversationStore(
+				user,
+				new Personality({ character: getEnumValue(Character, nameFormat(characterName)) })
+		  );
+
+	conversationStore.personality.lock(Traits.Character);
 
 	onMount(() => {
 		if (conversation) {
-			conversationStore = ConversationStore.fromConversation(user, conversation);
-		}
-
-		if (characterName) {
-			characterName = nameFormat(characterName);
-			conversationStore.setPersonality(
-				new Personality({ character: (Character as any)[characterName] })
+			characterName = conversationStore.personality.getName(
+				conversationStore.personality.character
 			);
-		} else {
-			personality.lock(Traits.Character);
 		}
 
 		if (initialChat) {
 			currentChat = initialChat;
 			sendChatMessage();
-		} else {
+		} else if (!conversation) {
 			chatBox.focus();
 		}
 
@@ -51,6 +51,12 @@
 
 		if (!navigator.clipboard) {
 			disableLinkButton = true;
+		}
+
+		const scrollEL: HTMLElement | null = document.querySelector('#messageDiv');
+
+		if (scrollEL) {
+			scrollEL.scrollTop = scrollEL.scrollHeight;
 		}
 	});
 
@@ -60,7 +66,9 @@
 		currentChat = '';
 
 		if (!characterName) {
-			characterName = personality.getName(personality.character);
+			characterName = conversationStore.personality.getName(
+				conversationStore.personality.character
+			);
 		}
 	};
 
@@ -204,7 +212,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="text-xl flex-grow overflow-y-auto">
+	<div id="messageDiv" class="text-xl flex-grow overflow-y-auto">
 		{#each $conversationStore.messages as message, index}
 			{@const currentAnswer =
 				index === $conversationStore.messages.length - 1 && message.role === 'assistant'}

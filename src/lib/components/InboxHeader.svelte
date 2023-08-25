@@ -1,6 +1,8 @@
 <script lang="ts">
 	import CharacterList from './CharacterList.svelte';
 	import { page } from '$app/stores';
+
+	export let showHome = false;
 </script>
 
 <dialog id="characterChooser" class="modal">
@@ -36,8 +38,10 @@
 	</div>
 
 	<div>
-		<!-- TODO: Add Menu-->
-		<a href="/" class="btn btn-ghost">Home</a>
+		{#if showHome}
+			<a href="/" class="btn btn-ghost">Home</a>
+		{/if}
+		<!-- svelte-ignore a11y-missing-attribute -->
 		<a class="btn btn-ghost" onclick="characterChooser.showModal()">New Chat</a>
 	</div>
 </div>

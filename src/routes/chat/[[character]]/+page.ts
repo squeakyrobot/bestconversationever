@@ -10,12 +10,13 @@ export const load = (({ params }) => {
         assert(characterExists(params.character),
             error(404, { message: `Character ${params.character} does not exist` }));
 
-        const name = nameFormat(params.character);
+        const characterName = nameFormat(params.character);
 
         return {
-            pageTitle: `Chat with ${name}`,
-            pageDescription: `Start a conversation with ${name} and see where it goes...`,
-            pageOgImage: `/images/characters/${name}-og.png`,
+            characterName,
+            pageTitle: `Chat with ${characterName}`,
+            pageDescription: `Start a conversation with ${characterName} and see where it goes...`,
+            pageOgImage: `/images/characters/${characterName}-og.png`,
         };
     }
     else {

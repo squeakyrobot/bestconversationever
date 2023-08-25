@@ -8,7 +8,6 @@ import { scoreThresholds } from '$lib/recaptcha-client';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
     try {
-        // TODO: add recaptcha verification
         const reqBody = await request.json() as { recaptchaToken: string };
 
         if (RECAPTCHA_ENABLED !== "0") {

@@ -1,74 +1,41 @@
 <script lang="ts">
 	import Chat from '$lib/components/Chat.svelte';
+	import type { PageData } from './$types';
 	import { ChatEvents, sendChatEvent } from '$lib/analytics';
 	import { goto } from '$app/navigation';
-	import { nameFormat } from '$lib/util';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { returnPage } from '$lib/stores/return-page';
 	import { scale } from 'svelte/transition';
 	import { userChat } from '$lib/stores/user-chat';
-	import { returnPage } from '$lib/stores/return-page';
-	import { conversationId } from '$lib/stores/conversation-id';
-	import type { Conversation } from '$lib/conversation';
-	import { getRecaptchaToken } from '$lib/recaptcha-client';
 
-	export let closeRedirect: string | undefined;
-
+	export let data: PageData;
+	let closeRedirect: string | undefined;
 	let initialChat = '';
-	let convo: Conversation | undefined = undefined;
 
 	userChat.subscribe((value) => {
 		initialChat = value;
 	});
 
-	onMount(async () => {
-		try {
-			if (!closeRedirect) {
-				closeRedirect = $returnPage;
-			}
-
-			userChat.update(() => '');
-
-			const characterName = $page.params.character ? nameFormat($page.params.character) : 'not_set';
-
-			if ($conversationId) {
-				const apiCall = await fetch(`/api/conversation/${$conversationId}`, {
-					method: 'POST',
-					body: JSON.stringify({
-						recaptchaToken: await getRecaptchaToken('inbox/loadConversation')
-					})
-				});
-
-				const c = (await apiCall.json()) as Conversation;
-
-				// TODO: this is all weird, fix it
-				if (c.character === characterName) {
-					convo = c;
-				}
-			}
-
-			sendChatEvent(ChatEvents.chatStart, { character: characterName });
-		} finally {
-			$conversationId = undefined;
+	onMount(() => {
+		if (!closeRedirect) {
+			closeRedirect = $returnPage;
 		}
+
+		userChat.update(() => '');
+
+		sendChatEvent(ChatEvents.chatStart, { character: data.characterName || 'NOT_SET' });
 	});
 
 	const onClose = () => {
-		const characterName = $page.params.character ? nameFormat($page.params.character) : 'not_set';
-		sendChatEvent(ChatEvents.chatClosed, { character: characterName });
+		sendChatEvent(ChatEvents.chatClosed, { character: data.characterName || 'NOT_SET' });
 
 		goto(closeRedirect || '/');
 	};
 </script>
 
 <div class="max-w-4xl h-full w-full overflow-hidden" in:scale={{ duration: 500 }}>
-	<!-- TODO: delay render until the conversatin is fetched? Or fetch it in the component? -->
-	{#key $page.url || convo}
-		<Chat
-			{initialChat}
-			{onClose}
-			characterName={nameFormat($page.params.character)}
-			conversation={convo}
-		/>
+	{#key $page.url}
+		<Chat {initialChat} {onClose} characterName={data.characterName} />
 	{/key}
 </div>
