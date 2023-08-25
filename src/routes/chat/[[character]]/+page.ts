@@ -1,5 +1,5 @@
 import type { PageLoad } from "./$types";
-import { Character, characterExists } from "$lib/personality";
+import { characterExists } from "$lib/personality";
 import { nameFormat } from "$lib/util";
 import { assert } from "$lib/assert";
 import { error } from '@sveltejs/kit';
@@ -10,12 +10,13 @@ export const load = (({ params }) => {
         assert(characterExists(params.character),
             error(404, { message: `Character ${params.character} does not exist` }));
 
-        const name = nameFormat(params.character);
+        const characterName = nameFormat(params.character);
 
         return {
-            pageTitle: `Chat with ${name}`,
-            pageDescription: `Start a conversation with ${name} and see where it goes...`,
-            pageOgImage: `/images/characters/${name}-og.png`,
+            characterName,
+            pageTitle: `Chat with ${characterName}`,
+            pageDescription: `Start a conversation with ${characterName} and see where it goes...`,
+            pageOgImage: `/images/characters/${characterName}-og.png`,
         };
     }
     else {
@@ -28,9 +29,3 @@ export const load = (({ params }) => {
 
 }) satisfies PageLoad;
 
-// This is used if prerendering is on
-export function entries() {
-    return Object.keys(Character).map((v) => {
-        return { person: v.toLowerCase() };
-    });
-}

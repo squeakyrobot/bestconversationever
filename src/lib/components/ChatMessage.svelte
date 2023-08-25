@@ -1,13 +1,12 @@
 <script lang="ts">
 	import DOMPurify from 'isomorphic-dompurify';
-	import type { ConversationItem } from '$lib/stores/conversation';
+	import type { MessageExchange } from '$lib/conversation';
 	import type { User } from '$lib/user';
 	import { marked } from 'marked';
 	import { page } from '$app/stores';
-	import { longpress } from '$lib/long-press';
 
 	export let currentAnswer: boolean = false;
-	export let message: ConversationItem;
+	export let message: MessageExchange;
 	export let user: User = $page.data.session.user;
 	export let autoScroll = true;
 
