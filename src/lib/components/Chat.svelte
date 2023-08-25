@@ -8,12 +8,16 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import type { Conversation } from '$lib/conversation';
-	import { preloadData } from '$app/navigation';
+	import { goto, preloadData } from '$app/navigation';
+	import { fade, slide } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
+	import { getRecaptchaToken } from '$lib/recaptcha-client';
 
 	export let conversation: Conversation | undefined = undefined;
 	export let characterName = '';
 	export let initialChat = '';
 	export let preloadRoute = '';
+	export let checkExisting = false;
 	export let onClose: () => void;
 
 	const user: User = $page.data.session.user;
@@ -24,6 +28,8 @@
 	let sendingChat = false;
 	let shareUrl: string = '';
 	let disableLinkButton = false;
+
+	let existingConvoId: string | undefined = undefined;
 
 	// const personality = new Personality();
 	const conversationStore = conversation
@@ -60,7 +66,22 @@
 		if (scrollEL) {
 			scrollEL.scrollTop = scrollEL.scrollHeight;
 		}
+
+		checkExistingConvo();
 	});
+
+	const checkExistingConvo = async () => {
+		if (checkExisting && characterName) {
+			const apiCall = await fetch(`/api/inbox/by-char/${characterName}`, {
+				method: 'POST',
+				body: JSON.stringify({ recaptchaToken: await getRecaptchaToken('inbox/byChar') })
+			});
+
+			const apiResponse = (await apiCall.json()) as { conversationId: string | undefined };
+
+			existingConvoId = apiResponse.conversationId;
+		}
+	};
 
 	const sendChatMessage = (e?: SubmitEvent) => {
 		sendingChat = true;
@@ -232,6 +253,32 @@
 		{/each}
 	</div>
 	<div class=" bottom-0 mt-2">
+		{#if existingConvoId}
+			<div
+				class="alert mb-2"
+				transition:slide={{ delay: 250, duration: 300, easing: quintOut, axis: 'y' }}
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					class="stroke-info shrink-0 w-6 h-6"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+					/></svg
+				>
+				<span>There's an existing conversation with {characterName}. Load it?</span>
+				<div>
+					<button class="btn btn-sm" on:click={() => goto(`/inbox/${existingConvoId}`)}
+						>Yes
+					</button>
+					<button class="btn btn-sm" on:click={() => (existingConvoId = undefined)}>No</button>
+				</div>
+			</div>
+		{/if}
 		<form on:submit|preventDefault={sendChatMessage} class="form-control">
 			<div class="input-group input-group-lg w-full">
 				<input
