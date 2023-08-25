@@ -43,7 +43,7 @@
 			<a href="/" class="btn btn-ghost">Home</a>
 		{/if}
 		<!-- svelte-ignore a11y-missing-attribute -->
-		<a class="btn btn-accent" onclick="characterChooser.showModal()">
+		<a class="btn btn-neutral" onclick="characterChooser.showModal()">
 			<!-- <svg
 				xmlns="http://www.w3.org/2000/svg"
 				height="1em"
