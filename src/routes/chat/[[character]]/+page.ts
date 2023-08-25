@@ -1,5 +1,5 @@
 import type { PageLoad } from "./$types";
-import { Character, characterExists } from "$lib/personality";
+import { characterExists } from "$lib/personality";
 import { nameFormat } from "$lib/util";
 import { assert } from "$lib/assert";
 import { error } from '@sveltejs/kit';
@@ -28,9 +28,3 @@ export const load = (({ params }) => {
 
 }) satisfies PageLoad;
 
-// This is used if prerendering is on
-export function entries() {
-    return Object.keys(Character).map((v) => {
-        return { person: v.toLowerCase() };
-    });
-}

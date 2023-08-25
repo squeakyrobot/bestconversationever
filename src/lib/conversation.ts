@@ -56,7 +56,7 @@ export function unpackConversationListItem(packed: string): ConversationListItem
 
     return {
         convoKey,
-        consversationId: convoKey.substring(convoKey.lastIndexOf(':')),
+        consversationId: convoKey.substring(convoKey.lastIndexOf(':') + 1),
         characterName: parts[1],
         userId: parts[2],
         userName: parts[3]

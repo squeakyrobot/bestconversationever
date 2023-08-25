@@ -7,7 +7,6 @@
 	import { nameFormat } from '$lib/util';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { conversationId } from '$lib/stores/conversation-id';
 	import type { Conversation } from '$lib/conversation';
 
 	export let conversation: Conversation | undefined = undefined;
@@ -25,11 +24,13 @@
 	let disableLinkButton = false;
 
 	const personality = new Personality();
-	const conversationStore = conversation
-		? ConversationStore.fromConversation(user, conversation)
-		: new ConversationStore(user, personality);
+	let conversationStore = new ConversationStore(user, personality);
 
-	onMount(async () => {
+	onMount(() => {
+		if (conversation) {
+			conversationStore = ConversationStore.fromConversation(user, conversation);
+		}
+
 		if (characterName) {
 			characterName = nameFormat(characterName);
 			conversationStore.setPersonality(
@@ -51,8 +52,6 @@
 		if (!navigator.clipboard) {
 			disableLinkButton = true;
 		}
-
-		console.log(conversationStore.conversationId);
 	});
 
 	const sendChatMessage = (e?: SubmitEvent) => {

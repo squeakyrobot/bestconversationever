@@ -1,17 +1,29 @@
 <script lang="ts">
 	import Footer from '$lib/components/Footer.svelte';
 	import InboxHeader from '$lib/components/InboxHeader.svelte';
-	import { UserType } from '$lib/user';
-	import { getDisplayTime } from '../../relative-time';
 	import type { PageData } from './$types';
+	import { UserType } from '$lib/user';
+	import { getDisplayTime } from '../../lib/relative-time';
+	import { conversationId } from '$lib/stores/conversation-id';
+	import { goto } from '$app/navigation';
 
 	export let data: PageData;
 
-	const loadConversation = (convoKey: string) => {
-		console.log(convoKey);
+	let clickedCharName = '';
 
-		return null;
+	const loadConversation = async (convoKey: string, characterName: string) => {
+		clickedCharName = characterName;
+
+		conversationId.update(() => {
+			return convoKey.substring(convoKey.lastIndexOf(':') + 1);
+		});
 	};
+
+	conversationId.subscribe((id) => {
+		if (id) {
+			goto('/chat/' + clickedCharName.toLowerCase());
+		}
+	});
 </script>
 
 <div class="max-w-4xl h-full w-full overflow-hidden">
@@ -21,14 +33,14 @@
 			<div class="alert sm:alert">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
+					class="stroke-warning shrink-0 h-6 w-6"
 					fill="none"
 					viewBox="0 0 24 24"
-					class="stroke-info shrink-0 w-6 h-6"
 					><path
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="2"
-						d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
 					/></svg
 				>
 				<span
@@ -45,7 +57,7 @@
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
-					on:click={loadConversation(item.convoKey)}
+					on:click={loadConversation(item.convoKey, item.characterName)}
 					class="flex pt-4 pb-4 pl-2 pr-2 hover:bg-neutral hover:rounded-xl hover:cursor-pointer"
 				>
 					<div class="flex-none avatar inline">
