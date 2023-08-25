@@ -5,7 +5,6 @@
 	import { afterUpdate, onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { preloadData } from '$app/navigation';
 	import { returnPage } from '$lib/stores/return-page';
 	import { scale } from 'svelte/transition';
 
