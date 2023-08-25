@@ -81,6 +81,12 @@ export class ConversationStore {
      * @param text message from the user to send
      */
     public async sendUserExchange(text: string): Promise<void> {
+        // Its important that we snapshot the messages first because
+        // we use them later to create the chatgpt context. But, we
+        // want to get the user message and respondent waiting indicator
+        // on screen ASAP. If we grab the messages after those are added
+        // it messes up the chatgpt request
+        const previousMessages = [...get<Conversation>(this.store).messages];
 
         // Add the user message
         const userMsg: MessageExchange = {
@@ -107,8 +113,6 @@ export class ConversationStore {
 
         this.addMessage(responseMsg);
 
-
-        const previousMessages = [...get<Conversation>(this.store).messages];
 
         if (previousMessages.length > MAX_CLIENT_MESSAGES) {
             previousMessages.splice(0, previousMessages.length - MAX_CLIENT_MESSAGES);
