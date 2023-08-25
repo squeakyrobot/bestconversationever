@@ -8,10 +8,12 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import type { Conversation } from '$lib/conversation';
+	import { preloadData } from '$app/navigation';
 
 	export let conversation: Conversation | undefined = undefined;
 	export let characterName = '';
 	export let initialChat = '';
+	export let preloadRoute = '';
 	export let onClose: () => void;
 
 	const user: User = $page.data.session.user;
@@ -93,6 +95,12 @@
 	const copyShareUrl = async () => {
 		await navigator.clipboard.writeText(shareUrl);
 	};
+
+	const preloadClose = () => {
+		if (preloadRoute) {
+			preloadData(preloadRoute);
+		}
+	};
 </script>
 
 <dialog id="characterChooser" class="modal">
@@ -155,7 +163,11 @@
 		</div>
 		<div class="flex-none">
 			{#if onClose}
-				<button on:click={onClose} class="btn btn-square btn-sm btn-ghost">
+				<button
+					on:mouseenter={preloadClose}
+					on:click={onClose}
+					class="btn btn-square btn-sm btn-ghost"
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						class="h-6 w-6"
