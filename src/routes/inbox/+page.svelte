@@ -5,8 +5,18 @@
 	import { UserType } from '$lib/user';
 	import { getDisplayTime } from '../../lib/relative-time';
 	import { fade } from 'svelte/transition';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
+
+	// The message time display is keyed off refreshTime
+	// so it updates the display when the value changes
+	let refreshTime = 0;
+
+	onMount(() => {
+		const timer = setInterval(() => refreshTime++, 30000);
+		return () => clearInterval(timer);
+	});
 </script>
 
 <div class="max-w-4xl h-full w-full overflow-hidden" in:fade>
@@ -60,7 +70,9 @@
 					</div>
 
 					<div class="flex-none">
-						<div class="text-sm whitespace-nowrap">{getDisplayTime(item.time)}</div>
+						{#key refreshTime}
+							<div class="text-sm whitespace-nowrap">{getDisplayTime(item.time)}</div>
+						{/key}
 					</div>
 				</a>
 			{/each}

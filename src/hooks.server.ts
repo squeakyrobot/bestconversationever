@@ -25,6 +25,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     const sessionData = cookies.get(SESSION_COOKIE_NAME);
     locals.session = await getSession(sessionData);
 
+    // locals.session.user.name = 'Ryan';
+    // locals.session.user.type = UserType.Authenticated;
+    // locals.session.user.avatarUrl = 'https://lh3.googleusercontent.com/a/AAcHTtdHquP6fWrXhUdHlQvaT85S0-ryluf8kOILtnJ8y5X_mgxy=s288-c-no';
+
     cookies.set(SESSION_COOKIE_NAME, await packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
     const response = await resolve(event);

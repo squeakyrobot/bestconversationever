@@ -26,6 +26,7 @@
 		<div class="avatar inline">
 			<div class="w-12 rounded-full">
 				<img
+					crossorigin="anonymous"
 					src={$page.data.session.user.avatarUrl}
 					alt={$page.data.session.user.name}
 					title={$page.data.session.user.name}

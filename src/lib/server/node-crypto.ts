@@ -1,16 +1,7 @@
 import {
     randomBytes,
-    pbkdf2,
-    hkdfSync,
-    createECDH,
-    createHash,
-    createVerify,
-    createPublicKey,
-    createSign,
-    createPrivateKey,
     createCipheriv,
     createDecipheriv,
-    createHmac
 } from 'crypto';
 
 
