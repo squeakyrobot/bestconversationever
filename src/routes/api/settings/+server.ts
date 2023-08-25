@@ -6,6 +6,8 @@ import { json } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request, cookies, locals }) => {
     try {
+        // TODO: add recaptcha verification
+
         const updatedSettings = await request.json() as UserSettings
 
         locals.session.user.settings = updatedSettings;

@@ -36,6 +36,6 @@
 
 <div class="max-w-4xl h-full w-full overflow-hidden" in:scale={{ duration: 500 }}>
 	{#key $page.url}
-		<Chat {initialChat} {onClose} characterName={data.characterName} />
+		<Chat {initialChat} {onClose} characterName={data.characterName} checkExisting={true} />
 	{/key}
 </div>
