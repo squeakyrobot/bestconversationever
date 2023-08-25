@@ -14,7 +14,7 @@ const securityHeaders = {
     'x-download-options': 'noopen',
     'x-frame-options': 'SAMEORIGIN',
     'x-permitted-cross-domain-policies': 'none',
-    'x-xss-protection': '0',
+    'x-xss-protection': '1',
     'x-powered-by': 'best-conversation-ever',
 } as const;
 
@@ -22,12 +22,17 @@ export const handle: Handle = async ({ event, resolve }) => {
     // Session Management
     const { cookies, locals } = event;
 
+
+
     const sessionData = cookies.get(SESSION_COOKIE_NAME);
+
+    console.log('HOOKS: getting cookie', sessionData);
 
     locals.session = getSession(sessionData);
 
     cookies.set(SESSION_COOKIE_NAME, packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
+    console.log('HOOKS: resetting cookie (SET)', locals.session);
     const response = await resolve(event);
 
     // Security Headers

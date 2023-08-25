@@ -20,10 +20,7 @@ export function getSession(sessionData?: string): Session {
         if (sessionData) {
             const session = unpackSession(sessionData);
 
-            if (session.expires < expires) {
-                session.expires = expires;
-                return session;
-            }
+            console.log('UNPACKED SESSION: ', session);
 
             // Migration
             if (!session.user.settings) {
@@ -34,10 +31,19 @@ export function getSession(sessionData?: string): Session {
                     unicycleFreq: SettingsQueryModifier.Normal,
                 };
             }
+
+            // If the session has not expired, update the expiration date
+            // Otherwise it will proceed to creating a new session
+            if (session.expires < expires) {
+                session.expires = expires;
+                return session;
+            }
         }
     } catch (e) {
         console.error('Failed to unpack session', e);
     }
+
+    console.log('SESSION: Returning NEW session');
 
     return {
         version: 1,
