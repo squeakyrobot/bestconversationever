@@ -81,6 +81,12 @@ export class ConversationStore {
      * @param text message from the user to send
      */
     public async sendUserExchange(text: string): Promise<void> {
+        // Its important that we snapshot the messages first because
+        // we use them later to create the chatgpt context. But, we
+        // want to get the user message and respondent waiting indicator
+        // on screen ASAP. If we grab the messages after those are added
+        // it messes up the chatgpt request
+        const previousMessages = [...get<Conversation>(this.store).messages];
 
         // Add the user message
         const userMsg: MessageExchange = {
@@ -94,8 +100,19 @@ export class ConversationStore {
 
         this.addMessage(userMsg);
 
+        // The initial response has no text and has the waiting flag set
+        // this is so the UI can provide a loading or waiting indicator
+        const personalityOptions = this.personality.export();
 
-        const previousMessages = [...get<Conversation>(this.store).messages];
+        const responseMsg: MessageExchange = {
+            name: personalityOptions.name,
+            requestId: userMsg.requestId,
+            role: 'assistant',
+            waitingForResponse: true,
+        };
+
+        this.addMessage(responseMsg);
+
 
         if (previousMessages.length > MAX_CLIENT_MESSAGES) {
             previousMessages.splice(0, previousMessages.length - MAX_CLIENT_MESSAGES);
@@ -107,7 +124,7 @@ export class ConversationStore {
             conversationId: this.conversationId,
             id: userMsg.requestId,
             message: userMsg.text || '',
-            personality: this.personality.export(),
+            personality: personalityOptions,
             previousMessages,
             recaptchaToken: token,
             time: userMsg.time || new Date(),
@@ -115,17 +132,6 @@ export class ConversationStore {
             userName: this.userName,
         };
 
-
-        // The initial response has no text and has the waiting flag set
-        // this is so the UI can provide a loading or waiting indicator
-        const responseMsg: MessageExchange = {
-            name: apiRequest.personality.name,
-            requestId: userMsg.requestId,
-            role: 'assistant',
-            waitingForResponse: true,
-        };
-
-        this.addMessage(responseMsg);
 
 
         // This is an estimate based on the MAX_CLIENT_MESSAGES setting, the

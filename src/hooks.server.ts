@@ -24,10 +24,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     const sessionData = cookies.get(SESSION_COOKIE_NAME);
 
+    console.log('HOOKS: getting cookie', sessionData);
+
     locals.session = getSession(sessionData);
 
     cookies.set(SESSION_COOKIE_NAME, packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
+    console.log('HOOKS: resetting cookie (SET)', locals.session);
     const response = await resolve(event);
 
     // Security Headers

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Chat from '$lib/components/Chat.svelte';
-	import { ChatEvents, sendChatEvent } from '$lib/analytics';
-	import { goto } from '$app/navigation';
-	import { afterUpdate, onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import type { PageData } from './$types';
-	import { scale } from 'svelte/transition';
+	import { ChatEvents, sendChatEvent } from '$lib/analytics';
+	import { afterUpdate, onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { returnPage } from '$lib/stores/return-page';
+	import { scale } from 'svelte/transition';
 
 	export let data: PageData;
 
@@ -27,6 +27,6 @@
 
 <div class="max-w-4xl h-full w-full overflow-hidden" in:scale={{ duration: 500 }}>
 	{#key $page.url}
-		<Chat {onClose} conversation={data.conversation} />
+		<Chat {onClose} conversation={data.conversation} preloadRoute="/inbox" />
 	{/key}
 </div>
