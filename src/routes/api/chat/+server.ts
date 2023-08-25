@@ -65,8 +65,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             max_tokens: maxResponseTokens,
         });
 
-        console.log(chatCompletion);
-
         const message = chatCompletion.data.choices[0].message?.content || 'I have nothing to say.';
 
         const apiResponse = {
@@ -92,6 +90,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         return json(apiResponse);
     }
     catch (error) {
+        console.error(error);
+
         const message = getErrorMessage(error);
 
         return json({
