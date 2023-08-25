@@ -9,7 +9,7 @@ import {
 } from '$env/static/private';
 import type { ChatApiRequest } from '$lib/chat-api-request';
 import type { ChatApiResponse } from '$lib/chat-api-response';
-import type { Conversation, ConversationItem } from '$lib/stores/conversation';
+import type { Conversation, MessageExchange } from '$lib/conversation';
 import type { RequestHandler } from './$types';
 import { Character, Personality } from '$lib/personality';
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
@@ -30,7 +30,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     // Get request data
     const apiRequest = await request.json() as ChatApiRequest;
 
-
     try {
         if (!OPENAI_API_KEY) {
             throw new Error('No API Key');
@@ -41,14 +40,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             assert(apiRequest.recaptchaToken, 'No Recaptcha Token Provided');
 
             const response = await verifyRecaptcha(apiRequest.recaptchaToken);
-
             assert(response.success, 'Recaptcha verification failed');
             assert(response.score >= scoreThresholds.chat, 'Are you a bot?\nRecaptcha score too low.');
         }
 
         // TODO: Use moderation API to check the data for safe mode
         // off for now because the adult language is funnier anyway
-
 
         const query = buildChatQuery(apiRequest, locals.session.user.settings);
         assert(query.promptTokens <= maxChatTokens, 'Chat too long, try something shorter.');
@@ -68,6 +65,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             max_tokens: maxResponseTokens,
         });
 
+        console.log(chatCompletion);
 
         const message = chatCompletion.data.choices[0].message?.content || 'I have nothing to say.';
 
@@ -134,7 +132,7 @@ function createChatGptMessages(query: QueryResult, apiRequest: ChatApiRequest) {
         }
 
         messages.push(...prevMessages.map<ChatCompletionRequestMessage>(
-            (value: ConversationItem) => {
+            (value: MessageExchange) => {
                 return { role: value.role, content: value.text };
             })
         );

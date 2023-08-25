@@ -1,4 +1,3 @@
-import { text } from "@sveltejs/kit";
 import { assert } from "./assert";
 
 export type MessageExchange = {

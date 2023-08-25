@@ -4,15 +4,15 @@ import { getSession, packSession, type Session } from '$lib/session';
 import { json } from '@sveltejs/kit';
 import { SESSION_COOKIE_NAME } from '$env/static/private';
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request, cookies, locals }) => {
     try {
         const updatedSettings = await request.json() as UserSettings
-        const sessionData = cookies.get(SESSION_COOKIE_NAME);
-        const session = getSession(sessionData) as Session;
 
-        session.user.settings = updatedSettings;
+        locals.session.user.settings = updatedSettings;
 
-        cookies.set(SESSION_COOKIE_NAME, packSession(session), { path: '/', expires: new Date(session.expires) });
+        console.log('Settings Udate: Updated (SET)', locals.session);
+        cookies.set(SESSION_COOKIE_NAME,
+            packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
         return json({ success: true });
 
