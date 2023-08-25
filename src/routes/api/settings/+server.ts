@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import type { UserSettings } from '$lib/user';
-import { packSession } from '$lib/session';
+import { packSession } from '$lib/server/session-utils';
 import { SESSION_COOKIE_NAME } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 
@@ -13,7 +13,7 @@ export const POST: RequestHandler = async ({ request, cookies, locals }) => {
         locals.session.user.settings = updatedSettings;
 
         cookies.set(SESSION_COOKIE_NAME,
-            packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
+            await packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
         return json({ success: true });
 
