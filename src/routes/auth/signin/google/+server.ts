@@ -7,11 +7,11 @@ import { OAuth2Client } from "google-auth-library";
 
 export const GET: RequestHandler = async ({ url, params }) => {
     const redirectURL = `${url.origin}/auth/response/google`;
+    const stateParam = await url.searchParams.get('state');
+    let state: string | undefined;
 
-    let state: string | undefined = undefined;
-
-    if (params.character && characterExists(params.character)) {
-        state = params.character.toLowerCase();
+    if (stateParam && characterExists(stateParam)) {
+        state = stateParam.toLowerCase();
     }
 
     const oAuth2Client = new OAuth2Client(
