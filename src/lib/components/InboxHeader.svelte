@@ -27,14 +27,14 @@
 			<div class="w-12 rounded-full">
 				<img
 					crossorigin="anonymous"
-					src={$page.data.session.user.avatarUrl}
-					alt={$page.data.session.user.name}
-					title={$page.data.session.user.name}
+					src={$page.data.user.avatarUrl}
+					alt={$page.data.user.displayName}
+					title={$page.data.user.displayName}
 				/>
 			</div>
 		</div>
 		<div class="pl-4 text-sm sm:text-xl">
-			{$page.data.session.user.name}
+			{$page.data.user.displayName}
 		</div>
 	</div>
 

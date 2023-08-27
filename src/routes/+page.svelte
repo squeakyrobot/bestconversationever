@@ -76,6 +76,5 @@
 		</div>
 	</div>
 
-	<a href="/auth/signin/google">Sign in with Google</a>
 	<Footer />
 </div>

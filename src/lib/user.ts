@@ -1,4 +1,7 @@
 
+export const defaultUserName = 'Anonymous';
+export const defaultAvatar = '/images/user/missing-user.jpg';
+
 export enum SettingsQueryModifier {
     Normal = 0,
     Extra = 1,
@@ -18,9 +21,9 @@ export enum UserType {
 }
 
 export type User = {
-    type: UserType;
-    name: string;
-    id: string;
     avatarUrl: string;
+    displayName: string;
+    id: string;
     settings: UserSettings;
+    type: UserType;
 }

@@ -1,6 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 
 import type { Session } from "$lib/session";
+import type { User } from "$lib/user";
 
 // for information about these interfaces
 declare global {
@@ -14,7 +15,7 @@ declare global {
 			session: Session,
 		}
 		interface PageData {
-			session: Session,
+			user: User,
 			pageTitle: string,
 			pageDescription: string,
 		}

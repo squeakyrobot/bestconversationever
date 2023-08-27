@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 
 export function randomEnum<T extends { [index: string]: string }>(enumType: T): T[keyof T] {
     const values = Object.keys(enumType);
@@ -53,4 +54,8 @@ export function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
 
 export function getErrorMessage(error: unknown) {
     return toErrorWithMessage(error).message
+}
+
+export function newId(): string {
+    return nanoid(14);
 }

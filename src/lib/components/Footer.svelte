@@ -3,7 +3,7 @@
 	import { PUBLIC_GITHUB_URL } from '$env/static/public';
 	import { onMount } from 'svelte';
 	import { updateUserSettings } from '$lib/settings';
-	import { userSession } from '$lib/stores/session-store';
+	import { sessionUser } from '$lib/stores/session-user';
 
 	export let disabled = false;
 	export let showVersion = false;
@@ -16,7 +16,7 @@
 	let selectedRobotFreq = SettingsQueryModifier.Normal;
 	let selectedSkateboardFreq = SettingsQueryModifier.Normal;
 	let selectedUnicycleFreq = SettingsQueryModifier.Normal;
-	let settings = $userSession.user.settings;
+	let settings = $sessionUser.settings;
 
 	onMount(() => {
 		if (!settings) {
@@ -27,7 +27,7 @@
 				unicycleFreq: SettingsQueryModifier.Normal
 			};
 
-			$userSession.user.settings = settings;
+			$sessionUser.settings = settings;
 		}
 
 		selectedGoatFreq = settings.goatFreq;
@@ -56,7 +56,7 @@
 		const result = await updateUserSettings(updatedSettings); // TODO: notify of failure
 
 		if (result) {
-			$userSession.user.settings = settings;
+			$sessionUser.settings = settings;
 		} else {
 			console.log('Could not update settings');
 		}

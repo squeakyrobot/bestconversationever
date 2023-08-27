@@ -1,17 +1,18 @@
 import { GOOGLE_OAUTH_CLIENT_SECRET, SESSION_COOKIE_NAME } from '$env/static/private';
-import { PUBLIC_GOOGLE_OAUTH_CLIENT_ID } from '$env/static/public';
-import { assert } from '$lib/assert';
-import { packSession } from '$lib/server/session-utils';
-import { UserType } from '$lib/user';
-import { redirect, type RequestHandler } from '@sveltejs/kit';
 import { LoginTicket, OAuth2Client } from 'google-auth-library';
-
-
+import { PUBLIC_GOOGLE_OAUTH_CLIENT_ID } from '$env/static/public';
+import { RedisClient } from '$lib/server/redis';
+import { assert } from '$lib/assert';
+import { createFromAuthInfo, type AuthenticatorInfo, updateFromAuthInfo } from '$lib/server/user-account';
+import { packSession } from '$lib/server/session-utils';
+import { redirect, type RequestHandler } from '@sveltejs/kit';
+import { characterExists } from '$lib/personality';
 
 export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 
     const redirectURL = `${url.origin}/auth/response/google`;
     const code = await url.searchParams.get('code');
+    const state = await url.searchParams.get('state');
 
     try {
         assert(code, 'No code received');
@@ -24,53 +25,65 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 
         const response = await client.getToken(code);
         client.setCredentials(response.tokens);
-        const user = client.credentials;
+        const userTokens = client.credentials;
 
-        assert(user.id_token, 'No id token provided');
+
+        assert(userTokens.id_token, 'No id token provided by Google auth');
 
         const ticket = await client.verifyIdToken({
-            idToken: user.id_token,
+            idToken: userTokens.id_token,
             requiredAudience: PUBLIC_GOOGLE_OAUTH_CLIENT_ID,
         }) as unknown as LoginTicket;
 
-        assert(ticket && ticket instanceof LoginTicket);
+        assert(ticket && ticket instanceof LoginTicket, 'Unable to verify id token');
+
         const payload = ticket.getPayload();
+        const googleUserId = ticket.getUserId();
 
-        console.log(payload);
+        assert(googleUserId, 'Unable to get Google user id');
+        assert(payload, 'Unable to get auth payload');
 
-        console.log(user);
+        const authInfo: AuthenticatorInfo = {
+            authenticator: 'google',
+            email: payload.email,
+            emailVerified: payload.email_verified || false,
+            id: googleUserId,
+            name: payload.name || undefined,
+            picture: payload.picture || undefined,
+        }
 
-        // TODO: Log them in!!!!!
+        const redisCLient = new RedisClient();
 
-        locals.session.user.type = UserType.Authenticated;
-        locals.session.user.name = payload?.name || '';
-        locals.session.user.avatarUrl = payload?.picture || '';
+        let userAccount = await redisCLient.findUserAccount(authInfo);
+
+
+        if (userAccount) {
+            userAccount = updateFromAuthInfo(userAccount, authInfo);
+        }
+        else {
+            userAccount = createFromAuthInfo(locals.session.user, authInfo);
+        }
+
+        const accountKey = await redisCLient.saveUserAccount(userAccount);
+
+        assert(accountKey, 'Failed to save the user account');
+
+        // Should it get a new sessin id?
+        locals.session.authenticated = true;
+        locals.session.accountId = userAccount.id;
+        locals.session.authTime = Date.now();
+        locals.session.user = userAccount.user;
 
         cookies.set(SESSION_COOKIE_NAME,
             await packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
-
-
-        // {
-        //     iss: 'https://accounts.google.com',
-        //     azp: '513691672899-lev6dshj5k4vslq4pvh5nbte5q6uql62.apps.googleusercontent.com',
-        //     aud: '513691672899-lev6dshj5k4vslq4pvh5nbte5q6uql62.apps.googleusercontent.com',
-        //     sub: '103666588557881622017',
-        //     at_hash: 'DdluQkaMX3KWZQ12Wtmsdw',
-        //     name: 'Ryan Cook',
-        //     picture: 'https://lh3.googleusercontent.com/a/AAcHTtdHquP6fWrXhUdHlQvaT85S0-ryluf8kOILtnJ8y5X_mgxy=s96-c',
-        //     given_name: 'Ryan',
-        //     family_name: 'Cook',
-        //     locale: 'en',
-        //     iat: 1693007573,
-        //     exp: 1693011173
-        //   }
-
     }
     catch (e) {
         console.error(e);
+        throw e;
     }
 
-    throw redirect(303, '/inbox');
+    const redirectUrl = (state && characterExists(state)) ? `/chat/${state}` : '/inbox';
 
+    throw redirect(303, redirectUrl);
 };

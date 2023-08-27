@@ -1,12 +1,11 @@
-import { SettingsQueryModifier, UserType } from "../user";
+import { SettingsQueryModifier, UserType, defaultAvatar, defaultUserName } from "../user";
 import { SESSION_DAYS, SESSION_KEY_1 } from "$env/static/private";
 import { base64url } from '@scure/base';
-import { nanoid } from "nanoid";
 import type { Session } from "$lib/session";
 import { aesGcmDecrypt, aesGcmEncrypt } from "./node-crypto";
+import { newId } from "$lib/util";
 
-const defaultUserName = 'Anonymous';
-const defaultAvatar = '/images/user/missing-user.jpg';
+
 
 export async function getSession(sessionData?: string): Promise<Session> {
     const expires = (parseInt(SESSION_DAYS || "7", 10) * 8.64e+7) + Date.now();
@@ -16,14 +15,15 @@ export async function getSession(sessionData?: string): Promise<Session> {
             const session = await unpackSession(sessionData);
 
             // Migration
-            if (!session.user.settings) {
-                session.user.settings = {
-                    goatFreq: SettingsQueryModifier.Normal,
-                    robotFreq: SettingsQueryModifier.Normal,
-                    skateboardFreq: SettingsQueryModifier.Normal,
-                    unicycleFreq: SettingsQueryModifier.Normal,
-                };
-            }
+            // if (!session.user.settings) {
+            //     session.user.settings = {
+            //         goatFreq: SettingsQueryModifier.Normal,
+            //         robotFreq: SettingsQueryModifier.Normal,
+            //         skateboardFreq: SettingsQueryModifier.Normal,
+            //         unicycleFreq: SettingsQueryModifier.Normal,
+            //     };
+            // }
+
 
             // If the session has not expired, update the expiration date
             // Otherwise it will proceed to creating a new session
@@ -37,14 +37,17 @@ export async function getSession(sessionData?: string): Promise<Session> {
     }
 
     return {
-        version: 1,
-        id: nanoid(12),
+        authenticated: false,
+        accountId: '',
+        authTime: 0,
         expires,
+        id: newId(),
+        version: 1,
         user: {
-            id: nanoid(12),
-            name: defaultUserName,
-            type: UserType.Anonymous,
             avatarUrl: defaultAvatar,
+            displayName: defaultUserName,
+            id: newId(),
+            type: UserType.Anonymous,
             settings: {
                 goatFreq: SettingsQueryModifier.Normal,
                 robotFreq: SettingsQueryModifier.Normal,
@@ -63,14 +66,17 @@ export async function getSession(sessionData?: string): Promise<Session> {
  */
 export async function packSession(session: Session): Promise<string> {
     const minified = {
-        v: session.version,
-        i: session.id,
+        a: session.authenticated,
+        as: session.accountId,
+        at: session.authTime,
         e: session.expires,
+        i: session.id,
+        v: session.version,
         u: {
-            i: session.user.id,
-            n: (session.user.name === defaultUserName) ? undefined : session.user.name,
-            t: session.user.type,
             a: (session.user.avatarUrl === defaultAvatar) ? undefined : session.user.avatarUrl,
+            i: session.user.id,
+            n: (session.user.displayName === defaultUserName) ? undefined : session.user.displayName,
+            t: session.user.type,
             s: {
                 g: session.user.settings.goatFreq,
                 r: session.user.settings.robotFreq,
@@ -97,14 +103,17 @@ async function unpackSession(sessionData: string): Promise<Session> {
     );
 
     return {
-        version: minified.v || 1,
-        id: minified.i,
+        authenticated: minified.a,
+        accountId: minified.as,
+        authTime: minified.at,
         expires: minified.e,
+        id: minified.i,
+        version: minified.v || 1,
         user: {
-            id: minified.u.i,
-            name: minified.u.n || defaultUserName,
-            type: minified.u.t,
             avatarUrl: minified.u.a || defaultAvatar,
+            displayName: minified.u.n || defaultUserName,
+            id: minified.u.i,
+            type: minified.u.t,
             settings: {
                 goatFreq: minified.u.s?.g || SettingsQueryModifier.Normal,
                 robotFreq: minified.u.s?.r || SettingsQueryModifier.Normal,

@@ -8,7 +8,7 @@
 
 	export let data: PageData;
 
-	const user: User = data.session.user;
+	const user: User = data.user;
 	const conversation = data.conversation;
 </script>
 
