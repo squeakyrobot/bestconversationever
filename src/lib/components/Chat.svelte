@@ -251,7 +251,7 @@
 		{#each $conversationStore.messages as message, index}
 			{@const currentAnswer =
 				index === $conversationStore.messages.length - 1 && message.role === 'assistant'}
-			<ChatMessage {message} {currentAnswer} {user} />
+			<ChatMessage {message} {currentAnswer} participants={$conversationStore.participants} />
 		{/each}
 	</div>
 	<div class=" bottom-0 mt-2">

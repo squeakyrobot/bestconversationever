@@ -3,12 +3,10 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import type { PageData } from './$types';
-	import type { User } from '$lib/user';
 	import { fade } from 'svelte/transition';
 
 	export let data: PageData;
 
-	const user: User = data.user;
 	const conversation = data.conversation;
 </script>
 
@@ -19,7 +17,7 @@
 	<Header title={data.pageTitle} titleLink="/chat/{conversation.character}" />
 	<div class="text-xl flex-grow overflow-y-auto">
 		{#each conversation.messages as message}
-			<ChatMessage {message} {user} autoScroll={false} />
+			<ChatMessage {message} participants={conversation.participants} autoScroll={false} />
 		{/each}
 	</div>
 

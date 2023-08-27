@@ -14,7 +14,7 @@ export const POST: RequestHandler = async ({ request, cookies, locals }) => {
         locals.session.user.settings = updatedSettings;
 
         if (locals.session.authenticated) {
-            const redis = new RedisClient();
+            const redis = new RedisClient(locals.session);
             await redis.updateUserSettings(locals.session.accountId, updatedSettings);
         }
 

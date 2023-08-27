@@ -9,12 +9,22 @@ export type MessageExchange = {
     waitingForResponse: boolean;
 }
 
+export type Participant = {
+    displayName: string;
+    avatarUrl?: string;
+};
+
+export type ParticipantList = {
+    [name: string]: Participant;
+};
+
 export type Conversation = {
     character: string;
     conversationId: string;
     shareable: boolean;
     userId: string;
     userName: string;
+    participants: ParticipantList;
     messages: MessageExchange[];
 }
 

@@ -2,9 +2,9 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { RedisClient } from '$lib/server/redis';
 
-export const load = (async ({ params }) => {
+export const load = (async ({ params, locals }) => {
 
-    const conversation = await (new RedisClient()).getConversation(params.conversationId);
+    const conversation = await (new RedisClient(locals.session)).getConversation(params.conversationId);
 
     if (!conversation) {
         throw error(404, 'Conversation not found');

@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 
 export const load = (async ({ locals }) => {
 
-    const redis = new RedisClient();
+    const redis = new RedisClient(locals.session);
     const convoList = await redis.getConversationList(locals.session.user.id);
 
     const titleMsg = (locals.session.user.type !== UserType.Authenticated) ?

@@ -14,17 +14,6 @@ export async function getSession(sessionData?: string): Promise<Session> {
         if (sessionData) {
             const session = await unpackSession(sessionData);
 
-            // Migration
-            // if (!session.user.settings) {
-            //     session.user.settings = {
-            //         goatFreq: SettingsQueryModifier.Normal,
-            //         robotFreq: SettingsQueryModifier.Normal,
-            //         skateboardFreq: SettingsQueryModifier.Normal,
-            //         unicycleFreq: SettingsQueryModifier.Normal,
-            //     };
-            // }
-
-
             // If the session has not expired, update the expiration date
             // Otherwise it will proceed to creating a new session
             if (session.expires < expires) {

@@ -1,6 +1,6 @@
 import type { ChatApiRequest } from "$lib/chat-api-request";
 import type { ChatApiResponse } from "$lib/chat-api-response";
-import type { Conversation, MessageExchange } from "$lib/conversation";
+import type { Conversation, MessageExchange, ParticipantList } from "$lib/conversation";
 import type { User } from "$lib/user";
 import { Character, Personality } from "$lib/personality";
 import { ChatEvents, sendChatEvent } from "$lib/analytics";
@@ -33,6 +33,7 @@ export class ConversationStore {
     public personality: Personality;
     private userId: string;
     private userName: string;
+    private participants: ParticipantList;
 
     public constructor(user: User, personality?: Personality) {
         this.personality = personality || new Personality();
@@ -42,12 +43,27 @@ export class ConversationStore {
         this.shareable = false;
         this.character = this.personality.export().character;
 
+        const characterName = this.personality.getName(this.personality.character);
+
+        this.participants = {};
+
+        this.participants[`${user.displayName}`] = {
+            displayName: user.displayName,
+            avatarUrl: user.avatarUrl || undefined,
+        };
+
+        this.participants[`${characterName}`] = {
+            displayName: characterName,
+            avatarUrl: `/images/characters/${characterName}.svg`,
+        };
+
         this.store = writable<Conversation>({
             character: this.character,
             conversationId: this.conversationId,
             shareable: this.shareable,
             userId: this.userId,
             userName: this.userName,
+            participants: this.participants,
             messages: [],
         });
     }
@@ -70,6 +86,7 @@ export class ConversationStore {
         convoStore.shareable = convo.shareable;
         convoStore.userId = convo.userId;
         convoStore.userName = convo.userName;
+        convoStore.participants = convo.participants;
         convoStore.store = writable<Conversation>(convo);
 
         return convoStore;
@@ -202,6 +219,7 @@ export class ConversationStore {
                 shareable: this.shareable,
                 userId: this.userId,
                 userName: this.userName,
+                participants: this.participants,
                 messages: [...conversation.messages, message,]
             };
         });
