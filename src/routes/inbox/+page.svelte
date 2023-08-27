@@ -5,7 +5,10 @@
 	import { getDisplayTime } from '../../lib/relative-time';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
+<<<<<<< HEAD
 	import SigninAlert from '$lib/components/SigninAlert.svelte';
+=======
+>>>>>>> main
 
 	export let data: PageData;
 
