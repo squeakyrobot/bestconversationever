@@ -4,6 +4,7 @@
 	import type { User } from '$lib/user';
 	import { marked } from 'marked';
 	import { page } from '$app/stores';
+	import { fade, scale, slide } from 'svelte/transition';
 
 	export let currentAnswer: boolean = false;
 	export let message: MessageExchange;
@@ -41,7 +42,12 @@
 	<div class="chat chat-start mt-5 mb-10 text-xl">
 		<div class="chat-image avatar">
 			<div class="w-16 rounded-full">
-				<img src="/images/characters/{message.name}.svg" alt={message.name} title={message.name} />
+				<img
+					crossorigin="anonymous"
+					src="/images/characters/{message.name}.svg"
+					alt={message.name}
+					title={message.name}
+				/>
 			</div>
 		</div>
 		<div class="chat-header">
@@ -57,7 +63,7 @@
 				</div>
 			</div>
 		{:else if currentAnswer}
-			<div class="chat-bubble mt-2" use:doAutoScroll>
+			<div class="chat-bubble mt-2" use:doAutoScroll in:slide>
 				<div class="m-3 overflow-x-auto">
 					<!-- TODO: Add animation & audio -->
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}

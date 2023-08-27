@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             assert(apiRequest.recaptchaToken, 'No Recaptcha Token Provided');
 
             const response = await verifyRecaptcha(apiRequest.recaptchaToken);
-            assert(response.success, 'Recaptcha verification failed');
+            assert(response.success, 'Recaptcha verification failed, error codes: ' + response['error-codes']?.join(', '));
             assert(response.score >= scoreThresholds.chat, 'Are you a bot?\nRecaptcha score too low.');
         }
 
