@@ -27,14 +27,14 @@
 			<div class="w-12 rounded-full">
 				<img
 					crossorigin="anonymous"
-					src={$page.data.session.user.avatarUrl}
-					alt={$page.data.session.user.name}
-					title={$page.data.session.user.name}
+					src={$page.data.user.avatarUrl}
+					alt={$page.data.user.displayName}
+					title={$page.data.user.displayName}
 				/>
 			</div>
 		</div>
 		<div class="pl-4 text-sm sm:text-xl">
-			{$page.data.session.user.name}
+			{$page.data.user.displayName}
 		</div>
 	</div>
 
@@ -43,7 +43,7 @@
 			<a href="/" class="btn btn-ghost">Home</a>
 		{/if}
 		<!-- svelte-ignore a11y-missing-attribute -->
-		<a class="btn btn-accent" onclick="characterChooser.showModal()">
+		<a class="btn btn-neutral" onclick="characterChooser.showModal()">
 			<!-- <svg
 				xmlns="http://www.w3.org/2000/svg"
 				height="1em"
