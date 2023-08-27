@@ -20,7 +20,7 @@
 	export let checkExisting = false;
 	export let onClose: () => void;
 
-	const user: User = $page.data.session.user;
+	const user: User = $page.data.user;
 
 	let chatBox: HTMLInputElement;
 

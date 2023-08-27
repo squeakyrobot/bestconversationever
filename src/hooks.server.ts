@@ -1,6 +1,6 @@
 import type { Handle } from "@sveltejs/kit";
 import { SESSION_COOKIE_NAME } from "$env/static/private";
-import { getSession, packSession } from "$lib/session";
+import { getSession, packSession } from "$lib/server/session-utils";
 
 const securityHeaders = {
     'cross-origin-embedder-policy': 'require-corp',
@@ -23,9 +23,9 @@ export const handle: Handle = async ({ event, resolve }) => {
     const { cookies, locals } = event;
 
     const sessionData = cookies.get(SESSION_COOKIE_NAME);
-    locals.session = getSession(sessionData);
+    locals.session = await getSession(sessionData);
 
-    cookies.set(SESSION_COOKIE_NAME, packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
+    cookies.set(SESSION_COOKIE_NAME, await packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
 
     const response = await resolve(event);
 

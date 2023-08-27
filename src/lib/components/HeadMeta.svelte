@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PUBLIC_GOOGLE_OAUTH_CLIENT_ID } from '$env/static/public';
 
 	export let ogImage = $page.data.pageOgImage || '/images/bce-logo-og.png';
 	export let url = $page.url.href;
@@ -22,3 +23,7 @@
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content="{$page.url.origin}{ogImage}" />
+<meta
+	name="google-signin-client_id"
+	content="{PUBLIC_GOOGLE_OAUTH_CLIENT_ID}.apps.googleusercontent.com"
+/>

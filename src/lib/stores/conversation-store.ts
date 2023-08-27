@@ -7,9 +7,8 @@ import { ChatEvents, sendChatEvent } from "$lib/analytics";
 import { PUBLIC_MAX_CLIENT_MESSAGES } from "$env/static/public";
 import { assert } from "$lib/assert";
 import { estimateGptTokens } from "$lib/token-estimator";
-import { getEnumValue } from "$lib/util";
+import { getEnumValue, newId } from "$lib/util";
 import { getRecaptchaToken } from "$lib/recaptcha-client";
-import { nanoid } from 'nanoid'
 import {
     writable,
     get,
@@ -36,9 +35,9 @@ export class ConversationStore {
 
     public constructor(user: User, personality?: Personality) {
         this.personality = personality || new Personality();
-        this.conversationId = nanoid(10);
+        this.conversationId = newId();
         this.userId = user.id;
-        this.userName = user.name;
+        this.userName = user.displayName;
         this.shareable = false;
         this.character = this.personality.export().character;
 
@@ -90,7 +89,7 @@ export class ConversationStore {
 
         // Add the user message
         const userMsg: MessageExchange = {
-            requestId: nanoid(10),
+            requestId: newId(),
             name: this.userName,
             role: 'user',
             time: new Date(),

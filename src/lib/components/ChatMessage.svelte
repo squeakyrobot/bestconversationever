@@ -7,7 +7,7 @@
 
 	export let currentAnswer: boolean = false;
 	export let message: MessageExchange;
-	export let user: User = $page.data.session.user;
+	export let user: User = $page.data.user;
 	export let autoScroll = true;
 
 	const doAutoScroll = (el: HTMLElement) => {
@@ -21,7 +21,7 @@
 	<div class="chat chat-end">
 		<div class="chat-image avatar">
 			<div class="w-16 rounded-full">
-				<img src={user.avatarUrl} alt="User" />
+				<img crossorigin="anonymous" src={user.avatarUrl} alt="User" />
 			</div>
 		</div>
 		<div class="chat-header">

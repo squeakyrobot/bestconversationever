@@ -2,12 +2,12 @@
 	import '../app.css';
 	import HeadMeta from '$lib/components/HeadMeta.svelte';
 	import { PUBLIC_RECAPTCHA_SITE_KEY } from '$env/static/public';
-	import { page } from '$app/stores';
-	import { userSession } from '$lib/stores/session-store';
 	import { afterUpdate } from 'svelte';
+	import { page } from '$app/stores';
 	import { returnPage } from '$lib/stores/return-page';
+	import { sessionUser } from '$lib/stores/session-user';
 
-	$userSession = $page.data.session;
+	$sessionUser = $page.data.user;
 
 	afterUpdate(() => {
 		$returnPage = $page.url.pathname;
@@ -24,6 +24,3 @@
 <div class="grid place-items-center h-[calc(100dvh)]">
 	<slot />
 </div>
-
-<!-- TEMP -->
-{@html `<!-- ${JSON.stringify($page.data.session, null, 4)} -->`}
