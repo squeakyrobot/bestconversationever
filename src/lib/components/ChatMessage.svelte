@@ -1,13 +1,13 @@
 <script lang="ts">
 	import DOMPurify from 'isomorphic-dompurify';
-	import type { MessageExchange } from '$lib/conversation';
-	import type { User } from '$lib/user';
+	import type { ParticipantList, MessageExchange } from '$lib/conversation';
 	import { marked } from 'marked';
-	import { page } from '$app/stores';
+	import { slide } from 'svelte/transition';
+	import ChatAvatar from './ChatAvatar.svelte';
 
+	export let participants: ParticipantList;
 	export let currentAnswer: boolean = false;
 	export let message: MessageExchange;
-	export let user: User = $page.data.user;
 	export let autoScroll = true;
 
 	const doAutoScroll = (el: HTMLElement) => {
@@ -19,11 +19,7 @@
 
 {#if message.role === 'user'}
 	<div class="chat chat-end">
-		<div class="chat-image avatar">
-			<div class="w-16 rounded-full">
-				<img crossorigin="anonymous" src={user.avatarUrl} alt="User" />
-			</div>
-		</div>
+		<ChatAvatar participant={participants ? participants[message.name] : undefined} {message} />
 		<div class="chat-header">
 			{message.name}
 			<time class="text-xs opacity-70">
@@ -39,11 +35,7 @@
 	</div>
 {:else if (message.role === 'assistant' && message.text) || message.waitingForResponse}
 	<div class="chat chat-start mt-5 mb-10 text-xl">
-		<div class="chat-image avatar">
-			<div class="w-16 rounded-full">
-				<img src="/images/characters/{message.name}.svg" alt={message.name} title={message.name} />
-			</div>
-		</div>
+		<ChatAvatar participant={participants ? participants[message.name] : undefined} {message} />
 		<div class="chat-header">
 			{message.name || 'Finding someone who cares...'}
 			<time class="text-xs opacity-50">
@@ -57,9 +49,8 @@
 				</div>
 			</div>
 		{:else if currentAnswer}
-			<div class="chat-bubble mt-2" use:doAutoScroll>
+			<div class="chat-bubble mt-2" use:doAutoScroll in:slide>
 				<div class="m-3 overflow-x-auto">
-					<!-- TODO: Add animation & audio -->
 					{@html DOMPurify.sanitize(marked.parse(message.text || ''))}
 				</div>
 			</div>

@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
             picture: payload.picture || undefined,
         }
 
-        const redisCLient = new RedisClient();
+        const redisCLient = new RedisClient(locals.session);
 
         let userAccount = await redisCLient.findUserAccount(authInfo);
 
@@ -67,6 +67,35 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
         const accountKey = await redisCLient.saveUserAccount(userAccount);
 
         assert(accountKey, 'Failed to save the user account');
+
+        // TODO: move this code to a fuction and call it selectivly
+        // Move any existing conversations from Anonymous to the new user
+        const redis = new RedisClient(locals.session);
+
+        const convoList = await redis.getConversationList(userAccount.user.id);
+
+        for (const item of convoList) {
+            const convo = await redis.getConversation(item.consversationId);
+
+            if (!convo) {
+                continue;
+            }
+
+            if (convo.participants['Anonymous']) {
+                delete convo.participants['Anonymous'];
+
+                for (const msg of convo.messages.filter((m) => m.role === 'user')) {
+                    msg.name = userAccount.user.displayName;
+                }
+
+                convo.participants[userAccount.user.displayName] = {
+                    displayName: userAccount.user.displayName,
+                    avatarUrl: userAccount.user.avatarUrl,
+                };
+
+                await redis.saveConversation(convo, true);
+            }
+        }
 
         // Should it get a new sessin id?
         locals.session.authenticated = true;

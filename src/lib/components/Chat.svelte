@@ -9,9 +9,10 @@
 	import { page } from '$app/stores';
 	import type { Conversation } from '$lib/conversation';
 	import { goto, preloadData } from '$app/navigation';
-	import { fade, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { getRecaptchaToken } from '$lib/recaptcha-client';
+	import SigninAlert from './SigninAlert.svelte';
 
 	export let conversation: Conversation | undefined = undefined;
 	export let characterName = '';
@@ -245,11 +246,12 @@
 			</div>
 		</div>
 	</div>
-	<div id="messageDiv" class="text-xl flex-grow overflow-y-auto">
+	<div id="messageDiv" class="flex-grow overflow-y-auto">
+		<SigninAlert state={characterName} />
 		{#each $conversationStore.messages as message, index}
 			{@const currentAnswer =
 				index === $conversationStore.messages.length - 1 && message.role === 'assistant'}
-			<ChatMessage {message} {currentAnswer} {user} />
+			<ChatMessage {message} {currentAnswer} participants={$conversationStore.participants} />
 		{/each}
 	</div>
 	<div class=" bottom-0 mt-2">

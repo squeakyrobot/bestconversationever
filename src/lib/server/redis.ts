@@ -1,10 +1,11 @@
-import { packConversationListItem, type Conversation, type ConversationList, unpackConversationListItem, truncateSnippet } from "$lib/conversation";
+import { packConversationListItem, type Conversation, type ConversationList, unpackConversationListItem, truncateSnippet, type ParticipantList } from "$lib/conversation";
 import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from "$env/static/private";
 import { createClient, type RedisClientType } from 'redis';
 import { getEnvironmentPrefix } from "./environment";
 import type { User, UserSettings } from "$lib/user";
 import type { AuthenticatorInfo, UserAccount } from "./user-account";
 import { assert } from "$lib/assert";
+import type { Session } from "$lib/session";
 
 export interface SortedSetIndex {
     key: string;
@@ -30,7 +31,7 @@ export interface UserAccountKey {
 export class RedisClient {
     private internalClient: RedisClientType;
 
-    public constructor() {
+    public constructor(private session: Session) {
         this.internalClient = createClient({ url: REDIS_CONNECTION_URL, socket: { tls: true } });
         this.internalClient.on('error', (e) => { throw e; });
     }
@@ -92,10 +93,27 @@ export class RedisClient {
                 await this.internalClient.connect();
             }
 
-            const result = await this.internalClient.json.get(convoKey);
+            const result = await this.internalClient.json.get(convoKey) as unknown as Conversation | null;
+
+            // Migration: 08/27/2023
+            if (result && !result.participants) {
+                console.log('Migrating Coversatin: Adding participants');
+
+                const participants: ParticipantList = {};
+
+                participants[`${result.userName}`] = { displayName: result.userName };
+                participants[`${result.character}`] = {
+                    displayName: result.character,
+                    avatarUrl: `/images/characters/${result.character}.svg`
+                };
+
+                result.participants = participants;
+
+                await this.saveConversation(result, true);
+            }
 
             // TODO: use a typeguard
-            return result as unknown as Conversation | null;
+            return result;
 
         }
         catch (e) {
@@ -257,7 +275,8 @@ export class RedisClient {
         }
     }
 
-    public async saveConversation(convo: Conversation): Promise<boolean> {
+    // TODO: differeintiate from adding a convo and appendign messages better
+    public async saveConversation(convo: Conversation, forceFullUpdate = false): Promise<boolean> {
         try {
             const chatKey = RedisClient.generateConvoKeys(convo);
 
@@ -272,7 +291,7 @@ export class RedisClient {
 
 
             // Append the new messages if the conversation exists
-            if (keyExists) {
+            if (keyExists && !forceFullUpdate) {
                 redisPromises.push(
                     this.internalClient.json.arrAppend(
                         chatKey.key, '$.messages', ...convo.messages));
