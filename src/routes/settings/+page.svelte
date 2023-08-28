@@ -30,6 +30,7 @@
 				displayName: 'Anonymous',
 				showAvatarInChat: true,
 				useAvatarImage: true,
+				avatarUrl: $sessionUser.settings.avatarUrl,
 				goatFreq: SettingsQueryModifier.Normal,
 				robotFreq: SettingsQueryModifier.Normal,
 				skateboardFreq: SettingsQueryModifier.Normal,
@@ -136,12 +137,12 @@
 					<option value={SettingsQueryModifier.Extra}>Extra</option>
 					<option value={SettingsQueryModifier.Absurd}>Absurd</option>
 				</select>
-				<!-- <div class="form-control mt-4">
+				<div class="form-control mt-4">
 					<label class="label cursor-pointer w-64">
 						<span class="label-text text-lg">Use Avatar Image</span>
 						<input type="checkbox" bind:checked={useAvatarImage} class="checkbox" />
 					</label>
-				</div> -->
+				</div>
 				<div class="form-control mt-4">
 					<label class="label cursor-pointer w-64">
 						<span class="label-text text-lg">Show Avatars in Chat</span>

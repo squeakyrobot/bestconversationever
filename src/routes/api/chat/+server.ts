@@ -21,6 +21,7 @@ import { getErrorMessage } from '$lib/util';
 import { json } from '@sveltejs/kit';
 import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
+import { defaultAvatar } from '$lib/user';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 
@@ -148,7 +149,7 @@ function createConversation(locals: App.Locals, apiRequest: ChatApiRequest, apiR
 
     participants[`${apiRequest.userName}`] = {
         displayName: apiRequest.userName,
-        avatarUrl: locals.session.user.avatarUrl || undefined,
+        avatarUrl: locals.session.user.settings.avatarUrl,
     };
 
     participants[`${apiResponse.personality.name}`] = {

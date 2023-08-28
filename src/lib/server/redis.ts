@@ -2,7 +2,7 @@ import { packConversationListItem, type Conversation, type ConversationList, unp
 import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from "$env/static/private";
 import { createClient, type RedisClientType } from 'redis';
 import { getEnvironmentPrefix } from "./environment";
-import type { User, UserSettings } from "$lib/user";
+import { defaultAvatar, type User, type UserSettings } from "$lib/user";
 import type { AuthenticatorInfo, UserAccount } from "./user-account";
 import { assert } from "$lib/assert";
 import type { Session } from "$lib/session";
@@ -93,22 +93,26 @@ export class RedisClient {
 
             const result = await this.internalClient.json.get(convoKey) as unknown as Conversation | null;
 
-            // Migration: 08/27/2023
-            if (result && !result.participants) {
-                console.log('Migrating Coversation: Adding participants');
+            // // Migration: 08/27/2023
+            // if (result && !result.participants) {
+            //     console.log('Migrating Coversation: Adding participants');
 
-                const participants: ParticipantList = {};
+            //     const participants: ParticipantList = {};
 
-                participants[`${result.userName}`] = { displayName: result.userName };
-                participants[`${result.character}`] = {
-                    displayName: result.character,
-                    avatarUrl: `/images/characters/${result.character}.svg`
-                };
+            //     participants[`${result.userName}`] = {
+            //         displayName: result.userName,
+            //         avatarUrl: defaultAvatar
+            //     };
 
-                result.participants = participants;
+            //     participants[`${result.character}`] = {
+            //         displayName: result.character,
+            //         avatarUrl: `/images/characters/${result.character}.svg`
+            //     };
 
-                await this.saveConversation(result, true);
-            }
+            //     result.participants = participants;
+
+            //     await this.saveConversation(result, true);
+            // }
 
             // TODO: use a typeguard
             return result;

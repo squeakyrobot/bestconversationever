@@ -1,7 +1,7 @@
 import type { ChatApiRequest } from "$lib/chat-api-request";
 import type { ChatApiResponse } from "$lib/chat-api-response";
 import type { Conversation, MessageExchange, ParticipantList } from "$lib/conversation";
-import { defaultUserName, type User } from "$lib/user";
+import type { User } from "$lib/user";
 import { Character, Personality } from "$lib/personality";
 import { ChatEvents, sendChatEvent } from "$lib/analytics";
 import { PUBLIC_MAX_CLIENT_MESSAGES } from "$env/static/public";
@@ -49,7 +49,7 @@ export class ConversationStore {
 
         this.participants[`${this.userName}`] = {
             displayName: this.userName,
-            avatarUrl: user.settings.avatarUrl || undefined,
+            avatarUrl: user.settings.avatarUrl,
         };
 
         this.participants[`${characterName}`] = {

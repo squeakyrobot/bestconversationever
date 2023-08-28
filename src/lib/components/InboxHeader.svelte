@@ -2,6 +2,7 @@
 	import CharacterList from './CharacterList.svelte';
 	import InboxMenu from './InboxMenu.svelte';
 	import { page } from '$app/stores';
+	import { getAvatarInitials } from '$lib/util';
 
 	export let showHome = false;
 </script>
@@ -28,16 +29,24 @@
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 			<!-- svelte-ignore a11y-label-has-associated-control -->
 			<label tabindex="0" class="cursor-pointer inline-flex items-center">
-				<div class="avatar inline">
-					<div class="w-12 rounded-full">
-						<img
-							crossorigin="anonymous"
-							src={$page.data.user.settings.avatarUrl}
-							alt={$page.data.user.settings.displayName}
-							title={$page.data.user.settings.displayName}
-						/>
+				{#if $page.data.user.settings.useAvatarImage}
+					<div class="avatar inline">
+						<div class="w-12 rounded-full">
+							<img
+								crossorigin="anonymous"
+								src={$page.data.user.settings.avatarUrl}
+								alt={$page.data.user.settings.displayName}
+								title={$page.data.user.settings.displayName}
+							/>
+						</div>
 					</div>
-				</div>
+				{:else}
+					<div class="chat-image avatar placeholder">
+						<div class="w-12 rounded-full bg-secondary-focus">
+							<span class="text-xl">{getAvatarInitials($page.data.user.settings.displayName)}</span>
+						</div>
+					</div>
+				{/if}
 				<div class="pl-4 text-sm sm:text-xl">
 					{$page.data.user.settings.displayName}
 				</div>

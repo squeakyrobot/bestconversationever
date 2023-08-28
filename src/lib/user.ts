@@ -9,7 +9,7 @@ export enum SettingsQueryModifier {
 }
 
 export type UserSettings = {
-    avatarUrl?: string;
+    avatarUrl: string;
     useAvatarImage: boolean;
     displayName: string;
     showAvatarInChat: boolean;
