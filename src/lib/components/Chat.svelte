@@ -32,15 +32,21 @@
 
 	let existingConvoId: string | undefined = undefined;
 
-	// const personality = new Personality();
-	const conversationStore = conversation
-		? ConversationStore.fromConversation(user, conversation)
-		: new ConversationStore(
-				user,
-				new Personality({ character: getEnumValue(Character, nameFormat(characterName)) })
-		  );
+	const createConvoStore = () => {
+		if (conversation) {
+			return ConversationStore.fromConversation(user, conversation);
+		} else {
+			const personality = new Personality({
+				character: getEnumValue(Character, nameFormat(characterName))
+			});
 
-	conversationStore.personality.lock(Traits.Character);
+			personality.lock(Traits.Character);
+
+			return new ConversationStore(user, personality);
+		}
+	};
+
+	const conversationStore = createConvoStore();
 
 	onMount(() => {
 		if (conversation) {
