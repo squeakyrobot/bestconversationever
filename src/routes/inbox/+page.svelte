@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Footer from '$lib/components/Footer.svelte';
 	import InboxHeader from '$lib/components/InboxHeader.svelte';
-	import type { PageData } from './$types';
-	import { getDisplayTime } from '../../lib/relative-time';
-	import { fade } from 'svelte/transition';
-	import { onMount } from 'svelte';
 	import SigninAlert from '$lib/components/SigninAlert.svelte';
+	import type { PageData } from './$types';
+	import { fade } from 'svelte/transition';
+	import { getDisplayTime } from '../../lib/relative-time';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
 

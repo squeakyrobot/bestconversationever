@@ -14,7 +14,7 @@
 	class="flex flex-col w-full lg:w-3/4 max-w-6xl border-opacity-50 p-4 h-full"
 	in:fade={{ duration: 400 }}
 >
-	<Header title={data.pageTitle} titleLink="/chat/{conversation.character}" />
+	<Header title={data.pageTitle} />
 	<div class="text-xl flex-grow overflow-y-auto">
 		{#each conversation.messages as message}
 			<ChatMessage {message} participants={conversation.participants} autoScroll={false} />
