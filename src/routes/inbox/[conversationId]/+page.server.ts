@@ -18,7 +18,7 @@ export const load = (async ({ locals, params }) => {
         const conversationId = params.conversationId;
         assert(conversationId, 'Missing conversationId');
 
-        const redis = new RedisClient();
+        const redis = new RedisClient(locals.session);
         const conversation = await redis.getConversation(conversationId);
 
         assert(conversation, error(404, 'Conversation not found'));
@@ -26,6 +26,8 @@ export const load = (async ({ locals, params }) => {
 
         const pageTitle = `Chat with ${conversation.character}`;
         const pageDescription = `Your conversation with ${conversation.character}`;
+
+        // console.log(conversation);
 
         return { conversation, pageTitle, pageDescription };
     }

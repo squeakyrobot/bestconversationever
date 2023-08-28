@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
             assert(response.score >= scoreThresholds.chat, 'Are you a bot?\nRecaptcha score too low.');
         }
 
-        const redis = new RedisClient();
+        const redis = new RedisClient(locals.session);
         let result = await redis.getConversationKey(locals.session.user.id, params.character);
 
         if (result) {

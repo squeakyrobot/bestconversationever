@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
         const conversationId = params.conversationId;
         assert(conversationId, 'Missing conversationId');
 
-        const redis = new RedisClient();
+        const redis = new RedisClient(locals.session);
         const convo = await redis.getConversation(conversationId);
 
         assert(convo, error(404, 'Conversation not found'));

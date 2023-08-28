@@ -9,6 +9,10 @@ export enum SettingsQueryModifier {
 }
 
 export type UserSettings = {
+    avatarUrl: string;
+    useAvatarImage: boolean;
+    displayName: string;
+    showAvatarInChat: boolean;
     goatFreq: SettingsQueryModifier;
     robotFreq: SettingsQueryModifier;
     skateboardFreq: SettingsQueryModifier;
@@ -21,8 +25,6 @@ export enum UserType {
 }
 
 export type User = {
-    avatarUrl: string;
-    displayName: string;
     id: string;
     settings: UserSettings;
     type: UserType;

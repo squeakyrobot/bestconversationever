@@ -33,8 +33,8 @@ export function createFromAuthInfo(user: User, authInfo: AuthenticatorInfo): Use
         user: user,
     }
 
-    userAccount.user.avatarUrl = authInfo.picture || defaultAvatar;
-    userAccount.user.displayName = authInfo.name || defaultUserName;
+    userAccount.user.settings.avatarUrl = authInfo.picture || defaultAvatar;
+    userAccount.user.settings.displayName = authInfo.name || defaultUserName;
     userAccount.user.type = UserType.Authenticated;
 
     return userAccount;
@@ -54,8 +54,15 @@ export function updateFromAuthInfo(userAccount: UserAccount, authInfo: Authentic
 
     // If profile source is the same as the authInfo then update it
     if (userAccount.profileSource === authInfo.authenticator) {
-        userAccount.user.avatarUrl = authInfo.picture || userAccount.user.avatarUrl || defaultAvatar;
-        userAccount.user.displayName = authInfo.name || userAccount.user.displayName || defaultUserName;
+
+        if (userAccount.user.settings.avatarUrl === defaultAvatar) {
+            userAccount.user.settings.avatarUrl = authInfo.picture || defaultAvatar;
+        }
+
+        if (userAccount.user.settings.displayName === defaultUserName) {
+            userAccount.user.settings.displayName = authInfo.name || defaultUserName;
+        }
+
         userAccount.primaryEmail = authInfo.email || undefined;
         userAccount.primaryEmailVerified = authInfo.emailVerified;
     }

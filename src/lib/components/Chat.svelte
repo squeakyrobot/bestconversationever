@@ -8,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import type { Conversation } from '$lib/conversation';
-	import { goto, preloadData } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { getRecaptchaToken } from '$lib/recaptcha-client';
@@ -17,7 +17,7 @@
 	export let conversation: Conversation | undefined = undefined;
 	export let characterName = '';
 	export let initialChat = '';
-	export let preloadRoute = '';
+	// export let preloadRoute = '';
 	export let checkExisting = false;
 	export let onClose: () => void;
 
@@ -32,15 +32,21 @@
 
 	let existingConvoId: string | undefined = undefined;
 
-	// const personality = new Personality();
-	const conversationStore = conversation
-		? ConversationStore.fromConversation(user, conversation)
-		: new ConversationStore(
-				user,
-				new Personality({ character: getEnumValue(Character, nameFormat(characterName)) })
-		  );
+	const createConvoStore = () => {
+		if (conversation) {
+			return ConversationStore.fromConversation(user, conversation);
+		} else {
+			const personality = new Personality({
+				character: getEnumValue(Character, nameFormat(characterName))
+			});
 
-	conversationStore.personality.lock(Traits.Character);
+			personality.lock(Traits.Character);
+
+			return new ConversationStore(user, personality);
+		}
+	};
+
+	const conversationStore = createConvoStore();
 
 	onMount(() => {
 		if (conversation) {
@@ -118,11 +124,11 @@
 		await navigator.clipboard.writeText(shareUrl);
 	};
 
-	const preloadClose = () => {
-		if (preloadRoute) {
-			preloadData(preloadRoute);
-		}
-	};
+	// const preloadClose = () => {
+	// 	if (preloadRoute) {
+	// 		preloadData(preloadRoute);
+	// 	}
+	// };
 </script>
 
 <dialog id="characterChooser" class="modal">
@@ -185,11 +191,7 @@
 		</div>
 		<div class="flex-none">
 			{#if onClose}
-				<button
-					on:mouseenter={preloadClose}
-					on:click={onClose}
-					class="btn btn-square btn-sm btn-ghost"
-				>
+				<button on:click={onClose} class="btn btn-square btn-sm btn-ghost">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						class="h-6 w-6"
@@ -251,7 +253,7 @@
 		{#each $conversationStore.messages as message, index}
 			{@const currentAnswer =
 				index === $conversationStore.messages.length - 1 && message.role === 'assistant'}
-			<ChatMessage {message} {currentAnswer} {user} />
+			<ChatMessage {message} {currentAnswer} participants={$conversationStore.participants} />
 		{/each}
 	</div>
 	<div class=" bottom-0 mt-2">

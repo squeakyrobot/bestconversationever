@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Footer from '$lib/components/Footer.svelte';
 	import InboxHeader from '$lib/components/InboxHeader.svelte';
-	import type { PageData } from './$types';
-	import { getDisplayTime } from '../../lib/relative-time';
-	import { fade } from 'svelte/transition';
-	import { onMount } from 'svelte';
 	import SigninAlert from '$lib/components/SigninAlert.svelte';
+	import type { PageData } from './$types';
+	import { fade } from 'svelte/transition';
+	import { getDisplayTime } from '../../lib/relative-time';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
 
@@ -22,7 +22,6 @@
 <div class="max-w-4xl h-full w-full overflow-hidden" in:fade>
 	<div class="flex flex-col overflow-hidden h-full p-2 w-full">
 		<InboxHeader />
-
 		<div class="flex-grow overflow-y-auto">
 			<SigninAlert />
 			{#each data.convoList as item}
@@ -49,12 +48,14 @@
 
 					<div class="flex-none">
 						{#key refreshTime}
-							<div class="text-sm whitespace-nowrap">{getDisplayTime(item.time)}</div>
+							<div class="text-sm whitespace-nowrap mr-2">{getDisplayTime(item.time)}</div>
 						{/key}
 					</div>
 				</a>
 			{/each}
 		</div>
-		<Footer />
+		<span class="relative hidden sm:block">
+			<Footer />
+		</span>
 	</div>
 </div>

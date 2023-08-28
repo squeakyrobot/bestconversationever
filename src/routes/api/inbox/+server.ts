@@ -18,7 +18,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
             assert(response.success, 'Recaptcha verification failed');
             assert(response.score >= scoreThresholds.chat, 'Are you a bot?\nRecaptcha score too low.');
         }
-        const redis = new RedisClient();
+        const redis = new RedisClient(locals.session);
         const convoList = await redis.getConversationList(locals.session.user.id);
 
         return json(convoList);

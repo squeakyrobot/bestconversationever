@@ -9,7 +9,7 @@ import {
 } from '$env/static/private';
 import type { ChatApiRequest } from '$lib/chat-api-request';
 import type { ChatApiResponse } from '$lib/chat-api-response';
-import type { Conversation, MessageExchange } from '$lib/conversation';
+import type { Conversation, MessageExchange, ParticipantList } from '$lib/conversation';
 import type { RequestHandler } from './$types';
 import { Character, Personality } from '$lib/personality';
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai';
@@ -21,6 +21,7 @@ import { getErrorMessage } from '$lib/util';
 import { json } from '@sveltejs/kit';
 import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
+import { defaultAvatar } from '$lib/user';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 
@@ -40,7 +41,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             assert(apiRequest.recaptchaToken, 'No Recaptcha Token Provided');
 
             const response = await verifyRecaptcha(apiRequest.recaptchaToken);
-            assert(response.success, 'Recaptcha verification failed');
+            assert(response.success, 'Recaptcha verification failed, error codes: ' + response['error-codes']?.join(', '));
             assert(response.score >= scoreThresholds.chat, 'Are you a bot?\nRecaptcha score too low.');
         }
 
@@ -83,7 +84,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const convo: Conversation = createConversation(locals, apiRequest, apiResponse)
 
         // TODO: handle db errors - This simply returns false if the save fails
-        const saved = (USE_DB !== '0') ? await (new RedisClient()).saveConversation(convo) : false;
+        const saved = (USE_DB !== '0') ? await (new RedisClient(locals.session)).saveConversation(convo) : false;
 
         apiResponse.sharable = saved;
 
@@ -144,12 +145,25 @@ function createChatGptMessages(query: QueryResult, apiRequest: ChatApiRequest) {
 }
 
 function createConversation(locals: App.Locals, apiRequest: ChatApiRequest, apiResponse: ChatApiResponse): Conversation {
+    const participants: ParticipantList = {};
+
+    participants[`${apiRequest.userName}`] = {
+        displayName: apiRequest.userName,
+        avatarUrl: locals.session.user.settings.avatarUrl,
+    };
+
+    participants[`${apiResponse.personality.name}`] = {
+        displayName: apiResponse.personality.name,
+        avatarUrl: `/images/characters/${apiResponse.personality.name}.svg`,
+    };
+
     return {
         userId: locals.session.user.id,
         userName: apiRequest.userName,
         character: apiRequest.personality.name,
         conversationId: apiRequest.conversationId,
         shareable: true,
+        participants,
         messages: [
             {
                 requestId: apiRequest.id,

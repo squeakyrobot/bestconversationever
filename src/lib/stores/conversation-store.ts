@@ -1,6 +1,6 @@
 import type { ChatApiRequest } from "$lib/chat-api-request";
 import type { ChatApiResponse } from "$lib/chat-api-response";
-import type { Conversation, MessageExchange } from "$lib/conversation";
+import type { Conversation, MessageExchange, ParticipantList } from "$lib/conversation";
 import type { User } from "$lib/user";
 import { Character, Personality } from "$lib/personality";
 import { ChatEvents, sendChatEvent } from "$lib/analytics";
@@ -17,6 +17,7 @@ import {
     type Subscriber,
     type Invalidator
 } from "svelte/store";
+import { tick } from "svelte";
 
 
 const MAX_CLIENT_MESSAGES = PUBLIC_MAX_CLIENT_MESSAGES ? parseInt(PUBLIC_MAX_CLIENT_MESSAGES, 10) : 15;
@@ -32,14 +33,29 @@ export class ConversationStore {
     public personality: Personality;
     private userId: string;
     private userName: string;
+    private participants: ParticipantList;
 
     public constructor(user: User, personality?: Personality) {
         this.personality = personality || new Personality();
         this.conversationId = newId();
         this.userId = user.id;
-        this.userName = user.displayName;
+        this.userName = user.settings.displayName;
         this.shareable = false;
         this.character = this.personality.export().character;
+
+        const characterName = this.personality.getName(this.personality.character);
+
+        this.participants = {};
+
+        this.participants[`${this.userName}`] = {
+            displayName: this.userName,
+            avatarUrl: user.settings.avatarUrl,
+        };
+
+        this.participants[`${characterName}`] = {
+            displayName: characterName,
+            avatarUrl: `/images/characters/${characterName}.svg`,
+        };
 
         this.store = writable<Conversation>({
             character: this.character,
@@ -47,6 +63,7 @@ export class ConversationStore {
             shareable: this.shareable,
             userId: this.userId,
             userName: this.userName,
+            participants: this.participants,
             messages: [],
         });
     }
@@ -67,8 +84,23 @@ export class ConversationStore {
 
         convoStore.conversationId = convo.conversationId;
         convoStore.shareable = convo.shareable;
-        convoStore.userId = convo.userId;
-        convoStore.userName = convo.userName;
+        convoStore.userId = user.id;
+        convoStore.userName = user.settings.displayName;
+
+        if (!convo.participants[`${convoStore.userName}`]) {
+            convo.participants[`${convoStore.userName}`] = {
+                displayName: convoStore.userName,
+                avatarUrl: user.settings.avatarUrl,
+            };
+        }
+
+        // TODO: If the participants change they will not be updated in the DB
+        // This is because we append messages only. THis happens whenever the user 
+        // changes their display name. The solution could be to update the participants
+        // of existing conversations when the display name changes
+
+        convoStore.participants = convo.participants;
+
         convoStore.store = writable<Conversation>(convo);
 
         return convoStore;
@@ -80,12 +112,6 @@ export class ConversationStore {
      * @param text message from the user to send
      */
     public async sendUserExchange(text: string): Promise<void> {
-        // Its important that we snapshot the messages first because
-        // we use them later to create the chatgpt context. But, we
-        // want to get the user message and respondent waiting indicator
-        // on screen ASAP. If we grab the messages after those are added
-        // it messes up the chatgpt request
-        const previousMessages = [...get<Conversation>(this.store).messages];
 
         // Add the user message
         const userMsg: MessageExchange = {
@@ -99,6 +125,16 @@ export class ConversationStore {
 
         this.addMessage(userMsg);
 
+        await tick();
+
+        const previousMessages = [...get<Conversation>(this.store).messages];
+
+        if (previousMessages.length > MAX_CLIENT_MESSAGES) {
+            previousMessages.splice(0, previousMessages.length - MAX_CLIENT_MESSAGES);
+        }
+
+        const token = await getRecaptchaToken('chat');
+
         // The initial response has no text and has the waiting flag set
         // this is so the UI can provide a loading or waiting indicator
         const personalityOptions = this.personality.export();
@@ -111,13 +147,7 @@ export class ConversationStore {
         };
 
         this.addMessage(responseMsg);
-
-
-        if (previousMessages.length > MAX_CLIENT_MESSAGES) {
-            previousMessages.splice(0, previousMessages.length - MAX_CLIENT_MESSAGES);
-        }
-
-        const token = await getRecaptchaToken('chat');
+        await tick();
 
         const apiRequest: ChatApiRequest = {
             conversationId: this.conversationId,
@@ -203,6 +233,7 @@ export class ConversationStore {
                 shareable: this.shareable,
                 userId: this.userId,
                 userName: this.userName,
+                participants: this.participants,
                 messages: [...conversation.messages, message,]
             };
         });

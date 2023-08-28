@@ -5,12 +5,11 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { returnPage } from '$lib/stores/return-page';
 	import { scale } from 'svelte/transition';
 	import { userChat } from '$lib/stores/user-chat';
 
 	export let data: PageData;
-	let closeRedirect: string | undefined;
+
 	let initialChat = '';
 
 	userChat.subscribe((value) => {
@@ -18,19 +17,14 @@
 	});
 
 	onMount(() => {
-		if (!closeRedirect) {
-			closeRedirect = $returnPage;
-		}
-
 		userChat.update(() => '');
-
 		sendChatEvent(ChatEvents.chatStart, { character: data.characterName || 'NOT_SET' });
 	});
 
 	const onClose = () => {
 		sendChatEvent(ChatEvents.chatClosed, { character: data.characterName || 'NOT_SET' });
 
-		goto(closeRedirect || '/');
+		goto('/inbox');
 	};
 </script>
 
