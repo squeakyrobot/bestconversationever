@@ -24,8 +24,10 @@
 
 <div class="flex justify-between top-0 border-b-2 border-neutral mt-2 mb-2 pl-2 pb-4">
 	<div class="items-center inline-flex">
-		<details id="menuPanel" class="dropdown">
-			<summary class="cursor-pointer inline-flex items-center">
+		<div id="menuPanel" class="dropdown">
+			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+			<!-- svelte-ignore a11y-label-has-associated-control -->
+			<label tabindex="0" class="cursor-pointer inline-flex items-center">
 				<div class="avatar inline">
 					<div class="w-12 rounded-full">
 						<img
@@ -39,9 +41,9 @@
 				<div class="pl-4 text-sm sm:text-xl">
 					{$page.data.user.displayName}
 				</div>
-			</summary>
+			</label>
 			<InboxMenu panel="menuPanel" />
-		</details>
+		</div>
 	</div>
 
 	<div>
