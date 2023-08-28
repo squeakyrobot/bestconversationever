@@ -44,6 +44,7 @@
 
 	onMount(() => {
 		if (conversation) {
+			console.log(conversation);
 			characterName = conversationStore.personality.getName(
 				conversationStore.personality.character
 			);

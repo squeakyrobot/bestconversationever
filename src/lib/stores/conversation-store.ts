@@ -84,9 +84,18 @@ export class ConversationStore {
 
         convoStore.conversationId = convo.conversationId;
         convoStore.shareable = convo.shareable;
-        convoStore.userId = convo.userId;
-        convoStore.userName = convo.userName;
+        convoStore.userId = user.id;
+        convoStore.userName = user.displayName;
+
+        if (!convo.participants[`${user.displayName}`]) {
+            convo.participants[`${user.displayName}`] = {
+                displayName: user.displayName,
+                avatarUrl: user.avatarUrl,
+            };
+        }
+
         convoStore.participants = convo.participants;
+
         convoStore.store = writable<Conversation>(convo);
 
         return convoStore;
