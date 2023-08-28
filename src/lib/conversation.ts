@@ -33,8 +33,6 @@ export type ConversationListItem = {
     consversationId: string;
     characterName: string;
     userId: string;
-    userName: string;
-    snippet?: string;
 }
 
 export type ConversationList = (ConversationListItem & { time: Date })[];
@@ -54,12 +52,12 @@ export function truncateSnippet(text?: string): string {
 }
 
 export function packConversationListItem(convoListItem: ConversationListItem): string {
-    return `${convoListItem.convoKey}|${convoListItem.characterName}|${convoListItem.userId}|${convoListItem.userName}`;
+    return `${convoListItem.convoKey}|${convoListItem.characterName}|${convoListItem.userId}}`;
 }
 
 export function unpackConversationListItem(packed: string): ConversationListItem {
     const parts = packed.split('|');
-    assert(parts.length === 4, 'Cannot unpack conversation list item, wrong number of elements');
+    assert(parts.length === 3 || parts.length === 4, 'Cannot unpack conversation list item, wrong number of elements');
 
     const convoKey = parts[0];
 
@@ -68,6 +66,5 @@ export function unpackConversationListItem(packed: string): ConversationListItem
         consversationId: convoKey.substring(convoKey.lastIndexOf(':') + 1),
         characterName: parts[1],
         userId: parts[2],
-        userName: parts[3]
     }
 }

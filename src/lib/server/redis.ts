@@ -45,8 +45,6 @@ export class RedisClient {
             consversationId: convo.conversationId,
             characterName: convo.character,
             userId: convo.userId,
-            userName: convo.userName,
-            snippet: convo.messages[convo.messages.length - 1].text,
         });
 
         return {

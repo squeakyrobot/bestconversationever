@@ -42,8 +42,7 @@
 				<p class="py-6 text-lg">
 					A site where you can have captivating conversations with various
 					<abbr title="Artificial Intelligence">AI</abbr>
-					personalities. But beware! We save all the messages so we can show them to your friends, family,
-					colleagues, and neighbors. The voyeur section should be coming soon.
+					personalities.
 				</p>
 			</div>
 		</div>
