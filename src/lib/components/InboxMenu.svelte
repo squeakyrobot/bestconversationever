@@ -3,30 +3,43 @@
 	import { UserType } from '$lib/user';
 	import Settings from './Settings.svelte';
 
-	export let panel: string;
+	let hidden = false;
 
 	const closeMenu = () => {
-		const menu = document.querySelector('#' + panel);
-		menu?.removeAttribute('open');
+		const el = document.querySelector('#inboxMenu') as HTMLElement;
+		console.log(el);
+		if (el) {
+			el.blur();
+		}
 	};
+
+	const openSettings = () => {
+		hidden = true;
+		showSettingsDialog();
+	};
+
+	const settingsClosed = () => {
+		closeMenu();
+		hidden = false;
+	};
+
+	let showSettingsDialog: () => void;
+	let closeSettingsDialog: () => void;
 </script>
 
-<!-- <dialog id="settingsModal" class="modal">
-	<form method="dialog" class="modal-box w-11/12 max-w-3xl">
-		<button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-		<Settings />
-		<div class="flex justify-end bottom-0 border-t-2 border-neutral mt-2 pt-4">
-			<button class="btn btn-ghost">Close</button>
-		</div>
-	</form>
-	<form method="dialog" class="modal-backdrop">
-		<button>close</button>
-	</form>
-</dialog> -->
-
-<ul class="p-2 shadow menu dropdown-content z-[1] bg-neutral rounded-box w-80 text-lg">
-	<!-- <li>
-		
+<Settings
+	bind:open={showSettingsDialog}
+	bind:close={closeSettingsDialog}
+	onClose={settingsClosed}
+/>
+<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+<ul
+	id="inboxMenu"
+	tabindex="0"
+	class="p-2 shadow menu dropdown-content z-[1] bg-neutral rounded-box w-80 text-lg"
+	class:hidden
+>
+	<li>
 		<a on:click={openSettings}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +54,7 @@
 			>
 			Settings
 		</a>
-	</li> -->
+	</li>
 	<li>
 		<a href="/about">
 			<svg
@@ -79,9 +92,6 @@
 		</li>
 	{/if}
 	<li class="mb-2 pt-2 mt-2 border-t-2 border-neutral-focus">
-		<!-- svelte-ignore a11y-missing-attribute -->
-		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<a on:click={closeMenu}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
