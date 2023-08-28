@@ -32,14 +32,14 @@
 					<div class="w-12 rounded-full">
 						<img
 							crossorigin="anonymous"
-							src={$page.data.user.avatarUrl}
-							alt={$page.data.user.displayName}
-							title={$page.data.user.displayName}
+							src={$page.data.user.settings.avatarUrl}
+							alt={$page.data.user.settings.displayName}
+							title={$page.data.user.settings.displayName}
 						/>
 					</div>
 				</div>
 				<div class="pl-4 text-sm sm:text-xl">
-					{$page.data.user.displayName}
+					{$page.data.user.settings.displayName}
 				</div>
 			</label>
 			<InboxMenu />

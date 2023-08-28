@@ -48,12 +48,14 @@
 
 					<div class="flex-none">
 						{#key refreshTime}
-							<div class="text-sm whitespace-nowrap">{getDisplayTime(item.time)}</div>
+							<div class="text-sm whitespace-nowrap mr-2">{getDisplayTime(item.time)}</div>
 						{/key}
 					</div>
 				</a>
 			{/each}
 		</div>
-		<Footer />
+		<span class="relative hidden sm:block">
+			<Footer />
+		</span>
 	</div>
 </div>

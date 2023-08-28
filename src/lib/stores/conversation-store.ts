@@ -1,7 +1,7 @@
 import type { ChatApiRequest } from "$lib/chat-api-request";
 import type { ChatApiResponse } from "$lib/chat-api-response";
 import type { Conversation, MessageExchange, ParticipantList } from "$lib/conversation";
-import type { User } from "$lib/user";
+import { defaultUserName, type User } from "$lib/user";
 import { Character, Personality } from "$lib/personality";
 import { ChatEvents, sendChatEvent } from "$lib/analytics";
 import { PUBLIC_MAX_CLIENT_MESSAGES } from "$env/static/public";
@@ -39,7 +39,7 @@ export class ConversationStore {
         this.personality = personality || new Personality();
         this.conversationId = newId();
         this.userId = user.id;
-        this.userName = user.displayName;
+        this.userName = user.settings.displayName;
         this.shareable = false;
         this.character = this.personality.export().character;
 
@@ -47,9 +47,9 @@ export class ConversationStore {
 
         this.participants = {};
 
-        this.participants[`${user.displayName}`] = {
-            displayName: user.displayName,
-            avatarUrl: user.avatarUrl || undefined,
+        this.participants[`${this.userName}`] = {
+            displayName: this.userName,
+            avatarUrl: user.settings.avatarUrl || undefined,
         };
 
         this.participants[`${characterName}`] = {
@@ -85,14 +85,19 @@ export class ConversationStore {
         convoStore.conversationId = convo.conversationId;
         convoStore.shareable = convo.shareable;
         convoStore.userId = user.id;
-        convoStore.userName = user.displayName;
+        convoStore.userName = user.settings.displayName;
 
-        if (!convo.participants[`${user.displayName}`]) {
-            convo.participants[`${user.displayName}`] = {
-                displayName: user.displayName,
-                avatarUrl: user.avatarUrl,
+        if (!convo.participants[`${convoStore.userName}`]) {
+            convo.participants[`${convoStore.userName}`] = {
+                displayName: convoStore.userName,
+                avatarUrl: user.settings.avatarUrl,
             };
         }
+
+        // TODO: If the participants change they will not be updated in the DB
+        // This is because we append messages only. THis happens whenever the user 
+        // changes their display name. The solution could be to update the participants
+        // of existing conversations when the display name changes
 
         convoStore.participants = convo.participants;
 

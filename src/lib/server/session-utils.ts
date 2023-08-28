@@ -5,8 +5,6 @@ import type { Session } from "$lib/session";
 import { aesGcmDecrypt, aesGcmEncrypt } from "./node-crypto";
 import { newId } from "$lib/util";
 
-
-
 export async function getSession(sessionData?: string): Promise<Session> {
     const expires = (parseInt(SESSION_DAYS || "7", 10) * 8.64e+7) + Date.now();
 
@@ -33,11 +31,13 @@ export async function getSession(sessionData?: string): Promise<Session> {
         id: newId(),
         version: 1,
         user: {
-            avatarUrl: defaultAvatar,
-            displayName: defaultUserName,
             id: newId(),
             type: UserType.Anonymous,
             settings: {
+                avatarUrl: defaultAvatar,
+                useAvatarImage: true,
+                displayName: defaultUserName,
+                showAvatarInChat: true,
                 goatFreq: SettingsQueryModifier.Normal,
                 robotFreq: SettingsQueryModifier.Normal,
                 skateboardFreq: SettingsQueryModifier.Normal,
@@ -62,11 +62,13 @@ export async function packSession(session: Session): Promise<string> {
         i: session.id,
         v: session.version,
         u: {
-            a: (session.user.avatarUrl === defaultAvatar) ? undefined : session.user.avatarUrl,
             i: session.user.id,
-            n: (session.user.displayName === defaultUserName) ? undefined : session.user.displayName,
             t: session.user.type,
             s: {
+                a: (session.user.settings.avatarUrl === defaultAvatar) ? undefined : session.user.settings.avatarUrl,
+                ua: session.user.settings.useAvatarImage,
+                n: (session.user.settings.displayName === defaultUserName) ? undefined : session.user.settings.displayName,
+                sa: session.user.settings.showAvatarInChat,
                 g: session.user.settings.goatFreq,
                 r: session.user.settings.robotFreq,
                 s: session.user.settings.skateboardFreq,
@@ -99,11 +101,13 @@ async function unpackSession(sessionData: string): Promise<Session> {
         id: minified.i,
         version: minified.v || 1,
         user: {
-            avatarUrl: minified.u.a || defaultAvatar,
-            displayName: minified.u.n || defaultUserName,
             id: minified.u.i,
             type: minified.u.t,
             settings: {
+                avatarUrl: minified.u.s?.a || defaultAvatar,
+                useAvatarImage: minified.u.s?.ua,
+                displayName: minified.u.s?.n || defaultUserName,
+                showAvatarInChat: minified.u.s?.sa,
                 goatFreq: minified.u.s?.g || SettingsQueryModifier.Normal,
                 robotFreq: minified.u.s?.r || SettingsQueryModifier.Normal,
                 skateboardFreq: minified.u.s?.s || SettingsQueryModifier.Normal,
