@@ -33,6 +33,7 @@ export type ConversationListItem = {
     consversationId: string;
     characterName: string;
     userId: string;
+    snippet?: string;
 }
 
 export type ConversationList = (ConversationListItem & { time: Date })[];

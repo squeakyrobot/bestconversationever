@@ -8,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import type { Conversation } from '$lib/conversation';
-	import { goto, preloadData } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { getRecaptchaToken } from '$lib/recaptcha-client';
@@ -17,7 +17,7 @@
 	export let conversation: Conversation | undefined = undefined;
 	export let characterName = '';
 	export let initialChat = '';
-	export let preloadRoute = '';
+	// export let preloadRoute = '';
 	export let checkExisting = false;
 	export let onClose: () => void;
 
@@ -118,11 +118,11 @@
 		await navigator.clipboard.writeText(shareUrl);
 	};
 
-	const preloadClose = () => {
-		if (preloadRoute) {
-			preloadData(preloadRoute);
-		}
-	};
+	// const preloadClose = () => {
+	// 	if (preloadRoute) {
+	// 		preloadData(preloadRoute);
+	// 	}
+	// };
 </script>
 
 <dialog id="characterChooser" class="modal">
@@ -185,11 +185,7 @@
 		</div>
 		<div class="flex-none">
 			{#if onClose}
-				<button
-					on:mouseenter={preloadClose}
-					on:click={onClose}
-					class="btn btn-square btn-sm btn-ghost"
-				>
+				<button on:click={onClose} class="btn btn-square btn-sm btn-ghost">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						class="h-6 w-6"

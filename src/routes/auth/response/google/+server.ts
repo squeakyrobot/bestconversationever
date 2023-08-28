@@ -85,12 +85,12 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
                 delete convo.participants['Anonymous'];
 
                 for (const msg of convo.messages.filter((m) => m.role === 'user')) {
-                    msg.name = userAccount.user.displayName;
+                    msg.name = userAccount.user.settings.displayName;
                 }
 
-                convo.participants[userAccount.user.displayName] = {
-                    displayName: userAccount.user.displayName,
-                    avatarUrl: userAccount.user.avatarUrl,
+                convo.participants[userAccount.user.settings.displayName] = {
+                    displayName: userAccount.user.settings.displayName,
+                    avatarUrl: userAccount.user.settings.avatarUrl,
                 };
 
                 await redis.saveConversation(convo, true);

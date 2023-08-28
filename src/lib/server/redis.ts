@@ -95,7 +95,7 @@ export class RedisClient {
 
             // Migration: 08/27/2023
             if (result && !result.participants) {
-                console.log('Migrating Coversatin: Adding participants');
+                console.log('Migrating Coversation: Adding participants');
 
                 const participants: ParticipantList = {};
 

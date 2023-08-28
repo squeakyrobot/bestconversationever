@@ -10,7 +10,7 @@
 	import { userChat } from '$lib/stores/user-chat';
 
 	export let data: PageData;
-	let closeRedirect: string | undefined;
+	// let closeRedirect: string | undefined;
 	let initialChat = '';
 
 	userChat.subscribe((value) => {
@@ -18,9 +18,9 @@
 	});
 
 	onMount(() => {
-		if (!closeRedirect) {
-			closeRedirect = $returnPage;
-		}
+		// if (!closeRedirect) {
+		// 	closeRedirect = $returnPage;
+		// }
 
 		userChat.update(() => '');
 
@@ -30,7 +30,7 @@
 	const onClose = () => {
 		sendChatEvent(ChatEvents.chatClosed, { character: data.characterName || 'NOT_SET' });
 
-		goto(closeRedirect || '/');
+		goto('/inbox');
 	};
 </script>
 
