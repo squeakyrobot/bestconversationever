@@ -59,3 +59,13 @@ export function getErrorMessage(error: unknown) {
 export function newId(): string {
     return nanoid(14);
 }
+
+export function getAvatarInitials(name: string): string {
+    const names = name.split(' ');
+
+    if (names.length > 1) {
+        return name.charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+    }
+
+    return name.charAt(0).toUpperCase();
+};
