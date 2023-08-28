@@ -4,7 +4,11 @@
 	import { updateUserSettings } from '$lib/settings';
 	import { sessionUser } from '$lib/stores/session-user';
 
-	export let panel: string;
+	let settingsModal: any;
+
+	export const open = () => settingsModal.showModal();
+	export const close = () => settingsModal.close();
+	export let onClose: () => void;
 
 	// TODO: cleanup all this ugly settings stuff
 	let selectedGoatFreq = SettingsQueryModifier.Normal;
@@ -14,6 +18,9 @@
 	let settings = $sessionUser.settings;
 
 	onMount(() => {
+		settingsModal = document.querySelector('#settingsModal');
+
+		console.log(settingsModal);
 		if (!settings) {
 			settings = {
 				goatFreq: SettingsQueryModifier.Normal,
@@ -56,59 +63,65 @@
 			console.log('Could not update settings');
 		}
 
-		const settingsPanel = document.querySelector(`#${panel}`);
-		settingsPanel?.removeAttribute('open');
+		onClose();
+		close();
 	};
 </script>
 
-<div class="card-body">
-	<h3 class="card-title top-0 pb-1">Settings</h3>
-	<div class="">
-		<div class="pl-2 mt-2 mb-1 text-lg">Goats:</div>
-		<select
-			bind:value={selectedGoatFreq}
-			id="goatFreqSelect"
-			class="select select-bordered w-full max-w-xs"
+<dialog id="settingsModal" class="modal">
+	<form method="dialog" class="modal-box w-11/12 max-w-3xl">
+		<button on:click={onClose} class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+			>✕</button
 		>
-			<option value={SettingsQueryModifier.Normal}>Normal</option>
-			<option value={SettingsQueryModifier.Extra}>Extra</option>
-			<option value={SettingsQueryModifier.Absurd}>Absurd</option>
-		</select>
+		<h3 class="card-title top-0 pb-1">Settings</h3>
+		<div class="">
+			<div class="pl-2 mt-2 mb-1 text-lg">Goats:</div>
+			<select
+				bind:value={selectedGoatFreq}
+				id="goatFreqSelect"
+				class="select select-bordered w-full max-w-xs"
+			>
+				<option value={SettingsQueryModifier.Normal}>Normal</option>
+				<option value={SettingsQueryModifier.Extra}>Extra</option>
+				<option value={SettingsQueryModifier.Absurd}>Absurd</option>
+			</select>
 
-		<div class="pl-2 mt-4 mb-1 text-lg">Robots:</div>
-		<select
-			bind:value={selectedRobotFreq}
-			id="robotFreqSelect"
-			class="select select-bordered w-full max-w-xs"
-		>
-			<option value={SettingsQueryModifier.Normal}>Normal</option>
-			<option value={SettingsQueryModifier.Extra}>Extra</option>
-			<option value={SettingsQueryModifier.Absurd}>Absurd</option>
-		</select>
+			<div class="pl-2 mt-4 mb-1 text-lg">Robots:</div>
+			<select
+				bind:value={selectedRobotFreq}
+				id="robotFreqSelect"
+				class="select select-bordered w-full max-w-xs"
+			>
+				<option value={SettingsQueryModifier.Normal}>Normal</option>
+				<option value={SettingsQueryModifier.Extra}>Extra</option>
+				<option value={SettingsQueryModifier.Absurd}>Absurd</option>
+			</select>
 
-		<div class="pl-2 mt-4 mb-1 text-lg">Skateboards:</div>
-		<select
-			bind:value={selectedSkateboardFreq}
-			id="skateboardFreqSelect"
-			class="select select-bordered w-full max-w-xs"
-		>
-			<option value={SettingsQueryModifier.Normal}>Normal</option>
-			<option value={SettingsQueryModifier.Extra}>Extra</option>
-			<option value={SettingsQueryModifier.Absurd}>Absurd</option>
-		</select>
+			<div class="pl-2 mt-4 mb-1 text-lg">Skateboards:</div>
+			<select
+				bind:value={selectedSkateboardFreq}
+				id="skateboardFreqSelect"
+				class="select select-bordered w-full max-w-xs"
+			>
+				<option value={SettingsQueryModifier.Normal}>Normal</option>
+				<option value={SettingsQueryModifier.Extra}>Extra</option>
+				<option value={SettingsQueryModifier.Absurd}>Absurd</option>
+			</select>
 
-		<div class="pl-2 mt-4 mb-1 text-lg">Unicycles:</div>
-		<select
-			bind:value={selectedUnicycleFreq}
-			id="unicycleFreqSelect"
-			class="select select-bordered w-full max-w-xs"
-		>
-			<option value={SettingsQueryModifier.Normal}>Normal</option>
-			<option value={SettingsQueryModifier.Extra}>Extra</option>
-			<option value={SettingsQueryModifier.Absurd}>Absurd</option>
-		</select>
-	</div>
-	<div class="flex justify-end bottom-0 border-t-2 border-slate-500 mt-2">
-		<button class="btn btn-ghost mt-2" on:click={saveSettings}>Save</button>
-	</div>
-</div>
+			<div class="pl-2 mt-4 mb-1 text-lg">Unicycles:</div>
+			<select
+				bind:value={selectedUnicycleFreq}
+				id="unicycleFreqSelect"
+				class="select select-bordered w-full max-w-xs"
+			>
+				<option value={SettingsQueryModifier.Normal}>Normal</option>
+				<option value={SettingsQueryModifier.Extra}>Extra</option>
+				<option value={SettingsQueryModifier.Absurd}>Absurd</option>
+			</select>
+		</div>
+		<div class="flex justify-end bottom-0 border-t-2 border-neutral mt-2 pt-4">
+			<button class="btn btn-ghost" on:click={saveSettings}>Save</button>
+			<button class="btn btn-ghost" on:click={onClose}>Cancel</button>
+		</div>
+	</form>
+</dialog>

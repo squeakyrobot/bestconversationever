@@ -1,18 +1,46 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { UserType } from '$lib/user';
+	import Settings from './Settings.svelte';
 
-	export let panel: string;
+	let hidden = false;
 
 	const closeMenu = () => {
-		const menu = document.querySelector('#' + panel);
-		menu?.removeAttribute('open');
+		const el = document.querySelector('#inboxMenu') as HTMLElement;
+		console.log(el);
+		if (el) {
+			el.blur();
+		}
 	};
+
+	const openSettings = () => {
+		hidden = true;
+		showSettingsDialog();
+	};
+
+	const settingsClosed = () => {
+		closeMenu();
+		hidden = false;
+	};
+
+	let showSettingsDialog: () => void;
+	let closeSettingsDialog: () => void;
 </script>
 
-<ul class="p-2 shadow menu dropdown-content z-[1] bg-neutral rounded-box w-80 text-lg">
+<Settings
+	bind:open={showSettingsDialog}
+	bind:close={closeSettingsDialog}
+	onClose={settingsClosed}
+/>
+<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+<ul
+	id="inboxMenu"
+	tabindex="0"
+	class="p-2 shadow menu dropdown-content z-[1] bg-neutral rounded-box w-80 text-lg"
+	class:hidden
+>
 	<li>
-		<a>
+		<a on:click={openSettings}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				height="1em"
@@ -63,7 +91,7 @@
 			</a>
 		</li>
 	{/if}
-	<li class="mb-2 pt-2 mt-2 border-t-2">
+	<li class="mb-2 pt-2 mt-2 border-t-2 border-neutral-focus">
 		<a on:click={closeMenu}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
