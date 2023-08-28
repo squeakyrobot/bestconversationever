@@ -22,7 +22,6 @@
 <div class="max-w-4xl h-full w-full overflow-hidden" in:fade>
 	<div class="flex flex-col overflow-hidden h-full p-2 w-full">
 		<InboxHeader />
-
 		<div class="flex-grow overflow-y-auto">
 			<SigninAlert />
 			{#each data.convoList as item}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CharacterList from './CharacterList.svelte';
 	import { page } from '$app/stores';
+	import InboxMenu from './InboxMenu.svelte';
 
 	export let showHome = false;
 </script>
@@ -23,19 +24,24 @@
 
 <div class="flex justify-between top-0 border-b-2 border-neutral mt-2 mb-2 pl-2 pb-4">
 	<div class="items-center inline-flex">
-		<div class="avatar inline">
-			<div class="w-12 rounded-full">
-				<img
-					crossorigin="anonymous"
-					src={$page.data.user.avatarUrl}
-					alt={$page.data.user.displayName}
-					title={$page.data.user.displayName}
-				/>
-			</div>
-		</div>
-		<div class="pl-4 text-sm sm:text-xl">
-			{$page.data.user.displayName}
-		</div>
+		<details id="menuPanel" class="dropdown">
+			<summary class="cursor-pointer inline-flex items-center">
+				<div class="avatar inline">
+					<div class="w-12 rounded-full">
+						<img
+							crossorigin="anonymous"
+							src={$page.data.user.avatarUrl}
+							alt={$page.data.user.displayName}
+							title={$page.data.user.displayName}
+						/>
+					</div>
+				</div>
+				<div class="pl-4 text-sm sm:text-xl">
+					{$page.data.user.displayName}
+				</div>
+			</summary>
+			<InboxMenu panel="menuPanel" />
+		</details>
 	</div>
 
 	<div>
