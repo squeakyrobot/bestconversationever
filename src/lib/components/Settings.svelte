@@ -4,7 +4,7 @@
 	import { updateUserSettings } from '$lib/settings';
 	import { sessionUser } from '$lib/stores/session-user';
 
-	export let panel: string;
+	export let panel: string | undefined;
 
 	// TODO: cleanup all this ugly settings stuff
 	let selectedGoatFreq = SettingsQueryModifier.Normal;
@@ -56,8 +56,10 @@
 			console.log('Could not update settings');
 		}
 
-		const settingsPanel = document.querySelector(`#${panel}`);
-		settingsPanel?.removeAttribute('open');
+		if (panel) {
+			const settingsPanel = document.querySelector(`#${panel}`);
+			settingsPanel?.removeAttribute('open');
+		}
 	};
 </script>
 
@@ -108,7 +110,7 @@
 			<option value={SettingsQueryModifier.Absurd}>Absurd</option>
 		</select>
 	</div>
-	<div class="flex justify-end bottom-0 border-t-2 border-slate-500 mt-2">
+	<div class="flex justify-end bottom-0 mt-2">
 		<button class="btn btn-ghost mt-2" on:click={saveSettings}>Save</button>
 	</div>
 </div>
