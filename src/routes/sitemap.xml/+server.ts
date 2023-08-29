@@ -1,6 +1,5 @@
 import { Character } from '$lib/personality';
 import type { RequestHandler } from './$types';
-import { page } from '$app/stores';
 
 
 export const GET: RequestHandler = async () => {

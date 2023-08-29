@@ -5,6 +5,8 @@
 	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { onMount } from 'svelte';
 	import { userChat } from '$lib/stores/user-chat';
+	import { sessionUser } from '$lib/stores/session-user';
+	import SigninHeader from '$lib/components/SigninHeader.svelte';
 
 	let chatLink: HTMLAnchorElement;
 
@@ -16,6 +18,8 @@
 
 	onMount(async () => {
 		handlePageRecaptcha(await recaptchaVerify('page_view/home'));
+
+		console.log($sessionUser.type);
 	});
 </script>
 
@@ -23,6 +27,8 @@
 	class="flex flex-col w-full lg:w-3/4 max-w-6xl border-opacity-50 p-4 h-full"
 	in:fade={{ duration: 400 }}
 >
+	<SigninHeader />
+
 	<div class="flex-grow">
 		<div class="hero mt-20">
 			<div class="hero-content text-center">
