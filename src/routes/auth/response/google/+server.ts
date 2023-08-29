@@ -3,10 +3,10 @@ import { LoginTicket, OAuth2Client } from 'google-auth-library';
 import { PUBLIC_GOOGLE_OAUTH_CLIENT_ID } from '$env/static/public';
 import { RedisClient } from '$lib/server/redis';
 import { assert } from '$lib/assert';
+import { characterExists } from '$lib/personality';
 import { createFromAuthInfo, type AuthenticatorInfo, updateFromAuthInfo } from '$lib/server/user-account';
 import { packSession } from '$lib/server/session-utils';
 import { redirect, type RequestHandler } from '@sveltejs/kit';
-import { characterExists } from '$lib/personality';
 
 export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 
@@ -102,7 +102,6 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
         locals.session.accountId = userAccount.id;
         locals.session.authTime = Date.now();
         locals.session.user = userAccount.user;
-        locals.session.gptModel = userAccount.gptModel;
 
         cookies.set(SESSION_COOKIE_NAME,
             await packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });

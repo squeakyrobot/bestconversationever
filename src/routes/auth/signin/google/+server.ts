@@ -1,11 +1,11 @@
 import { GOOGLE_OAUTH_CLIENT_SECRET } from "$env/static/private";
+import { OAuth2Client } from "google-auth-library";
 import { PUBLIC_GOOGLE_OAUTH_CLIENT_ID } from "$env/static/public";
 import { characterExists } from "$lib/personality";
 import { redirect, type RequestHandler } from "@sveltejs/kit";
-import { OAuth2Client } from "google-auth-library";
 
 
-export const GET: RequestHandler = async ({ url, params }) => {
+export const GET: RequestHandler = async ({ url }) => {
     const redirectURL = `${url.origin}/auth/response/google`;
     const stateParam = await url.searchParams.get('state');
     let state: string | undefined;

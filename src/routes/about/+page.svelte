@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CharacterList from '$lib/components/CharacterList.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import SigninHeader from '$lib/components/SigninHeader.svelte';
 	import type { PageData } from './$types';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { applyAction, enhance } from '$app/forms';
@@ -32,6 +33,8 @@
 	class="flex flex-col w-full lg:w-3/4 max-w-6xl border-opacity-50 p-4 h-full"
 	in:fade={{ duration: 400 }}
 >
+	<SigninHeader />
+
 	<div class="hero mt-20">
 		<div class="hero-content flex-col md:flex-row">
 			<img src="/images/bce-logo.svg" alt="BCE Logo" class="md:w-1/3 w-2/5" />
@@ -174,7 +177,6 @@
 			</div>
 		{/if}
 		<a href="/" class="link link-primary text-xl lg:text-2xl">Back Home</a><br />
-		<a href="/inbox" class="link link-primary text-xl lg:text-2xl">Inbox (Experimental)</a>
 	</div>
 	<Footer disabled={true} showVersion={true} />
 </div>

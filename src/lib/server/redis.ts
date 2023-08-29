@@ -79,7 +79,7 @@ export class RedisClient {
             return (await this.internalClient.exists(key)) === 1;
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -102,9 +102,9 @@ export class RedisClient {
             return null;
         }
         finally {
-            if (this.internalClient.isReady) {
-                await this.internalClient.disconnect();
-            }
+            // if (this.internalClient.isReady) {
+            //     await this.internalClient.disconnect();
+            // }
         }
     }
 
@@ -134,7 +134,7 @@ export class RedisClient {
 
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -155,7 +155,7 @@ export class RedisClient {
             return false;
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -180,7 +180,7 @@ export class RedisClient {
 
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -206,7 +206,7 @@ export class RedisClient {
             return undefined;
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -250,9 +250,9 @@ export class RedisClient {
             return [];
         }
         finally {
-            if (this.internalClient.isReady) {
-                await this.internalClient.disconnect();
-            }
+            // if (this.internalClient.isReady) {
+            //     await this.internalClient.disconnect();
+            // }
         }
     }
 
@@ -310,9 +310,9 @@ export class RedisClient {
             return false;
         }
         finally {
-            if (this.internalClient.isReady) {
-                await this.internalClient.disconnect();
-            }
+            // if (this.internalClient.isReady) {
+            //     await this.internalClient.disconnect();
+            // }
         }
     }
 }

@@ -6,6 +6,8 @@ import { RECAPTCHA_ENABLED } from '$env/static/private';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 import { scoreThresholds } from '$lib/recaptcha-client';
 
+
+// TODO: Verify if this is used or not and remove it if possible
 export const POST: RequestHandler = async ({ locals, params, request }) => {
     try {
         const reqBody = await request.json() as { recaptchaToken: string };

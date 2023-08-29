@@ -1,23 +1,22 @@
 <script lang="ts">
 	import CharacterList from './CharacterList.svelte';
 	import ChatMessage from './ChatMessage.svelte';
+	import SigninAlert from './SigninAlert.svelte';
+	import type { Conversation } from '$lib/conversation';
 	import type { User } from '$lib/user';
 	import { Character, Personality, Traits } from '$lib/personality';
 	import { ConversationStore } from '$lib/stores/conversation-store';
 	import { getEnumValue, nameFormat } from '$lib/util';
+	import { getRecaptchaToken } from '$lib/recaptcha-client';
+	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import type { Conversation } from '$lib/conversation';
-	import { goto } from '$app/navigation';
-	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { getRecaptchaToken } from '$lib/recaptcha-client';
-	import SigninAlert from './SigninAlert.svelte';
+	import { slide } from 'svelte/transition';
 
 	export let conversation: Conversation | undefined = undefined;
 	export let characterName = '';
 	export let initialChat = '';
-	// export let preloadRoute = '';
 	export let checkExisting = false;
 	export let onClose: () => void;
 
@@ -123,12 +122,6 @@
 	const copyShareUrl = async () => {
 		await navigator.clipboard.writeText(shareUrl);
 	};
-
-	// const preloadClose = () => {
-	// 	if (preloadRoute) {
-	// 		preloadData(preloadRoute);
-	// 	}
-	// };
 </script>
 
 <dialog id="characterChooser" class="modal">

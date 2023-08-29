@@ -1,9 +1,9 @@
 <script lang="ts">
+	import ChatAvatar from './ChatAvatar.svelte';
 	import DOMPurify from 'isomorphic-dompurify';
 	import type { ParticipantList, MessageExchange } from '$lib/conversation';
 	import { marked } from 'marked';
 	import { slide } from 'svelte/transition';
-	import ChatAvatar from './ChatAvatar.svelte';
 
 	export let participants: ParticipantList;
 	export let currentAnswer: boolean = false;
