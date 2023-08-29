@@ -27,7 +27,6 @@ export const load = (async ({ locals, params }) => {
         const pageTitle = `Chat with ${conversation.character}`;
         const pageDescription = `Your conversation with ${conversation.character}`;
 
-        // console.log(conversation);
 
         return { conversation, pageTitle, pageDescription };
     }

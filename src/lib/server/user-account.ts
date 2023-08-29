@@ -67,6 +67,8 @@ export function updateFromAuthInfo(userAccount: UserAccount, authInfo: Authentic
         userAccount.primaryEmailVerified = authInfo.emailVerified;
     }
 
+    userAccount.gptModel = (userAccount.primaryEmail === 'quamtar@gmail.com') ? 'gpt-4' : 'gpt-3.5-turbo';
+
     // things that should always be set
     userAccount.user.type = UserType.Authenticated;
 

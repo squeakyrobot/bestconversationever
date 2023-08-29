@@ -21,7 +21,6 @@ import { getErrorMessage } from '$lib/util';
 import { json } from '@sveltejs/kit';
 import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
-import { defaultAvatar } from '$lib/user';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 

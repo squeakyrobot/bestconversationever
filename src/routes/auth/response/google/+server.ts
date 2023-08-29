@@ -102,6 +102,7 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
         locals.session.accountId = userAccount.id;
         locals.session.authTime = Date.now();
         locals.session.user = userAccount.user;
+        locals.session.gptModel = userAccount.gptModel;
 
         cookies.set(SESSION_COOKIE_NAME,
             await packSession(locals.session), { path: '/', expires: new Date(locals.session.expires) });
