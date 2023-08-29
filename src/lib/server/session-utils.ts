@@ -2,7 +2,7 @@ import { SettingsQueryModifier, UserType, defaultAvatar, defaultUserName } from 
 import { SESSION_DAYS, SESSION_KEY_1 } from "$env/static/private";
 import { base64url } from '@scure/base';
 import type { Session } from "$lib/session";
-import { aesGcmDecrypt, aesGcmEncrypt } from "./node-crypto";
+import { aesGcmDecrypt, aesGcmEncrypt } from "./crypto";
 import { newId } from "$lib/util";
 
 export async function getSession(sessionData?: string): Promise<Session> {

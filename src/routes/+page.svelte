@@ -1,12 +1,12 @@
 <script lang="ts">
 	import CharacterList from '$lib/components/CharacterList.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import SigninHeader from '$lib/components/SigninHeader.svelte';
 	import { fade } from 'svelte/transition';
 	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { onMount } from 'svelte';
-	import { userChat } from '$lib/stores/user-chat';
 	import { sessionUser } from '$lib/stores/session-user';
-	import SigninHeader from '$lib/components/SigninHeader.svelte';
+	import { userChat } from '$lib/stores/user-chat';
 
 	let chatLink: HTMLAnchorElement;
 

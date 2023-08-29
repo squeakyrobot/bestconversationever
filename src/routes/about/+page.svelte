@@ -1,13 +1,13 @@
 <script lang="ts">
 	import CharacterList from '$lib/components/CharacterList.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import SigninHeader from '$lib/components/SigninHeader.svelte';
 	import type { PageData } from './$types';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { applyAction, enhance } from '$app/forms';
 	import { fade } from 'svelte/transition';
 	import { getRecaptchaToken, handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { onMount } from 'svelte';
-	import SigninHeader from '$lib/components/SigninHeader.svelte';
 
 	export let form: FormData;
 	export let data: PageData;

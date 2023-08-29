@@ -1,9 +1,9 @@
 import type { RequestHandler } from './$types';
 import type { UserSettings } from '$lib/user';
-import { packSession } from '$lib/server/session-utils';
+import { RedisClient } from '$lib/server/redis';
 import { SESSION_COOKIE_NAME } from '$env/static/private';
 import { json } from '@sveltejs/kit';
-import { RedisClient } from '$lib/server/redis';
+import { packSession } from '$lib/server/session-utils';
 
 export const POST: RequestHandler = async ({ request, cookies, locals }) => {
     try {

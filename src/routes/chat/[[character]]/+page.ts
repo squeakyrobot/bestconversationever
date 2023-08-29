@@ -1,8 +1,8 @@
 import type { PageLoad } from "./$types";
-import { characterExists } from "$lib/personality";
-import { nameFormat } from "$lib/util";
 import { assert } from "$lib/assert";
+import { characterExists } from "$lib/personality";
 import { error } from '@sveltejs/kit';
+import { nameFormat } from "$lib/util";
 
 export const load = (({ params }) => {
     if (params.character) {

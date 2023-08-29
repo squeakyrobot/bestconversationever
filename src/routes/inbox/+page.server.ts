@@ -1,6 +1,7 @@
+import type { PageServerLoad } from './$types';
 import { RedisClient } from '$lib/server/redis';
 import { UserType } from '$lib/user';
-import type { PageServerLoad } from './$types';
+
 
 export const load = (async ({ locals }) => {
 

@@ -1,7 +1,6 @@
 import { Character } from '$lib/personality';
 import type { RequestHandler } from './$types';
 
-
 export const GET: RequestHandler = async () => {
     // TODO: make this dynamic
     const lastMod = '2023-08-20';
