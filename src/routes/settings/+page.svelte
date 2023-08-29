@@ -150,7 +150,7 @@
 					</label>
 				</div>
 			</div>
-			<div class="flex justify-end bottom-0 border-t-2 border-neutral mt-10 pt-4">
+			<div class="flex justify-end bottom-0 border-t-2 border-neutral mt-5 pt-4">
 				<button class="btn btn-ghost" on:click={saveSettings}>Save</button>
 				<button class="btn btn-ghost" on:click={onClose}>Cancel</button>
 			</div>

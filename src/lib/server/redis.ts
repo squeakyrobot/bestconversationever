@@ -1,12 +1,11 @@
-import { packConversationListItem, type Conversation, type ConversationList, unpackConversationListItem, truncateSnippet, type ParticipantList, type ConversationListItem } from "$lib/conversation";
-import { REDIS_API_ENDPOINT, REDIS_API_KEY, REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from "$env/static/private";
-// import { createClient, type RedisClientType } from 'redis';
-import { getEnvironmentPrefix } from "./environment";
-import type { UserSettings } from "$lib/user";
 import type { AuthenticatorInfo, UserAccount } from "./user-account";
-import { assert } from "$lib/assert";
 import type { Session } from "$lib/session";
-import { createClient, VercelKV } from '@vercel/kv';
+import type { UserSettings } from "$lib/user";
+import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from "$env/static/private";
+import { assert } from "$lib/assert";
+import { createClient, type RedisClientType } from 'redis';
+import { getEnvironmentPrefix } from "./environment";
+import { packConversationListItem, type Conversation, type ConversationList, unpackConversationListItem, truncateSnippet, type ParticipantList } from "$lib/conversation";
 
 export interface SortedSetIndex {
     key: string;
@@ -30,11 +29,11 @@ export interface UserAccountKey {
 }
 
 export class RedisClient {
-    private internalClient: VercelKV;
+    private internalClient: RedisClientType;
 
     public constructor(private session: Session) {
-        this.internalClient = createClient({ url: REDIS_API_ENDPOINT, token: REDIS_API_KEY });
-        // this.internalClient.on('error', (e) => { throw e; });
+        this.internalClient = createClient({ url: REDIS_CONNECTION_URL, socket: { tls: true } });
+        this.internalClient.on('error', (e) => { throw e; });
     }
 
     public static generateConvoKeys(convo: Conversation): ChatKey {
@@ -73,47 +72,26 @@ export class RedisClient {
 
 
     public async keyExists(key: string): Promise<boolean> {
-        // try {
-        //     if (!this.internalClient.isReady) {
-        //         await this.internalClient.connect();
-        //     }
-        return (await this.internalClient.exists(key)) === 1;
-        // }
-        // finally {
-        //     await this.internalClient.disconnect();
-        // }
+        try {
+            if (!this.internalClient.isReady) {
+                await this.internalClient.connect();
+            }
+            return (await this.internalClient.exists(key)) === 1;
+        }
+        finally {
+            await this.internalClient.disconnect();
+        }
     }
 
     public async getConversation(conversationId: string): Promise<Conversation | null> {
         try {
             const convoKey = `${getEnvironmentPrefix()}:convo:${conversationId}`;
 
-            // if (!this.internalClient.isReady) {
-            //     await this.internalClient.connect();
-            // }
+            if (!this.internalClient.isReady) {
+                await this.internalClient.connect();
+            }
 
             const result = await this.internalClient.json.get(convoKey) as unknown as Conversation | null;
-
-            // // Migration: 08/27/2023
-            // if (result && !result.participants) {
-            //     console.log('Migrating Coversation: Adding participants');
-
-            //     const participants: ParticipantList = {};
-
-            //     participants[`${result.userName}`] = {
-            //         displayName: result.userName,
-            //         avatarUrl: defaultAvatar
-            //     };
-
-            //     participants[`${result.character}`] = {
-            //         displayName: result.character,
-            //         avatarUrl: `/images/characters/${result.character}.svg`
-            //     };
-
-            //     result.participants = participants;
-
-            //     await this.saveConversation(result, true);
-            // }
 
             // TODO: use a typeguard
             return result;
@@ -123,11 +101,11 @@ export class RedisClient {
             // TODO: log
             return null;
         }
-        // finally {
-        //     if (this.internalClient.isReady) {
-        //         await this.internalClient.disconnect();
-        //     }
-        // }
+        finally {
+            if (this.internalClient.isReady) {
+                await this.internalClient.disconnect();
+            }
+        }
     }
 
     public async saveUserAccount(account: UserAccount): Promise<string> {
@@ -137,35 +115,35 @@ export class RedisClient {
 
         const accountKey = RedisClient.generateUserAccountKeys(account);
 
-        // try {
-        //     if (!this.internalClient.isReady) {
-        //         await this.internalClient.connect();
-        //     }
+        try {
+            if (!this.internalClient.isReady) {
+                await this.internalClient.connect();
+            }
 
-        const redisTran = this.internalClient.multi();
+            const redisTran = this.internalClient.multi();
 
-        redisTran.json.set(accountKey.key, '$', account);
+            redisTran.json.set(accountKey.key, '$', account);
 
-        for (const index of accountKey.indexes) {
-            redisTran.set(index.key, index.value);
+            for (const index of accountKey.indexes) {
+                redisTran.set(index.key, index.value);
+            }
+
+            await redisTran.exec()
+
+            return accountKey.key;
+
         }
-
-        await redisTran.exec()
-
-        return accountKey.key;
-
-        // }
-        // finally {
-        //     await this.internalClient.disconnect();
-        // }
+        finally {
+            await this.internalClient.disconnect();
+        }
     }
 
     public async updateUserSettings(accountId: string, settings: UserSettings): Promise<boolean> {
 
         try {
-            // if (!this.internalClient.isReady) {
-            //     await this.internalClient.connect();
-            // }
+            if (!this.internalClient.isReady) {
+                await this.internalClient.connect();
+            }
 
             const key = `${getEnvironmentPrefix()}:account:${accountId}`;
             await this.internalClient.json.set(key, '$.user.settings', settings);
@@ -176,107 +154,85 @@ export class RedisClient {
             console.error(e);
             return false;
         }
-        // finally {
-        //     await this.internalClient.disconnect();
-        // }
+        finally {
+            await this.internalClient.disconnect();
+        }
     }
 
     public async findUserAccount(authInfo: AuthenticatorInfo): Promise<UserAccount | null> {
-        // try {
-        //     if (!this.internalClient.isReady) {
-        //         await this.internalClient.connect();
-        //     }
+        try {
+            if (!this.internalClient.isReady) {
+                await this.internalClient.connect();
+            }
 
-        const idxKey = `${getEnvironmentPrefix()}:idx_account:${authInfo.authenticator}-${authInfo.id}`;
+            const idxKey = `${getEnvironmentPrefix()}:idx_account:${authInfo.authenticator}-${authInfo.id}`;
 
-        const accountKey = await this.internalClient.get<string>(idxKey);
+            const accountKey = await this.internalClient.get(idxKey);
 
-        if (accountKey) {
-            const user = await this.internalClient.json.get(accountKey);
+            if (accountKey) {
+                const user = await this.internalClient.json.get(accountKey);
 
-            // TODO: use a typeguard
-            return user as unknown as UserAccount | null;
+                // TODO: use a typeguard
+                return user as unknown as UserAccount | null;
+            }
+
+            return null;
+
         }
-
-        return null;
-
-        // }
-        // finally {
-        //     await this.internalClient.disconnect();
-        // }
+        finally {
+            await this.internalClient.disconnect();
+        }
     }
 
     public async getConversationKey(userId: string, characterName: string): Promise<string | undefined> {
         const key = `${getEnvironmentPrefix()}:idx_convo_user:${userId}`;
 
-        // try {
-        //     if (!this.internalClient.isReady) {
-        //         await this.internalClient.connect();
-        //     }
+        try {
+            if (!this.internalClient.isReady) {
+                await this.internalClient.connect();
+            }
 
-        // const results = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
-        const results = await this.internalClient.zrange<(string | number)[]>(key, 0, -1, { rev: true, withScores: true });
-        characterName = characterName.toLowerCase();
+            const results = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
+            characterName = characterName.toLowerCase();
 
-        for (const item of results) {
-            // TODO: loop over every other item instead
-            if (typeof item === 'string') {
-                const convoListItem = unpackConversationListItem(item);
+            for (const item of results) {
+                const convoListItem = unpackConversationListItem(item.value);
 
                 if (convoListItem.characterName.toLowerCase() === characterName) {
                     return convoListItem.convoKey;
                 }
             }
-        }
 
-        return undefined;
-        // }
-        // finally {
-        //     await this.internalClient.disconnect();
-        // }
+            return undefined;
+        }
+        finally {
+            await this.internalClient.disconnect();
+        }
     }
 
     public async getConversationList(userId: string): Promise<ConversationList> {
         try {
             const key = `${getEnvironmentPrefix()}:idx_convo_user:${userId}`;
 
-            // if (!this.internalClient.isReady) {
-            //     await this.internalClient.connect();
-            // }
-
-            const result = await this.internalClient.zrange<(string | number)[]>(key, 0, -1, { rev: true, withScores: true });
-
-            // TODO: Create a function for this
-            const convoList: ConversationList = [];
-
-            if (result) {
-                let tempItem: ConversationListItem | undefined;
-
-                for (let i = 0; i < result.length; i++) {
-                    if (typeof result[i] === 'string') {
-                        tempItem = unpackConversationListItem(result[i] as string);
-                    }
-                    else {
-                        assert(tempItem);
-                        convoList.push({ time: new Date(result[i] as number), ...tempItem });
-                    }
-                }
+            if (!this.internalClient.isReady) {
+                await this.internalClient.connect();
             }
 
+            const result = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
 
 
-            // const convoList = result.map(item => {
-            //     const time = new Date(item.score);
-            //     const convoListItem = unpackConversationListItem(item.value);
+            const convoList = result.map(item => {
+                const time = new Date(item.score);
+                const convoListItem = unpackConversationListItem(item.value);
 
-            //     return {
-            //         time,
-            //         ...convoListItem,
-            //     }
-            // });
+                return {
+                    time,
+                    ...convoListItem,
+                }
+            });
 
             if (convoList.length > 0) {
-                const snippits = (await this.internalClient.json.mget(
+                const snippits = (await this.internalClient.json.mGet(
                     convoList.map(v => v.convoKey), '$.messages[-1].text'
                 )) as Array<string[]>;
 
@@ -293,11 +249,11 @@ export class RedisClient {
             console.error(e);
             return [];
         }
-        // finally {
-        //     if (this.internalClient.isReady) {
-        //         await this.internalClient.disconnect();
-        //     }
-        // }
+        finally {
+            if (this.internalClient.isReady) {
+                await this.internalClient.disconnect();
+            }
+        }
     }
 
     // TODO: differeintiate from adding a convo and appendign messages better
@@ -306,9 +262,9 @@ export class RedisClient {
             const chatKey = RedisClient.generateConvoKeys(convo);
 
 
-            // if (!this.internalClient.isReady) {
-            //     await this.internalClient.connect();
-            // }
+            if (!this.internalClient.isReady) {
+                await this.internalClient.connect();
+            }
 
 
             const keyExists = (await this.internalClient.exists(chatKey.key)) === 1;
@@ -318,7 +274,7 @@ export class RedisClient {
             // Append the new messages if the conversation exists
             if (keyExists && !forceFullUpdate) {
                 redisPromises.push(
-                    this.internalClient.json.arrappend(
+                    this.internalClient.json.arrAppend(
                         chatKey.key, '$.messages', ...convo.messages));
             }
             else {
@@ -330,7 +286,7 @@ export class RedisClient {
             // Updated the indexes so the score/time gets updated
             for (const item of chatKey.indexes) {
                 redisPromises.push(
-                    this.internalClient.zadd(item.key, { score: item.score, member: item.value }));
+                    this.internalClient.zAdd(item.key, { score: item.score, value: item.value }));
             }
 
             // expire dev items
@@ -353,10 +309,10 @@ export class RedisClient {
         catch (e) {
             return false;
         }
-        // finally {
-        //     if (this.internalClient.isReady) {
-        //         await this.internalClient.disconnect();
-        //     }
-        // }
+        finally {
+            if (this.internalClient.isReady) {
+                await this.internalClient.disconnect();
+            }
+        }
     }
 }
