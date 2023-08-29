@@ -1,8 +1,8 @@
 <script lang="ts">
 	import CharacterList from './CharacterList.svelte';
 	import InboxMenu from './InboxMenu.svelte';
-	import { page } from '$app/stores';
 	import { getAvatarInitials } from '$lib/util';
+	import { page } from '$app/stores';
 
 	export let showHome = false;
 </script>

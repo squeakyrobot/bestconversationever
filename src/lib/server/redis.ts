@@ -1,11 +1,11 @@
-import { packConversationListItem, type Conversation, type ConversationList, unpackConversationListItem, truncateSnippet, type ParticipantList } from "$lib/conversation";
+import type { AuthenticatorInfo, UserAccount } from "./user-account";
+import type { Session } from "$lib/session";
+import type { UserSettings } from "$lib/user";
 import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from "$env/static/private";
+import { assert } from "$lib/assert";
 import { createClient, type RedisClientType } from 'redis';
 import { getEnvironmentPrefix } from "./environment";
-import { defaultAvatar, type User, type UserSettings } from "$lib/user";
-import type { AuthenticatorInfo, UserAccount } from "./user-account";
-import { assert } from "$lib/assert";
-import type { Session } from "$lib/session";
+import { packConversationListItem, type Conversation, type ConversationList, unpackConversationListItem, truncateSnippet, type ParticipantList } from "$lib/conversation";
 
 export interface SortedSetIndex {
     key: string;
@@ -79,7 +79,7 @@ export class RedisClient {
             return (await this.internalClient.exists(key)) === 1;
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -93,27 +93,6 @@ export class RedisClient {
 
             const result = await this.internalClient.json.get(convoKey) as unknown as Conversation | null;
 
-            // // Migration: 08/27/2023
-            // if (result && !result.participants) {
-            //     console.log('Migrating Coversation: Adding participants');
-
-            //     const participants: ParticipantList = {};
-
-            //     participants[`${result.userName}`] = {
-            //         displayName: result.userName,
-            //         avatarUrl: defaultAvatar
-            //     };
-
-            //     participants[`${result.character}`] = {
-            //         displayName: result.character,
-            //         avatarUrl: `/images/characters/${result.character}.svg`
-            //     };
-
-            //     result.participants = participants;
-
-            //     await this.saveConversation(result, true);
-            // }
-
             // TODO: use a typeguard
             return result;
 
@@ -123,9 +102,9 @@ export class RedisClient {
             return null;
         }
         finally {
-            if (this.internalClient.isReady) {
-                await this.internalClient.disconnect();
-            }
+            // if (this.internalClient.isReady) {
+            //     await this.internalClient.disconnect();
+            // }
         }
     }
 
@@ -155,7 +134,7 @@ export class RedisClient {
 
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -176,7 +155,7 @@ export class RedisClient {
             return false;
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -201,7 +180,7 @@ export class RedisClient {
 
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -227,7 +206,7 @@ export class RedisClient {
             return undefined;
         }
         finally {
-            await this.internalClient.disconnect();
+            // await this.internalClient.disconnect();
         }
     }
 
@@ -271,9 +250,9 @@ export class RedisClient {
             return [];
         }
         finally {
-            if (this.internalClient.isReady) {
-                await this.internalClient.disconnect();
-            }
+            // if (this.internalClient.isReady) {
+            //     await this.internalClient.disconnect();
+            // }
         }
     }
 
@@ -331,9 +310,9 @@ export class RedisClient {
             return false;
         }
         finally {
-            if (this.internalClient.isReady) {
-                await this.internalClient.disconnect();
-            }
+            // if (this.internalClient.isReady) {
+            //     await this.internalClient.disconnect();
+            // }
         }
     }
 }

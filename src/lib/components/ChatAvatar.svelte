@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { MessageExchange, Participant } from '$lib/conversation';
-	import { sessionUser } from '$lib/stores/session-user';
 	import { getAvatarInitials } from '$lib/util';
+	import { sessionUser } from '$lib/stores/session-user';
 
 	export let participant: Participant | undefined;
 	export let message: MessageExchange;

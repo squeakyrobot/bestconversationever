@@ -7,7 +7,7 @@
 	export let title = $page.data.pageTitle || 'Best Conversation Ever';
 	export let description =
 		$page.data.pageDescription ||
-		'A site where you can have captivating conversations with various AI personalities. But beware! We save all the messages so we can show them to your friends, family, colleagues, and neighbors.';
+		'A site where you can have captivating conversations with various AI personalities.';
 </script>
 
 <title>{title}</title>

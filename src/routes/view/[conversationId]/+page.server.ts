@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
 import { RedisClient } from '$lib/server/redis';
+import { error } from '@sveltejs/kit';
 
 export const load = (async ({ params, locals }) => {
 

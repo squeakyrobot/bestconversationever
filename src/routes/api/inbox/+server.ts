@@ -1,10 +1,10 @@
 import type { RequestHandler } from './$types';
-import { RedisClient } from '$lib/server/redis';
-import { json } from '@sveltejs/kit';
 import { RECAPTCHA_ENABLED } from '$env/static/private';
+import { RedisClient } from '$lib/server/redis';
 import { assert } from '$lib/assert';
-import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
+import { json } from '@sveltejs/kit';
 import { scoreThresholds } from '$lib/recaptcha-client';
+import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
     try {
