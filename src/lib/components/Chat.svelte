@@ -9,7 +9,7 @@
 	import { getEnumValue, nameFormat } from '$lib/util';
 	import { getRecaptchaToken } from '$lib/recaptcha-client';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { quintOut } from 'svelte/easing';
 	import { slide } from 'svelte/transition';
@@ -87,8 +87,15 @@
 		}
 	};
 
-	const sendChatMessage = (e?: SubmitEvent) => {
+	const sendChatMessage = async (e?: SubmitEvent) => {
 		sendingChat = true;
+
+		await tick();
+		if ($conversationStore.archived) {
+			await archiveAction();
+			// TODO: Add toast message that the convo is back in the inbox
+		}
+
 		conversationStore.sendUserExchange(currentChat).then(() => (sendingChat = false));
 		currentChat = '';
 
@@ -117,8 +124,30 @@
 		}
 	};
 
-	const archiveConvoClick = () => {
-		console.log('Archive clicked');
+	const archiveAction = async (): Promise<boolean> => {
+		const apiCall = await fetch(`/api/inbox/archive`, {
+			method: 'POST',
+			body: JSON.stringify({
+				action: $conversationStore.archived ? 'unarchive' : 'archive',
+				conversationId: $conversationStore.conversationId,
+				recaptchaToken: await getRecaptchaToken('inbox/archive')
+			})
+		});
+
+		const apiResponse = (await apiCall.json()) as { success: boolean };
+
+		return apiResponse.success;
+	};
+
+	const archiveConvoClick = async () => {
+		const response = await archiveAction();
+
+		if (response) {
+			goto('/inbox');
+		} else {
+			// TODO: Show message
+			console.error('Could not archive conversation');
+		}
 	};
 
 	const copyShareUrl = async () => {

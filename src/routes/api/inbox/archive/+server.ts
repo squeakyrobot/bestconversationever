@@ -8,7 +8,11 @@ import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
     try {
-        const reqBody = await request.json() as { recaptchaToken: string };
+        const reqBody = await request.json() as {
+            action: 'archive' | 'unarchive',
+            recaptchaToken: string,
+            conversationId: string
+        };
 
         if (RECAPTCHA_ENABLED !== "0") {
             assert(reqBody.recaptchaToken, 'No Recaptcha Token Provided');
@@ -18,14 +22,23 @@ export const POST: RequestHandler = async ({ locals, request }) => {
             assert(response.success, 'Recaptcha verification failed');
             assert(response.score >= scoreThresholds.chat, 'Are you a bot?\nRecaptcha score too low.');
         }
-
         const redis = new RedisClient(locals.session);
-        const convoList = await redis.getConversationList(locals.session.user.id);
+        const conversation = await redis.getConversation(reqBody.conversationId);
 
-        return json(convoList);
+        assert(conversation, `Could not find conversatin to ${reqBody.action}`);
+        assert(conversation.userId === locals.session.user.id, `Cannot ${reqBody.action} conversations for other users`);
+
+        if (reqBody.action === 'archive') {
+            await redis.archiveConversation(conversation);
+        }
+        else {
+            await redis.unarchiveConversation(conversation);
+        }
+
+        return json({ success: true });
     }
     catch (e) {
-        console.error('Failed to retrieve inbox from api', e);
-        return json([]);
+        console.error('Failed to archive conversation', e);
+        return json({ success: false });
     }
 };
