@@ -5,6 +5,7 @@ import { assert } from '$lib/assert';
 import { json } from '@sveltejs/kit';
 import { scoreThresholds } from '$lib/recaptcha-client';
 import { verifyRecaptcha } from '$lib/server/recaptcha-verify';
+import { UserType } from '$lib/user';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
     try {
@@ -22,6 +23,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
             assert(response.success, 'Recaptcha verification failed');
             assert(response.score >= scoreThresholds.chat, 'Are you a bot?\nRecaptcha score too low.');
         }
+
+        assert(locals.session.user.type === UserType.Authenticated, 'Only authenticated users can archive');
+
         const redis = new RedisClient(locals.session);
         const conversation = await redis.getConversation(reqBody.conversationId);
 
