@@ -157,6 +157,7 @@ function createConversation(locals: App.Locals, apiRequest: ChatApiRequest, apiR
     };
 
     return {
+        archived: false,
         userId: locals.session.user.id,
         userName: apiRequest.userName,
         character: apiRequest.personality.name,
