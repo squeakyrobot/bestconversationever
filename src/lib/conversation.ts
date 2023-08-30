@@ -19,6 +19,7 @@ export type ParticipantList = {
 };
 
 export type Conversation = {
+    archived: boolean;
     character: string;
     conversationId: string;
     shareable: boolean;

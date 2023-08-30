@@ -3,15 +3,16 @@
 	import ChatMessage from './ChatMessage.svelte';
 	import SigninAlert from './SigninAlert.svelte';
 	import type { Conversation } from '$lib/conversation';
-	import type { User } from '$lib/user';
 	import { Character, Personality, Traits } from '$lib/personality';
 	import { ConversationStore } from '$lib/stores/conversation-store';
+	import { UserType, type User } from '$lib/user';
 	import { getEnumValue, nameFormat } from '$lib/util';
 	import { getRecaptchaToken } from '$lib/recaptcha-client';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { quintOut } from 'svelte/easing';
+	import { sessionUser } from '$lib/stores/session-user';
 	import { slide } from 'svelte/transition';
 
 	export let conversation: Conversation | undefined = undefined;
@@ -47,13 +48,11 @@
 
 	const conversationStore = createConvoStore();
 
-	onMount(() => {
-		if (conversation) {
-			characterName = conversationStore.personality.getName(
-				conversationStore.personality.character
-			);
-		}
+	if (conversation) {
+		characterName = conversationStore.personality.getName(conversationStore.personality.character);
+	}
 
+	onMount(() => {
 		if (initialChat) {
 			currentChat = initialChat;
 			sendChatMessage();
@@ -89,8 +88,15 @@
 		}
 	};
 
-	const sendChatMessage = (e?: SubmitEvent) => {
+	const sendChatMessage = async (e?: SubmitEvent) => {
 		sendingChat = true;
+
+		await tick();
+		if ($conversationStore.archived) {
+			await archiveAction();
+			// TODO: Add toast message that the convo is back in the inbox
+		}
+
 		conversationStore.sendUserExchange(currentChat).then(() => (sendingChat = false));
 		currentChat = '';
 
@@ -116,6 +122,32 @@
 		} else {
 			copyLinkModal.showModal();
 			document.getElementById('shareUrlInput').select();
+		}
+	};
+
+	const archiveAction = async (): Promise<boolean> => {
+		const apiCall = await fetch(`/api/inbox/archive`, {
+			method: 'POST',
+			body: JSON.stringify({
+				action: $conversationStore.archived ? 'unarchive' : 'archive',
+				conversationId: $conversationStore.conversationId,
+				recaptchaToken: await getRecaptchaToken('inbox/archive')
+			})
+		});
+
+		const apiResponse = (await apiCall.json()) as { success: boolean };
+
+		return apiResponse.success;
+	};
+
+	const archiveConvoClick = async () => {
+		const response = await archiveAction();
+
+		if (response) {
+			goto('/inbox');
+		} else {
+			// TODO: Show message
+			console.error('Could not archive conversation');
 		}
 	};
 
@@ -229,6 +261,7 @@
 								viewBox="0 0 448 512"
 								stroke="currentColor"
 								fill="currentColor"
+								class="mr-1"
 							>
 								<path
 									d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
@@ -237,6 +270,27 @@
 							Share Conversation
 						</button>
 					</li>
+					{#if $sessionUser.type === UserType.Authenticated}
+						<li>
+							<button
+								on:click={archiveConvoClick}
+								class={$conversationStore.messages.length < 2 ? 'btn-disabled text-base-100' : ''}
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									height="1em"
+									viewBox="0 0 512 512"
+									stroke="currentColor"
+									fill="currentColor"
+									class="mr-1"
+									><path
+										d="M32 32H480c17.7 0 32 14.3 32 32V96c0 17.7-14.3 32-32 32H32C14.3 128 0 113.7 0 96V64C0 46.3 14.3 32 32 32zm0 128H480V416c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V160zm128 80c0 8.8 7.2 16 16 16H336c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16z"
+									/></svg
+								>
+								{#if $conversationStore.archived}Unarchive{:else}Archive{/if}
+							</button>
+						</li>
+					{/if}
 				</ul>
 			</div>
 		</div>

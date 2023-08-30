@@ -7,6 +7,7 @@ const ENVIRONMENT = process.env.VERCEL_ENV || process.env.NODE_ENV || 'productio
  * @returns 
  */
 export function getEnvironmentPrefix(environment: string = ENVIRONMENT): string {
+
     switch (environment.toLowerCase()) {
         case 'production':
         case 'prod':
@@ -21,3 +22,5 @@ export function getEnvironmentPrefix(environment: string = ENVIRONMENT): string 
             return 'u';
     }
 }
+
+export const environmetPrefix = getEnvironmentPrefix();

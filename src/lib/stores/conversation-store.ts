@@ -58,6 +58,7 @@ export class ConversationStore {
         };
 
         this.store = writable<Conversation>({
+            archived: false,
             character: this.character,
             conversationId: this.conversationId,
             shareable: this.shareable,
@@ -227,15 +228,10 @@ export class ConversationStore {
                 conversation.messages.pop();
             }
 
-            return {
-                character: this.character,
-                conversationId: this.conversationId,
-                shareable: this.shareable,
-                userId: this.userId,
-                userName: this.userName,
-                participants: this.participants,
-                messages: [...conversation.messages, message,]
-            };
+            conversation.shareable = this.shareable;
+            conversation.messages.push(message);
+
+            return conversation;
         });
     }
 }

@@ -9,9 +9,9 @@ export const load = (async ({ locals }) => {
     const convoList = await redis.getConversationList(locals.session.user.id);
 
     const titleMsg = (locals.session.user.type !== UserType.Authenticated) ?
-        'Not signed in' : convoList.length + ' conversations';
+        ' - Not signed in' : '';
 
-    const pageTitle = `Inbox - ${titleMsg}`;
+    const pageTitle = `Inbox${titleMsg}`;
     const pageDescription = (locals.session.user.type !== UserType.Authenticated) ?
         'You are not logged in. Create an account or login to save your chats.' :
         '';

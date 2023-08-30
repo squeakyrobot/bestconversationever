@@ -10,6 +10,8 @@
 
 	export let data: PageData;
 
+	const closeRedirect = $returnPage;
+
 	onMount(() => {
 		sendChatEvent(ChatEvents.chatStart, { character: data.conversation.character });
 	});
@@ -17,7 +19,7 @@
 	const onClose = async () => {
 		sendChatEvent(ChatEvents.chatClosed, { character: data.conversation.character });
 
-		goto('/inbox');
+		goto(closeRedirect || '/inbox');
 	};
 
 	afterUpdate(() => {

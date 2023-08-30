@@ -7,6 +7,11 @@ export default {
     extend: {},
     screens: {
       'xs': '380px',
+      'hover-hover': { 'raw': '(hover: hover)' },
+      'hover-none': { 'raw': '(hover: none)' },
+      'pointer-coarse': { 'raw': '(pointer: coarse)' },
+      'pointer-fine': { 'raw': '(pointer: fine)' },
+      'pointer-none': { 'raw': '(pointer: none)' },
       ...defaultTheme.screens,
     },
   },

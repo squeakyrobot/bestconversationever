@@ -4,7 +4,7 @@ import type { UserSettings } from '$lib/user';
 import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from '$env/static/private';
 import { assert } from '$lib/assert';
 import { createClient, type RedisClientType } from 'redis';
-import { getEnvironmentPrefix } from './environment';
+import { environmetPrefix } from './environment';
 import {
     packConversationListItem,
     truncateSnippet,
@@ -34,18 +34,28 @@ export interface UserAccountKey {
     indexes: LookupIndex[];
 }
 
+let internalClient: RedisClientType;
+
 export class RedisClient {
-    private internalClient: RedisClientType;
 
     public constructor(private session: Session) {
-        this.internalClient = createClient({ url: REDIS_CONNECTION_URL, socket: { tls: true } });
-        this.internalClient.on('error', (e) => { throw e; });
+        if (!internalClient) {
+            internalClient = createClient({ url: REDIS_CONNECTION_URL, socket: { tls: true } });
+            internalClient.on('error', (e) => { throw e; });
+        }
+    }
+
+    public static generateUserIndex(userId: string, type: 'inbox' | 'archive' = 'inbox'): string {
+        return `${environmetPrefix}:idx_convo_user:${type === 'archive' ? 'archive:' : ''}${userId}`;
+    }
+
+    public static generateConvoKey(convo: Conversation): string {
+        return `${environmetPrefix}:convo:${convo.conversationId}`;
     }
 
     public static generateConvoKeys(convo: Conversation): ChatKey {
-        const prefix = getEnvironmentPrefix();
         const time = Date.now();
-        const convoKey = `${prefix}:convo:${convo.conversationId}`;
+        const convoKey = RedisClient.generateConvoKey(convo);
         const idxValue = packConversationListItem({
             convoKey,
             consversationId: convo.conversationId,
@@ -57,47 +67,34 @@ export class RedisClient {
             key: convoKey,
             indexes: [
                 // { key: `${prefix}:idx_convo_time`, score: time, member: convoKey },
-                { key: `${prefix}:idx_convo_user:${convo.userId}`, score: time, value: idxValue },
-                { key: `${prefix}:idx_convo_char:${convo.character.toLowerCase()}`, score: time, value: idxValue },
+                { key: RedisClient.generateUserIndex(convo.userId), score: time, value: idxValue },
+                { key: `${environmetPrefix}:idx_convo_char:${convo.character.toLowerCase()}`, score: time, value: idxValue },
             ]
         }
     }
 
     public static generateUserAccountKeys(account: UserAccount): UserAccountKey {
-        const prefix = getEnvironmentPrefix();
-
-        const key = `${prefix}:account:${account.id}`;
+        const key = `${environmetPrefix}:account:${account.id}`;
         const indexes: LookupIndex[] = [];
 
         for (const item of account.authSources) {
-            indexes.push({ key: `${prefix}:idx_account:${item.authenticator}-${item.id}`, value: key });
+            indexes.push({ key: `${environmetPrefix}:idx_account:${item.authenticator}-${item.id}`, value: key });
         }
 
         return { key, indexes };
     }
 
-
+    @connect
     public async keyExists(key: string): Promise<boolean> {
-        try {
-            if (!this.internalClient.isReady) {
-                await this.internalClient.connect();
-            }
-            return (await this.internalClient.exists(key)) === 1;
-        }
-        finally {
-            // await this.internalClient.disconnect();
-        }
+        return (await internalClient.exists(key)) === 1;
     }
 
+    @connect
     public async getConversation(conversationId: string): Promise<Conversation | null> {
         try {
-            const convoKey = `${getEnvironmentPrefix()}:convo:${conversationId}`;
+            const convoKey = `${environmetPrefix}:convo:${conversationId}`;
 
-            if (!this.internalClient.isReady) {
-                await this.internalClient.connect();
-            }
-
-            const result = await this.internalClient.json.get(convoKey) as unknown as Conversation | null;
+            const result = await internalClient.json.get(convoKey) as unknown as Conversation | null;
 
             // TODO: use a typeguard
             return result;
@@ -107,13 +104,9 @@ export class RedisClient {
             // TODO: log
             return null;
         }
-        finally {
-            // if (this.internalClient.isReady) {
-            //     await this.internalClient.disconnect();
-            // }
-        }
     }
 
+    @connect
     public async saveUserAccount(account: UserAccount): Promise<string> {
 
         assert(account.authSources.length > 0,
@@ -121,40 +114,27 @@ export class RedisClient {
 
         const accountKey = RedisClient.generateUserAccountKeys(account);
 
-        try {
-            if (!this.internalClient.isReady) {
-                await this.internalClient.connect();
-            }
+        const redisTran = internalClient.multi();
 
-            const redisTran = this.internalClient.multi();
+        redisTran.json.set(accountKey.key, '$', account);
 
-            redisTran.json.set(accountKey.key, '$', account);
-
-            for (const index of accountKey.indexes) {
-                redisTran.set(index.key, index.value);
-            }
-
-            await redisTran.exec();
-
-            await this.expireDevItems([accountKey.key, ...accountKey.indexes.map((i) => i.key)]);
-
-            return accountKey.key;
-
+        for (const index of accountKey.indexes) {
+            redisTran.set(index.key, index.value);
         }
-        finally {
-            // await this.internalClient.disconnect();
-        }
+
+        await redisTran.exec();
+
+        await this.expireDevItems([accountKey.key, ...accountKey.indexes.map((i) => i.key)]);
+
+        return accountKey.key;
     }
 
+    @connect
     public async updateUserSettings(accountId: string, settings: UserSettings): Promise<boolean> {
 
         try {
-            if (!this.internalClient.isReady) {
-                await this.internalClient.connect();
-            }
-
-            const key = `${getEnvironmentPrefix()}:account:${accountId}`;
-            await this.internalClient.json.set(key, '$.user.settings', settings);
+            const key = `${environmetPrefix}:account:${accountId}`;
+            await internalClient.json.set(key, '$.user.settings', settings);
 
             return true;
         }
@@ -162,71 +142,50 @@ export class RedisClient {
             console.error(e);
             return false;
         }
-        finally {
-            // await this.internalClient.disconnect();
-        }
     }
 
+    @connect
     public async findUserAccount(authInfo: AuthenticatorInfo): Promise<UserAccount | null> {
-        try {
-            if (!this.internalClient.isReady) {
-                await this.internalClient.connect();
-            }
 
-            const idxKey = `${getEnvironmentPrefix()}:idx_account:${authInfo.authenticator}-${authInfo.id}`;
+        const idxKey = `${environmetPrefix}:idx_account:${authInfo.authenticator}-${authInfo.id}`;
 
-            const accountKey = await this.internalClient.get(idxKey);
+        const accountKey = await internalClient.get(idxKey);
 
-            if (accountKey) {
-                const user = await this.internalClient.json.get(accountKey);
+        if (accountKey) {
+            const user = await internalClient.json.get(accountKey);
 
-                // TODO: use a typeguard
-                return user as unknown as UserAccount | null;
-            }
-
-            return null;
-
+            // TODO: use a typeguard
+            return user as unknown as UserAccount | null;
         }
-        finally {
-            // await this.internalClient.disconnect();
-        }
+
+        return null;
     }
 
+    @connect
     public async getConversationKey(userId: string, characterName: string): Promise<string | undefined> {
-        const key = `${getEnvironmentPrefix()}:idx_convo_user:${userId}`;
+        const key = `${environmetPrefix}:idx_convo_user:${userId}`;
 
-        try {
-            if (!this.internalClient.isReady) {
-                await this.internalClient.connect();
+        const results = await internalClient.zRangeWithScores(key, 0, -1, { REV: true });
+        characterName = characterName.toLowerCase();
+
+        for (const item of results) {
+            const convoListItem = unpackConversationListItem(item.value);
+
+            if (convoListItem.characterName.toLowerCase() === characterName) {
+                return convoListItem.convoKey;
             }
-
-            const results = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
-            characterName = characterName.toLowerCase();
-
-            for (const item of results) {
-                const convoListItem = unpackConversationListItem(item.value);
-
-                if (convoListItem.characterName.toLowerCase() === characterName) {
-                    return convoListItem.convoKey;
-                }
-            }
-
-            return undefined;
         }
-        finally {
-            // await this.internalClient.disconnect();
-        }
+
+        return undefined;
+
     }
 
-    public async getConversationList(userId: string): Promise<ConversationList> {
+    @connect
+    public async getConversationList(userId: string, archived = false): Promise<ConversationList> {
         try {
-            const key = `${getEnvironmentPrefix()}:idx_convo_user:${userId}`;
+            const key = RedisClient.generateUserIndex(userId, archived ? 'archive' : 'inbox');
 
-            if (!this.internalClient.isReady) {
-                await this.internalClient.connect();
-            }
-
-            const result = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
+            const result = await internalClient.zRangeWithScores(key, 0, -1, { REV: true });
 
             if (!result) {
                 return [];
@@ -246,7 +205,7 @@ export class RedisClient {
 
             // Get and add the conversation snipets to display in the inbox
             if (convoList.length > 0) {
-                const snippits = (await this.internalClient.json.mGet(
+                const snippits = (await internalClient.json.mGet(
                     convoList.map(v => v.convoKey), '$.messages[-1].text'
                 )) as Array<string[]>;
 
@@ -266,74 +225,136 @@ export class RedisClient {
             console.error(e);
             return [];
         }
-        finally {
-            // if (this.internalClient.isReady) {
-            //     await this.internalClient.disconnect();
-            // }
+    }
+
+    @connect
+    public async archiveConversation(conversation: Conversation): Promise<void> {
+
+        if (!conversation || conversation.archived) {
+            return;
         }
+
+        const convoKey = RedisClient.generateConvoKey(conversation);
+        const inboxKey = RedisClient.generateUserIndex(conversation.userId);
+        const archiveKey = RedisClient.generateUserIndex(conversation.userId, 'archive');
+
+
+        const inbox = await internalClient.zRangeWithScores(inboxKey, 0, -1, { REV: true });
+        let inboxItem: SortedSetIndex | undefined = undefined;
+
+        for (const item of inbox) {
+            if (item.value.startsWith(convoKey)) {
+                inboxItem = { key: inboxKey, score: item.score, value: item.value };
+            }
+        }
+
+        assert(inboxItem, 'Could not find conversation in inbox to archive');
+
+        conversation.archived = true;
+
+        const redisTran = internalClient.multi();
+        redisTran.json.set(convoKey, '$', conversation);
+        redisTran.zAdd(archiveKey, { score: inboxItem.score, value: inboxItem.value });
+        redisTran.zRem(inboxKey, inboxItem.value);
+        await redisTran.exec();
+    }
+
+    @connect
+    public async unarchiveConversation(conversation: Conversation): Promise<void> {
+
+        if (!conversation || !conversation.archived) {
+            return;
+        }
+
+        const convoKey = RedisClient.generateConvoKey(conversation);
+        const inboxKey = RedisClient.generateUserIndex(conversation.userId);
+        const archiveKey = RedisClient.generateUserIndex(conversation.userId, 'archive');
+
+
+        const archived = await internalClient.zRangeWithScores(archiveKey, 0, -1, { REV: true });
+        let archivedItem: SortedSetIndex | undefined = undefined;
+
+        for (const item of archived) {
+            if (item.value.startsWith(convoKey)) {
+                archivedItem = { key: inboxKey, score: item.score, value: item.value };
+            }
+        }
+
+        assert(archivedItem, 'Could not find conversation in inbox to archive');
+
+        conversation.archived = false;
+
+        const redisTran = internalClient.multi();
+        redisTran.json.set(convoKey, '$', conversation);
+        redisTran.zAdd(inboxKey, { score: archivedItem.score, value: archivedItem.value });
+        redisTran.zRem(archiveKey, archivedItem.value);
+        await redisTran.exec();
     }
 
     // TODO: differeintiate from adding a convo and appendign messages better
+    @connect
     public async saveConversation(convo: Conversation, forceFullUpdate = false): Promise<boolean> {
         try {
-            const chatKey = RedisClient.generateConvoKeys(convo);
-
-
-            if (!this.internalClient.isReady) {
-                await this.internalClient.connect();
-            }
-
-
-            const keyExists = (await this.internalClient.exists(chatKey.key)) === 1;
+            const convoKey = RedisClient.generateConvoKeys(convo);
+            const keyExists = (await internalClient.exists(convoKey.key)) === 1;
             const redisPromises: Promise<unknown>[] = [];
 
 
             // Append the new messages if the conversation exists
             if (keyExists && !forceFullUpdate) {
                 redisPromises.push(
-                    this.internalClient.json.arrAppend(
-                        chatKey.key, '$.messages', ...convo.messages));
+                    internalClient.json.arrAppend(
+                        convoKey.key, '$.messages', ...convo.messages));
             }
             else {
                 redisPromises.push(
-                    this.internalClient.json.set(
-                        chatKey.key, '$', convo));
+                    internalClient.json.set(
+                        convoKey.key, '$', convo));
             }
 
             // Updated the indexes so the score/time gets updated
-            for (const item of chatKey.indexes) {
+            for (const item of convoKey.indexes) {
                 redisPromises.push(
-                    this.internalClient.zAdd(item.key, { score: item.score, value: item.value }));
+                    internalClient.zAdd(item.key, { score: item.score, value: item.value }));
             }
 
             await Promise.all(redisPromises);
 
-            await this.expireDevItems([chatKey.key, ...chatKey.indexes.map((i) => i.key)]);
+            await this.expireDevItems([convoKey.key, ...convoKey.indexes.map((i) => i.key)]);
 
             return true;
         }
         catch (e) {
             return false;
         }
-        finally {
-            // if (this.internalClient.isReady) {
-            //     await this.internalClient.disconnect();
-            // }
-        }
     }
 
+    @connect
     private async expireDevItems(keys: string[]): Promise<void> {
-        if (getEnvironmentPrefix() !== 'prod') {
+        if (environmetPrefix !== 'prod') {
             const redisPromises: Promise<unknown>[] = [];
 
             const ttl = parseInt(REDIS_DEV_ITEM_TTL_SECONDS || '86400', 10);
 
             for (const key of keys) {
                 redisPromises.push(
-                    this.internalClient.expire(key, ttl));
+                    internalClient.expire(key, ttl));
             }
 
             await Promise.all(redisPromises);
         }
+    }
+}
+
+
+function connect(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalValue = descriptor.value;
+
+    descriptor.value = async function (...args: unknown[]) {
+        if (!internalClient.isReady) {
+            await internalClient.connect();
+        }
+
+        return originalValue.apply(this, args);
     }
 }
