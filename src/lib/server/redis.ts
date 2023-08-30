@@ -1,11 +1,17 @@
-import type { AuthenticatorInfo, UserAccount } from "./user-account";
-import type { Session } from "$lib/session";
-import type { UserSettings } from "$lib/user";
-import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from "$env/static/private";
-import { assert } from "$lib/assert";
+import type { AuthenticatorInfo, UserAccount } from './user-account';
+import type { Session } from '$lib/session';
+import type { UserSettings } from '$lib/user';
+import { REDIS_CONNECTION_URL, REDIS_DEV_ITEM_TTL_SECONDS } from '$env/static/private';
+import { assert } from '$lib/assert';
 import { createClient, type RedisClientType } from 'redis';
-import { getEnvironmentPrefix } from "./environment";
-import { packConversationListItem, type Conversation, type ConversationList, unpackConversationListItem, truncateSnippet, type ParticipantList } from "$lib/conversation";
+import { getEnvironmentPrefix } from './environment';
+import {
+    packConversationListItem,
+    truncateSnippet,
+    type Conversation,
+    type ConversationList,
+    unpackConversationListItem,
+} from '$lib/conversation';
 
 export interface SortedSetIndex {
     key: string;
@@ -128,7 +134,9 @@ export class RedisClient {
                 redisTran.set(index.key, index.value);
             }
 
-            await redisTran.exec()
+            await redisTran.exec();
+
+            await this.expireDevItems([accountKey.key, ...accountKey.indexes.map((i) => i.key)]);
 
             return accountKey.key;
 
@@ -220,6 +228,10 @@ export class RedisClient {
 
             const result = await this.internalClient.zRangeWithScores(key, 0, -1, { REV: true });
 
+            if (!result) {
+                return [];
+            }
+
 
             const convoList = result.map(item => {
                 const time = new Date(item.score);
@@ -231,13 +243,18 @@ export class RedisClient {
                 }
             });
 
+
+            // Get and add the conversation snipets to display in the inbox
             if (convoList.length > 0) {
                 const snippits = (await this.internalClient.json.mGet(
                     convoList.map(v => v.convoKey), '$.messages[-1].text'
                 )) as Array<string[]>;
 
+
                 for (let i = 0; i < convoList.length; i++) {
-                    convoList[i].snippet = truncateSnippet(snippits[i][0] as string);
+                    if (snippits[i] && snippits[i][0]) {
+                        convoList[i].snippet = truncateSnippet(snippits[i][0] as string);
+                    }
                 }
             }
 
@@ -289,20 +306,9 @@ export class RedisClient {
                     this.internalClient.zAdd(item.key, { score: item.score, value: item.value }));
             }
 
-            // expire dev items
-            if (getEnvironmentPrefix() !== 'prod') {
-                const ttl = parseInt(REDIS_DEV_ITEM_TTL_SECONDS || "86400", 10);
-
-                redisPromises.push(this.internalClient.expire(chatKey.key, ttl));
-
-                for (const item of chatKey.indexes) {
-                    redisPromises.push(
-                        this.internalClient.expire(item.key, ttl));
-                }
-
-            }
-
             await Promise.all(redisPromises);
+
+            await this.expireDevItems([chatKey.key, ...chatKey.indexes.map((i) => i.key)]);
 
             return true;
         }
@@ -313,6 +319,21 @@ export class RedisClient {
             // if (this.internalClient.isReady) {
             //     await this.internalClient.disconnect();
             // }
+        }
+    }
+
+    private async expireDevItems(keys: string[]): Promise<void> {
+        if (getEnvironmentPrefix() !== 'prod') {
+            const redisPromises: Promise<unknown>[] = [];
+
+            const ttl = parseInt(REDIS_DEV_ITEM_TTL_SECONDS || '86400', 10);
+
+            for (const key of keys) {
+                redisPromises.push(
+                    this.internalClient.expire(key, ttl));
+            }
+
+            await Promise.all(redisPromises);
         }
     }
 }
