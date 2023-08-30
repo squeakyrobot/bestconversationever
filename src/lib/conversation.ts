@@ -53,7 +53,7 @@ export function truncateSnippet(text?: string): string {
 }
 
 export function packConversationListItem(convoListItem: ConversationListItem): string {
-    return `${convoListItem.convoKey}|${convoListItem.characterName}|${convoListItem.userId}}`;
+    return `${convoListItem.convoKey}|${convoListItem.characterName}|${convoListItem.userId}`;
 }
 
 export function unpackConversationListItem(packed: string): ConversationListItem {

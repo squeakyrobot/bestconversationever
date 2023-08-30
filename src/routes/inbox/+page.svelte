@@ -41,9 +41,11 @@
 
 					<div class="grow ml-4 overflow-hidden">
 						<div class="text-xl">{item.characterName}</div>
-						<div class="opacity-60 truncate">
-							{item.snippet}
-						</div>
+						{#if item.snippet}
+							<div class="opacity-60 truncate">
+								{item.snippet}
+							</div>
+						{/if}
 					</div>
 
 					<div class="flex-none">
