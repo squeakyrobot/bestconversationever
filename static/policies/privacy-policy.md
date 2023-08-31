@@ -1,6 +1,6 @@
 # Privacy Policy for Best Conversation Ever
 
-**Effective Date:** [Date]
+**Effective Date:** 08/32/2023
 
 ## 1. Introduction
 
@@ -49,16 +49,14 @@ We respect your rights under the General Data Protection Regulation (GDPR) and t
 
 To exercise these rights or if you have any questions about how we handle your personal information, please contact us using the information provided below.
 
-## 8. Contact Us
-
-If you have any questions or concerns about this Privacy Policy, please contact us:
-- Email: [bce-info@squeakyrobot.com](mailto:bce-info@squeakyrobot.com)
-- Contact Form: [https://bestconversationever.com/contact](https://bestconversationever.com/contact)
-
-## 9. Changes to This Privacy Policy
+## 8. Changes to This Privacy Policy
 
 We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. We recommend reviewing this Privacy Policy periodically for any changes. By using our Website and App after such revisions, you consent to the updated terms of the Privacy Policy.
 
-Thank you for using Best Conversation Ever!
+## 9. Contact Us
 
-**Company Address:** La Mesa, CA, USA
+If you have any questions or concerns about this Privacy Policy, please contact us:
+- Online Contact Form: [https://bestconversationever.com/contact](https://bestconversationever.com/contact)
+
+  
+Thank you for using Best Conversation Ever!

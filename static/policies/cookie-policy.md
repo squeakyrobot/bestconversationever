@@ -1,6 +1,6 @@
 # Cookie Policy for Best Conversation Ever
 
-**Effective Date:** [Date]
+**Effective Date:** 08/32/2023
 
 ## 1. Introduction
 
@@ -30,9 +30,8 @@ We may update this Cookie Policy from time to time. We will notify you of any ch
 ## 6. Contact Us
 
 If you have any questions or concerns about this Cookie Policy, please contact us:
-- Email: [bce-info@squeakyrobot.com](mailto:bce-info@squeakyrobot.com)
-- Contact Form: [https://bestconversationever.com/contact](https://bestconversationever.com/contact)
+- Online Contact Form: [https://bestconversationever.com/contact](https://bestconversationever.com/contact)
 
+  
 Thank you for using Best Conversation Ever!
 
-**Company Address:** La Mesa, CA, USA
