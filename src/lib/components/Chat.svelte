@@ -270,7 +270,7 @@
 							Share Conversation
 						</button>
 					</li>
-					{#if $sessionUser.type === UserType.Authenticated}
+					{#if $sessionUser?.type === UserType.Authenticated}
 						<li>
 							<button
 								on:click={archiveConvoClick}

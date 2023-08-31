@@ -7,6 +7,7 @@
 	import { returnPage } from '$lib/stores/return-page';
 	import { sessionUser } from '$lib/stores/session-user';
 	import { updateUserSettings } from '$lib/settings';
+	import { page } from '$app/stores';
 
 	let closeRedirect: string | undefined;
 
@@ -18,9 +19,11 @@
 	let showAvatarInChat = true;
 	let useAvatarImage = true;
 	let displayName = 'Anonymous';
-	let settings = $sessionUser.settings;
+	let settings = $page.data.user.settings;
 
 	onMount(() => {
+		$sessionUser = $page.data.user;
+
 		if (!closeRedirect) {
 			closeRedirect = $returnPage;
 		}

@@ -5,7 +5,6 @@
 	import { fade } from 'svelte/transition';
 	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { onMount } from 'svelte';
-	import { sessionUser } from '$lib/stores/session-user';
 	import { userChat } from '$lib/stores/user-chat';
 
 	let chatLink: HTMLAnchorElement;
@@ -18,8 +17,6 @@
 
 	onMount(async () => {
 		handlePageRecaptcha(await recaptchaVerify('page_view/home'));
-
-		console.log($sessionUser.type);
 	});
 </script>
 

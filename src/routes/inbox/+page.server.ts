@@ -16,6 +16,6 @@ export const load = (async ({ locals }) => {
         'You are not logged in. Create an account or login to save your chats.' :
         '';
 
-    return { pageTitle, pageDescription, convoList };
+    return { user: locals.session.user, pageTitle, pageDescription, convoList };
 
 }) satisfies PageServerLoad;

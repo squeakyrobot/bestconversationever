@@ -7,14 +7,15 @@ import { getErrorMessage } from "$lib/util";
 import { scoreThresholds } from "$lib/recaptcha-client";
 import { verifyRecaptcha } from "$lib/server/recaptcha-verify";
 
-export const load = (({ cookies }) => {
+export const load = (({ cookies, locals }) => {
 
     const formSubmitted = !!cookies.get(CONTACT_SENT_COOKIE_NAME);
 
     return {
+        user: locals.session.user,
         formSubmitted,
-        pageTitle: 'About having the best conversation ever',
-        pageDescription: 'Learn more about the site',
+        pageTitle: 'Contact Us',
+        pageDescription: 'Got a technical issue? Want to send feedback about your experience? Leave us a message.',
     };
 }) satisfies PageServerLoad;
 

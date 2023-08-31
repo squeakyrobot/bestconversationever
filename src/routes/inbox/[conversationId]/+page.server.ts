@@ -5,16 +5,6 @@ import { error } from '@sveltejs/kit';
 
 export const load = (async ({ locals, params }) => {
     try {
-
-        // if (RECAPTCHA_ENABLED !== "0") {
-        //     assert(reqBody.recaptchaToken, 'No Recaptcha Token Provided');
-
-        //     const response = await verifyRecaptcha(reqBody.recaptchaToken);
-
-        //     assert(response.success, 'Recaptcha verification failed');
-        //     assert(response.score >= scoreThresholds.chat, 'Are you a bot?\nRecaptcha score too low.');
-        // }
-
         const conversationId = params.conversationId;
         assert(conversationId, 'Missing conversationId');
 
@@ -28,7 +18,7 @@ export const load = (async ({ locals, params }) => {
         const pageDescription = `Your conversation with ${conversation.character}`;
 
 
-        return { conversation, pageTitle, pageDescription };
+        return { user: locals.session.user, conversation, pageTitle, pageDescription };
     }
     catch (e) {
         console.error(e);
