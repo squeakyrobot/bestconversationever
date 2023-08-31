@@ -7,9 +7,15 @@
 	import { returnPage } from '$lib/stores/return-page';
 	import { sessionUser } from '$lib/stores/session-user';
 
-	$sessionUser = $page.data.user;
-
 	afterUpdate(() => {
+		// We are setting this here because having it in a +layout.server.ts
+		// and then earlier in the cycle messed up prerendering on the pages
+		// that need it. How it is now some pages may still need to pass in
+		// the user in the PageData and set it on the sessionUer as needed
+		if ($page.data.user) {
+			$sessionUser = $page.data.user;
+		}
+
 		$returnPage = $page.url.pathname;
 	});
 </script>

@@ -7,8 +7,8 @@
 	export let message: MessageExchange;
 </script>
 
-{#if participant && participant.avatarUrl && (message.role === 'assistant' || $sessionUser.settings.useAvatarImage)}
-	<div class="chat-image avatar" class:hidden={!$sessionUser.settings.showAvatarInChat}>
+{#if participant && participant.avatarUrl && (message.role === 'assistant' || $sessionUser?.settings?.useAvatarImage)}
+	<div class="chat-image avatar" class:hidden={!$sessionUser?.settings?.showAvatarInChat}>
 		<div class="w-16 rounded-full">
 			<img
 				crossorigin="anonymous"
@@ -19,7 +19,10 @@
 		</div>
 	</div>
 {:else}
-	<div class="chat-image avatar placeholder" class:hidden={!$sessionUser.settings.showAvatarInChat}>
+	<div
+		class="chat-image avatar placeholder"
+		class:hidden={!$sessionUser?.settings?.showAvatarInChat}
+	>
 		<div
 			class="w-16 rounded-full {message.role === 'user'
 				? 'bg-secondary-focus'

@@ -18,5 +18,5 @@ export const load = (async ({ params, locals }) => {
     const pageDescription = `Conversation between ${conversation.character} and ${userName}`;
     const pageOgImage = `/images/characters/${conversation.character}-view-og.png`;
 
-    return { conversation, pageTitle, pageDescription, pageOgImage };
+    return { user: locals.session.user, conversation, pageTitle, pageDescription, pageOgImage };
 }) satisfies PageServerLoad;

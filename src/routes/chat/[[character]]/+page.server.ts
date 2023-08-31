@@ -1,10 +1,10 @@
-import type { PageLoad } from "./$types";
+import type { PageServerLoad } from "./$types";
 import { assert } from "$lib/assert";
 import { characterExists } from "$lib/personality";
 import { error } from '@sveltejs/kit';
 import { nameFormat } from "$lib/util";
 
-export const load = (({ params }) => {
+export const load = (({ params, locals }) => {
     if (params.character) {
 
         assert(characterExists(params.character),
@@ -13,6 +13,7 @@ export const load = (({ params }) => {
         const characterName = nameFormat(params.character);
 
         return {
+            user: locals.session.user,
             characterName,
             pageTitle: `Chat with ${characterName}`,
             pageDescription: `Start a conversation with ${characterName} and see where it goes...`,
@@ -21,11 +22,12 @@ export const load = (({ params }) => {
     }
     else {
         return {
+            user: locals.session.user,
             pageTitle: 'Chat',
             pageDescription: 'Start a conversation and we\'ll find someone who will listen to what you have to say.',
             pageOgImage: undefined,
         };
     }
 
-}) satisfies PageLoad;
+}) satisfies PageServerLoad;
 
