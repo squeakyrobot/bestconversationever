@@ -5,7 +5,7 @@ export const prerender = true;
 
 export const GET: RequestHandler = async () => {
     // TODO: make this dynamic
-    const lastMod = '2023-08-20';
+    const lastMod = '2023-08-31';
 
     const characterEntries = Object.keys(Character).map((v) => {
         return `<url>
@@ -35,6 +35,22 @@ export const GET: RequestHandler = async () => {
         </url>
         <url>
             <loc>https://bestconversationever.com/chat</loc>
+            <lastmod>${lastMod}</lastmod>
+        </url>
+        <url>
+            <loc>https://bestconversationever.com/contact</loc>
+            <lastmod>${lastMod}</lastmod>
+        </url>
+        <url>
+            <loc>https://bestconversationever.com/privacy-policy</loc>
+            <lastmod>${lastMod}</lastmod>
+        </url>
+        <url>
+            <loc>https://bestconversationever.com/cookie-policy</loc>
+            <lastmod>${lastMod}</lastmod>
+        </url>
+        <url>
+            <loc>https://bestconversationever.com/terms-of-use</loc>
             <lastmod>${lastMod}</lastmod>
         </url>
         ${characterEntries}
