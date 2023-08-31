@@ -1,6 +1,6 @@
-# Privacy Policy for Best Conversation Ever
+# Privacy Policy
 
-**Effective Date:** 08/32/2023
+**Effective Date:** 08/31/2023
 
 ## 1. Introduction
 
@@ -27,12 +27,17 @@ We use the following third-party services to enhance our Website and App:
 - Google Analytics: We use Google Analytics to gather information about how users interact with our Website and App. This helps us improve our services and user experience.
 - Google reCAPTCHA v3 (Invisible): We use reCAPTCHA to prevent spam and abuse on our Website and App's forms while minimizing user disruptions.
 - Sign-in with Google: We offer the option to sign in using your Google account for ease of access.
+- Google's Policy Links: 
+[Privacy Policy](https://policies.google.com/privacy), 
+[Terms of Service](https://policies.google.com/terms)
 
 ## 5. Cookies
 
 We use essential cookies to:
 - Maintain session information, allowing you to navigate our Website and App smoothly.
 - Facilitate user authentication, ensuring the security of your account.
+
+View our [Cookie Policy](/cookie-policy) for more information
 
 ## 6. User-Generated Content and Sharing
 
@@ -56,7 +61,7 @@ We may update this Privacy Policy from time to time. We will notify you of any c
 ## 9. Contact Us
 
 If you have any questions or concerns about this Privacy Policy, please contact us:
-- Online Contact Form: [https://bestconversationever.com/contact](https://bestconversationever.com/contact)
+- Online Contact Form: [https://bestconversationever.com/contact](/contact)
 
   
 Thank you for using Best Conversation Ever!

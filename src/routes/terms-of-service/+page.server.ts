@@ -5,7 +5,7 @@ import * as fs from 'fs';
 export const prerender = true;
 
 export const load = (() => {
-    const policy = parse(fs.readFileSync('static/policies/terms-of-use.md', 'utf8'));
+    const policy = parse(fs.readFileSync('static/policies/terms-of-service.md', 'utf8'));
 
     return {
         policy,

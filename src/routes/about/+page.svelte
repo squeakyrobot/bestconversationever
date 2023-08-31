@@ -1,33 +1,14 @@
 <script lang="ts">
 	import CharacterList from '$lib/components/CharacterList.svelte';
-	import ContactForm from '$lib/components/ContactForm.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import SigninHeader from '$lib/components/SigninHeader.svelte';
-	import type { PageData } from './$types';
-	import type { SubmitFunction } from '@sveltejs/kit';
-	import { applyAction } from '$app/forms';
 	import { fade } from 'svelte/transition';
-	import { getRecaptchaToken, handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
+	import { handlePageRecaptcha, recaptchaVerify } from '$lib/recaptcha-client';
 	import { onMount } from 'svelte';
-
-	// export let form: FormData;
-	export let data: PageData;
-
-	let formLoading = false;
 
 	onMount(async () => {
 		handlePageRecaptcha(await recaptchaVerify('page_view/about'));
 	});
-
-	const contactSubmit: SubmitFunction = async ({ formData }) => {
-		formLoading = true;
-		formData.set('token', await getRecaptchaToken('contact/submit'));
-
-		return async ({ result }) => {
-			await applyAction(result);
-			formLoading = false;
-		};
-	};
 </script>
 
 <div
@@ -111,8 +92,12 @@
 			</ul>
 		</div>
 
-		<ContactForm formSubmitted={data.formSubmitted} />
-		<a href="/" class="link link-primary text-xl lg:text-2xl">Back Home</a><br />
+		<h2 class="text-3xl lg:text-4xl font-bold pt-10">Contact</h2>
+		<div class="py-6 ml-2 text-lg">
+			You can get in touch with us by using our <a href="/contact" class="link link-primary"
+				>Contact Form</a
+			>.
+		</div>
 	</div>
-	<Footer disabled={true} showVersion={true} />
+	<Footer showVersion={true} />
 </div>

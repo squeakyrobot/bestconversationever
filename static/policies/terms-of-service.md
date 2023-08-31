@@ -1,10 +1,10 @@
-# Terms of Use for Best Conversation Ever Website and Android Application
+# Terms of Service
 
-**Effective Date:** 08/32/2023
+**Effective Date:** 08/31/2023
 
 ## 1. Acceptance of Terms
 
-Welcome to the Best Conversation Ever website and Android application (collectively referred to as "the Platform"), provided by SqueakyRobot ("the Company," "we," "us," or "our"). By accessing or using the Platform, you agree to comply with and be bound by these Terms of Use ("Terms"). If you do not agree to these Terms, please do not use the Platform.
+Welcome to the Best Conversation Ever website and Android application (collectively referred to as "the Platform"), provided by SqueakyRobot ("the Company," "we," "us," or "our"). By accessing or using the Platform, you agree to comply with and be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the Platform.
 
 ## 2. User Information
 
@@ -41,6 +41,6 @@ The Company reserves the right to suspend, terminate, or restrict your access to
 ## 10. Contact Us
 
 If you have any questions, concerns, or feedback regarding these Terms or the Platform, please contact us at:
-- Online Contact Form: [https://bestconversationever.com/contact](https://bestconversationever.com/contact)
+- Online Contact Form: [https://bestconversationever.com/contact](/contact)
 
 By using the Best Conversation Ever Platform, you acknowledge that you have read, understood, and agreed to these Terms of Use. These Terms may be updated from time to time, and it is your responsibility to review them periodically for any changes. Your continued use of the Platform constitutes your acceptance of any such changes.
