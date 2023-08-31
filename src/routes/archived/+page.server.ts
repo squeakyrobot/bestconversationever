@@ -10,6 +10,10 @@ export const load = (async ({ locals }) => {
     const pageTitle = 'Archived Conversations';
     const pageDescription = pageTitle;
 
+<<<<<<< HEAD
     return { user: locals.session.user, pageTitle, pageDescription, convoList };
+=======
+    return { pageTitle, pageDescription, convoList };
+>>>>>>> main
 
 }) satisfies PageServerLoad;
