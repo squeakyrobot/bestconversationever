@@ -14,6 +14,7 @@
 		// the user in the PageData and set it on the sessionUer as needed
 		if ($page.data.user) {
 			$sessionUser = $page.data.user;
+			gtag('set', { user_id: $page.data.user.id });
 		}
 
 		$returnPage = $page.url.pathname;
