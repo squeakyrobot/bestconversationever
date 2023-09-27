@@ -28,6 +28,6 @@
 	<HeadMeta title={$page.data.pageTitle || 'Best Conversation Ever'} />
 </svelte:head>
 
-<div class="grid place-items-center h-[calc(100dvh)]">
+<div class="grid place-items-center h-screen">
 	<slot />
 </div>

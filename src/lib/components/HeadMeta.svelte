@@ -11,6 +11,8 @@
 </script>
 
 <title>{title}</title>
+<!-- TODO: Add canonical, beware of prerender -->
+<!-- <link rel="canonical" href="https://bestconversationever.com/" /> -->
 <meta name="description" content={description} />
 <meta property="og:url" content={url} />
 <meta property="og:type" content="website" />
